@@ -1,0 +1,13 @@
+logs/
+build/
+
+# IntelliJ
+.idea/
+*.iml
+
+# Swap files
+*.swp
+~*
+
+
+
