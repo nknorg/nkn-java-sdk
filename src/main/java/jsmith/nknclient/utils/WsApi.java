@@ -13,9 +13,9 @@ import java.util.function.Consumer;
 /**
  *
  */
-public class NknWsApi extends WebSocketClient {
+public class WsApi extends WebSocketClient {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NknWsApi.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WsApi.class);
     private static final boolean VERBOSE_LOGGING = true;
 
 
@@ -23,7 +23,7 @@ public class NknWsApi extends WebSocketClient {
     private final int myId;
 
 
-    public NknWsApi(InetSocketAddress address) {
+    public WsApi(InetSocketAddress address) {
         super(URI.create("ws://" + address.getHostString() + ":" + address.getPort()));
         myId = ++id;
     }

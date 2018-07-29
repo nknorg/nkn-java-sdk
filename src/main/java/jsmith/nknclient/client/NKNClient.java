@@ -2,7 +2,7 @@ package jsmith.nknclient.client;
 
 import com.darkyen.dave.WebbException;
 import jsmith.nknclient.utils.HttpApi;
-import jsmith.nknclient.utils.NknWsApi;
+import jsmith.nknclient.utils.WsApi;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +19,10 @@ public class NKNClient {
     private static final Logger LOG = LoggerFactory.getLogger(NKNClient.class);
 
 
-    private InetSocketAddress bootstrapNodesRpc[] = null;
-    private InetSocketAddress bootstrapNodeRpc = null;
+    private InetSocketAddress routingNodesRpc[] = null;
+    private InetSocketAddress routingNodeRpc = null;
     private InetSocketAddress directNodeWS = null;
-    private NknWsApi ws = null;
+    private WsApi ws = null;
 
     private final Identity identity;
 
@@ -36,45 +36,28 @@ public class NKNClient {
 
     public NKNClient(Identity identity, InetSocketAddress bootstrapNodesRPC[]) {
         this.identity = identity;
-        this.bootstrapNodesRpc = bootstrapNodesRPC;
+        this.routingNodesRpc = bootstrapNodesRPC;
     }
-
-    public NKNClient(Identity identity, InetSocketAddress directNodeWS) {
-        this.identity = identity;
-        this.directNodeWS = directNodeWS;
-    }
-
     public NKNClient start() {
         if (running) throw new NKNClientError("Client is already running, cannot start again");
 
         boolean success = false;
 
-        if (bootstrapNodesRpc == null) {
-            while (retries >= 0) {
-                if (!establishWsConnection()) {
-                    retries--;
-                } else {
-                    success = true;
-                    break;
-                }
-            }
-        } else {
-            // Choose one node using round robin
-            int bootstrapNodeIdx = (int)(Math.random() * bootstrapNodesRpc.length);
-            bootstrapNodeRpc = bootstrapNodesRpc[bootstrapNodeIdx];
+        // Choose one node using round robin
+        int bootstrapNodeIdx = (int)(Math.random() * routingNodesRpc.length);
+        routingNodeRpc = routingNodesRpc[bootstrapNodeIdx];
 
-            while (retries >= 0) {
-                if (!bootstrap(bootstrapNodeRpc) || !establishWsConnection()) {
-                    retries --;
-                    if (retries >= 0) {
-                        bootstrapNodeIdx ++;
-                        if (bootstrapNodeIdx >= bootstrapNodesRpc.length) bootstrapNodeIdx -= bootstrapNodesRpc.length;
-                        bootstrapNodeRpc = bootstrapNodesRpc[bootstrapNodeIdx];
-                    }
-                } else {
-                    success = true;
-                    break;
+        while (retries >= 0) {
+            if (!routingNode(routingNodeRpc) || !establishWsConnection()) {
+                retries --;
+                if (retries >= 0) {
+                    bootstrapNodeIdx ++;
+                    if (bootstrapNodeIdx >= routingNodesRpc.length) bootstrapNodeIdx -= routingNodesRpc.length;
+                    routingNodeRpc = routingNodesRpc[bootstrapNodeIdx];
                 }
+            } else {
+                success = true;
+                break;
             }
         }
 
@@ -95,16 +78,16 @@ public class NKNClient {
     }
 
     private final Object lock = new Object();
-    private boolean bootstrap(InetSocketAddress bootstrapNode) {
+    private boolean routingNode(InetSocketAddress routingNode) {
         try {
 
 
             final JSONObject parameters = new JSONObject();
             parameters.put("address", identity.getFullIdentifier());
 
-            LOG.debug("Client is connecting to bootstrap node:", bootstrapNode);
+            LOG.debug("Client is connecting to routingNode node:", routingNode);
 
-            final String wsAddr = HttpApi.rpcCall(bootstrapNode, "getwsaddr", parameters);
+            final String wsAddr = HttpApi.rpcCall(routingNode, "getwsaddr", parameters);
 
             try {
                 final String[] parts = wsAddr.split(":");
@@ -125,7 +108,7 @@ public class NKNClient {
     private boolean establishWsConnection() {
         LOG.debug("Client is connecting to node ws:", directNodeWS);
         final boolean success[] = {true};
-        ws = new NknWsApi(directNodeWS);
+        ws = new WsApi(directNodeWS);
 
         ws.setMessageListener( json -> {
             switch (json.get("Action").toString()) {
