@@ -4,8 +4,8 @@ import com.darkyen.tproll.LogFunction;
 import com.darkyen.tproll.TPLogger;
 import com.darkyen.tproll.logfunctions.FileLogFunction;
 import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
-import jsmith.nknclient.client.NKNClient;
 import jsmith.nknclient.client.Identity;
+import jsmith.nknclient.client.NKNClient;
 
 import java.io.File;
 
@@ -14,7 +14,7 @@ import java.io.File;
  */
 public class Simple {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         TPLogger.DEBUG();
         TPLogger.setLogFunction(
                 new LogFunctionMultiplexer(
@@ -22,9 +22,6 @@ public class Simple {
                         new FileLogFunction(new File("logs")) // & Log to file in "logs" directory
                 ));
         TPLogger.attachUnhandledExceptionLogger();
-
-
-        // new Client(new InetSocketAddress("35.234.123.221", 30002));
 
         final Identity identityA = new Identity("Node.A");
         final Identity identityB = new Identity("Node.B");
@@ -37,6 +34,10 @@ public class Simple {
                 .start();
 
         clientA.sendSimpleMessage(identityB.getFullIdentifier(), "Hello!");
+
+        Thread.sleep(5000);
+        clientA.close();
+        clientB.close();
 
     }
 

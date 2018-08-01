@@ -17,6 +17,8 @@ val NknClient by project {
     libraryDependencies add { dependency("org.java-websocket:Java-WebSocket:1.3.8") } // Websockets
     libraryDependencies add { dependency("com.github.Darkyenus:DaveWebb:v1.2") } // Rest API
 
+    libraryDependencies add { dependency("org.bouncycastle:bcprov-jdk15on:1.60") }
+
     extend(testing) {
         libraryDependencies add { JUnitAPI }
         libraryDependencies add { JUnitEngine }

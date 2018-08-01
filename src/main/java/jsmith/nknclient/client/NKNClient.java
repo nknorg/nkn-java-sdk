@@ -44,16 +44,16 @@ public class NKNClient {
         boolean success = false;
 
         // Choose one node using round robin
-        int bootstrapNodeIdx = (int)(Math.random() * routingNodesRpc.length);
-        routingNodeRpc = routingNodesRpc[bootstrapNodeIdx];
+        int routingNodeIdx = (int)(Math.random() * routingNodesRpc.length);
+        routingNodeRpc = routingNodesRpc[routingNodeIdx];
 
         while (retries >= 0) {
             if (!routingNode(routingNodeRpc) || !establishWsConnection()) {
                 retries --;
                 if (retries >= 0) {
-                    bootstrapNodeIdx ++;
-                    if (bootstrapNodeIdx >= routingNodesRpc.length) bootstrapNodeIdx -= routingNodesRpc.length;
-                    routingNodeRpc = routingNodesRpc[bootstrapNodeIdx];
+                    routingNodeIdx ++;
+                    if (routingNodeIdx >= routingNodesRpc.length) routingNodeIdx -= routingNodesRpc.length;
+                    routingNodeRpc = routingNodesRpc[routingNodeIdx];
                 }
             } else {
                 success = true;
@@ -115,9 +115,7 @@ public class NKNClient {
                 case "setClient": {
                     if (json.has("Error") && (int)json.get("Error") != 0) {
                         LOG.warn("WS connection failed, remaining retries: {}", retries);
-                        try {
-                            ws.closeBlocking();
-                        } catch (InterruptedException ignore) {}
+                        ws.close();
                         success[0] = false;
                         synchronized (lock) {
                             lock.notify();
