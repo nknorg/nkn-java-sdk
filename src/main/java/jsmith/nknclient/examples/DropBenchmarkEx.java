@@ -6,6 +6,7 @@ import com.darkyen.tproll.logfunctions.FileLogFunction;
 import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
 import jsmith.nknclient.client.Identity;
 import jsmith.nknclient.client.NKNClient;
+import jsmith.nknclient.wallet.Wallet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,9 +15,9 @@ import java.io.File;
 /**
  *
  */
-public class DropBenchmark {
+public class DropBenchmarkEx {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DropBenchmark.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DropBenchmarkEx.class);
 
     public static void main(String[] args) throws InterruptedException {
         TPLogger.DEBUG();
@@ -34,8 +35,8 @@ public class DropBenchmark {
 
         for (int test = 0; test < tries; test++) {
 
-            final Identity identityA = new Identity("Test." + test + ".A");
-            final Identity identityB = new Identity("Test." + test + ".B");
+            final Identity identityA = new Identity("Test." + test + ".A", Wallet.createNew());
+            final Identity identityB = new Identity("Test." + test + ".B", Wallet.createNew());
 
             boolean received[] = {false};
 

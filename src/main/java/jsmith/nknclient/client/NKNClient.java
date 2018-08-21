@@ -1,6 +1,7 @@
 package jsmith.nknclient.client;
 
 import com.darkyen.dave.WebbException;
+import jsmith.nknclient.Const;
 import jsmith.nknclient.utils.HttpApi;
 import jsmith.nknclient.utils.WsApi;
 import org.json.JSONObject;
@@ -80,7 +81,6 @@ public class NKNClient {
     private final Object lock = new Object();
     private boolean routingNode(InetSocketAddress routingNode) {
         try {
-
 
             final JSONObject parameters = new JSONObject();
             parameters.put("address", identity.getFullIdentifier());
@@ -179,7 +179,7 @@ public class NKNClient {
         messageJson.put("Action", "sendPacket");
         messageJson.put("Dest", destinationFullIdentifier);
         messageJson.put("Payload", message);
-        messageJson.put("Signature", identity.singStringAsString(message));
+        messageJson.put("Signature", identity.signStringAsString(message));
 
         ws.send(messageJson);
     }

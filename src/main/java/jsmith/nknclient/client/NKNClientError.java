@@ -9,4 +9,8 @@ public class NKNClientError extends Error {
         super(message);
     }
 
+    public NKNClientError(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

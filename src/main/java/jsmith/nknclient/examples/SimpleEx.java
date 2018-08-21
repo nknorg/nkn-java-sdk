@@ -6,13 +6,14 @@ import com.darkyen.tproll.logfunctions.FileLogFunction;
 import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
 import jsmith.nknclient.client.Identity;
 import jsmith.nknclient.client.NKNClient;
+import jsmith.nknclient.wallet.Wallet;
 
 import java.io.File;
 
 /**
  *
  */
-public class Simple {
+public class SimpleEx {
 
     public static void main(String[] args) throws InterruptedException {
         TPLogger.DEBUG();
@@ -23,8 +24,8 @@ public class Simple {
                 ));
         TPLogger.attachUnhandledExceptionLogger();
 
-        final Identity identityA = new Identity("Node.A");
-        final Identity identityB = new Identity("Node.B");
+        final Identity identityA = new Identity("Node.A", Wallet.createNew());
+        final Identity identityB = new Identity("Node.B", Wallet.createNew());
 
         final NKNClient clientA = new NKNClient(identityA)
                 .onSimpleMessage((from, message) -> System.out.println("ClientA: New message from " + from + "\n  ==> " + message))

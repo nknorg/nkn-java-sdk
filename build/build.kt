@@ -24,7 +24,7 @@ val NknClient by project {
         libraryDependencies add { JUnitEngine }
     }
 
-    mainClass set { "jsmith.nknclient.examples.DropBenchmark" }
+    mainClass set { "jsmith.nknclient.examples.WalletEx" }
     runDirectory set { projectRoot.get() }
 
 }
