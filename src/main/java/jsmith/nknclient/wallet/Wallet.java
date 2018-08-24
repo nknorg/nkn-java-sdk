@@ -12,6 +12,7 @@ import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
@@ -55,22 +56,21 @@ public class Wallet {
 //
 //    }
 
-    public double queryBalance() {
+    public BigInteger queryBalance() {
         return queryBalance(Const.BOOTSTRAP_NODES_RPC);
     }
-    public double queryBalance(InetSocketAddress bootstrapNodesRPC[]) {
+    public BigInteger queryBalance(InetSocketAddress bootstrapNodesRPC[]) {
         // Choose one node using round robin
 
         int bootstrapNodeIndex = (int)(Math.random() * bootstrapNodesRPC.length);
         InetSocketAddress bootstrapNodeRpc = bootstrapNodesRPC[bootstrapNodeIndex];
         int retries = Const.RETRIES;
-        double result = Double.NaN;
+        BigInteger result;
         WebbException error;
         do {
             try {
                 result = HttpApi.getUTXO(bootstrapNodeRpc, this, Const.BALANCE_ASSET_ID);
-                error = null;
-                break;
+                return result;
             } catch (WebbException e) {
                 error = e;
                 retries --;
@@ -81,7 +81,6 @@ public class Wallet {
             }
         } while (retries >= 0);
 
-        if (error == null) return result;
         throw new WalletError("Failed to query balance", error);
     }
 

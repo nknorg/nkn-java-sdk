@@ -7,6 +7,7 @@ import jsmith.nknclient.wallet.Wallet;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.math.BigInteger;
 import java.net.InetSocketAddress;
 
 /**
@@ -38,21 +39,21 @@ public class HttpApi {
         return new JSONObject(response.getBody());
     }
 
-    public static long getUTXO(InetSocketAddress server, Wallet w, String assetID) {
+    public static BigInteger getUTXO(InetSocketAddress server, Wallet w, String assetID) {
 
         final JSONObject params = new JSONObject();
         params.put("address", w.getAddressAsString());
         params.put("assetid", assetID);
 
-        final Object response = rpcCallJson(server, "getunspendoutput", params);
-        if (((JSONObject) response).isNull("result")) return 0;
+        BigInteger value = new BigInteger("0");
 
-        long value = 0;
+        final Object response = rpcCallJson(server, "getunspendoutput", params);
+        if (((JSONObject) response).isNull("result")) return value;
+
         final JSONArray arr = ((JSONObject) response).getJSONArray("result");
         for (Object obj : arr) {
-            value += ((JSONObject)obj).getInt("Value");
+            value = value.add(((JSONObject)obj).getBigInteger("Value"));
         }
-        System.out.println(value);
 
         return value;
     }
