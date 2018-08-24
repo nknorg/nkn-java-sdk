@@ -13,7 +13,7 @@ import java.io.File;
  */
 public class WalletEx {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         TPLogger.DEBUG();
         TPLogger.setLogFunction(
                 new LogFunctionMultiplexer(
