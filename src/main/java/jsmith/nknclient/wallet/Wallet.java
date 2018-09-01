@@ -55,7 +55,7 @@ public class Wallet {
         try {
             ECGenParameterSpec ecGenSpec = new ECGenParameterSpec("secp256r1");
             KeyPairGenerator g = KeyPairGenerator.getInstance("ECDSA", "BC");
-            g.initialize(ecGenSpec, new SecureRandom());
+            g.initialize(ecGenSpec, secureRandom);
 
             w.keyPair = g.generateKeyPair();
 
