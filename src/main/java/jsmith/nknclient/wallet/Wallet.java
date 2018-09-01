@@ -3,19 +3,37 @@ package jsmith.nknclient.wallet;
 import com.darkyen.dave.WebbException;
 import jsmith.nknclient.Const;
 import jsmith.nknclient.utils.Base58;
+import jsmith.nknclient.utils.Crypto;
 import jsmith.nknclient.utils.HttpApi;
+import jsmith.nknclient.utils.PasswordString;
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
+import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+import org.bouncycastle.jce.spec.ECNamedCurveSpec;
+import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.util.encoders.Hex;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
+import java.security.spec.ECParameterSpec;
+import java.security.spec.ECPrivateKeySpec;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
+
+import static jsmith.nknclient.utils.Crypto.aesEncryptAligned;
+import static jsmith.nknclient.utils.Crypto.sha256;
 
 /**
  *
@@ -27,8 +45,10 @@ public class Wallet {
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
+    private static final SecureRandom secureRandom = new SecureRandom(); // TODO: Does not look thread safe (using it, not creating)
 
     private KeyPair keyPair = null;
+    private String contractDataStr = "";
 
     public static Wallet createNew() {
         final Wallet w = new Wallet();
@@ -48,13 +68,112 @@ public class Wallet {
         return w;
     }
 
-//    public static Wallet load(InputStream is, byte[] key) {
-//
-//    }
-//
-//    public void save(OutputStream os, byte[] key) {
-//
-//    }
+    public static Wallet createFromPrivateKey(byte[] privateKey) {
+        try {
+
+            final Wallet w = new Wallet();
+
+            final ECNamedCurveParameterSpec ecNamedSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
+            final ECParameterSpec ecSpec = new ECNamedCurveSpec("secp256r1", ecNamedSpec.getCurve(), ecNamedSpec.getG(), ecNamedSpec.getN());
+            final org.bouncycastle.jce.spec.ECParameterSpec ecbcSpec = new org.bouncycastle.jce.spec.ECParameterSpec(ecNamedSpec.getCurve(), ecNamedSpec.getG(), ecNamedSpec.getN());
+            final KeyFactory kf = KeyFactory.getInstance("ECDSA", "BC");
+
+            // TODO: investigate // negative private key for compatibility reasons, weird hack
+            final ECPrivateKeySpec ecPrivKeySpec = new ECPrivateKeySpec(new BigInteger(-1, privateKey), ecSpec);
+            final BCECPrivateKey privKey = (BCECPrivateKey) kf.generatePrivate(ecPrivKeySpec);
+            final ECPublicKeySpec ecPubKeySpec = new ECPublicKeySpec(ecNamedSpec.getG().multiply(privKey.getD()), ecbcSpec);
+
+            w.keyPair = new KeyPair(
+                    kf.generatePublic(ecPubKeySpec),
+                    privKey
+            );
+
+            return w;
+
+        } catch (InvalidKeySpecException | NoSuchProviderException | NoSuchAlgorithmException e) {
+            throw new WalletError("Creating wallet from private key failed", e);
+        }
+    }
+
+    private static final String VERSION = "0.0.1";
+    public static Wallet load(InputStream is, PasswordString password) {
+        try {
+            JSONObject json = new JSONObject(new String(is.readAllBytes(), "UTF-8"));
+
+            if (!json.getString("Version").equals(VERSION)) {
+                throw new WalletError("Unsuported version of wallet save file: " + json.getString("Version"));
+            }
+
+            byte[] passwd = sha256(password.sha256());
+            final byte[] passwordHash = Hex.decode(json.getString("PasswordHash"));
+            if (!Arrays.equals(sha256(passwd), passwordHash)) {
+                   LOG.warn("Unlocking wallet failed, wrong password");
+                   return null;
+            }
+
+            final byte[] iv = Hex.decode(json.getString("IV"));
+            final byte[] masterKeyEnc = Hex.decode(json.getString("MasterKey"));
+
+            final byte[] masterKey = Crypto.aesDecryptAligned(masterKeyEnc, passwd, iv);
+            final byte[] privateKey = Crypto.aesDecryptAligned(Hex.decode(json.getString("PrivateKeyEncrypted")), masterKey, iv);
+
+            final Wallet w = createFromPrivateKey(privateKey);
+
+            if (json.has("ContractData")) w.contractDataStr = json.getString("ContractData");
+
+            // TODO check saved and generated address and program hash to see if address are not corrupted
+
+            return w;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public void save(OutputStream os, PasswordString password) {
+        byte[] passwd = sha256(password.sha256());
+
+        final JSONObject json = new JSONObject();
+
+        json.put("Version", VERSION);
+        json.put("Address", getAddressAsString());
+        json.put("ProgramHash", getProgramHashAsHexString());
+        json.put("PasswordHash", Hex.toHexString(sha256(passwd)));
+
+
+        final byte[] iv = new byte[16];
+        secureRandom.nextBytes(iv);
+        final byte[] masterKey = new byte[32];
+        secureRandom.nextBytes(masterKey);
+
+        json.put("IV", Hex.toHexString(iv));
+        json.put("MasterKey", Hex.toHexString(aesEncryptAligned(masterKey, passwd, iv)));
+
+        // negative private key for compatibility with compatibility mode (see comments in createFromPrivateKey function)
+        final BCECPrivateKey privateKey = (BCECPrivateKey) keyPair.getPrivate();
+        final byte[] dArr = privateKey.getParameters().getN().subtract(privateKey.getD()).toByteArray();
+
+        System.out.println(dArr.length);
+        final byte[] dArrTrimmed = new byte[32];
+        System.arraycopy(dArr, dArr.length == 32 ? 0 : 1, dArrTrimmed, 0, dArrTrimmed.length);
+
+        json.put("PrivateKeyEncrypted",
+                Hex.toHexString(
+                        aesEncryptAligned(dArrTrimmed, masterKey, iv)
+                )
+        );
+
+        json.put("ContractData", contractDataStr);
+
+        try {
+            os.write(json.toString().getBytes("UTF-8"));
+            os.flush();
+        } catch (IOException ioe) {
+            throw new WalletError("Wallet saving failed", ioe);
+        }
+
+    }
 
     public BigInteger queryBalance() {
         return queryBalance(Const.BOOTSTRAP_NODES_RPC);
@@ -74,7 +193,11 @@ public class Wallet {
             } catch (WebbException e) {
                 error = e;
                 retries --;
-                LOG.warn("Query balance RPC request failed, remaining retries: {}", retries);
+                if (retries >= 0) {
+                    LOG.warn("Query balance RPC request failed, remaining retries: {}", retries);
+                } else {
+                    LOG.warn("Query balance RPC request failed");
+                }
             } catch (WalletError e) {
                 LOG.warn("Failed to query balance", e);
                 throw e;
@@ -139,6 +262,14 @@ public class Wallet {
         System.arraycopy(x, 0, enc, sh.length, 4);
 
         return Base58.encode(enc);
+    }
+
+    public String getProgramHashAsHexString() {
+        final String addressStr = getAddressAsString();
+        final byte[] address = Base58.decode(addressStr);
+        final byte[] programHash = new byte[address.length - 5];
+        System.arraycopy(address, 1, programHash, 0, programHash.length);
+        return Hex.toHexString(programHash);
     }
 
 }

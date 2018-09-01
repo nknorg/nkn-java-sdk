@@ -34,15 +34,13 @@ public class HttpApi {
                 .bodyJson(requestBody.toString())
                 .execute(ResponseTranslator.STRING_TRANSLATOR);
 
-        System.out.println(response.getBody());
-
         return new JSONObject(response.getBody());
     }
 
-    public static BigInteger getUTXO(InetSocketAddress server, Wallet w, String assetID) {
+    public static BigInteger getUTXO(InetSocketAddress server, String nknAddress, String assetID) {
 
         final JSONObject params = new JSONObject();
-        params.put("address", w.getAddressAsString());
+        params.put("address", nknAddress);
         params.put("assetid", assetID);
 
         BigInteger value = new BigInteger("0");
@@ -56,6 +54,10 @@ public class HttpApi {
         }
 
         return value;
+    }
+
+    public static BigInteger getUTXO(InetSocketAddress server, Wallet w, String assetID) {
+        return getUTXO(server, w.getAddressAsString(), assetID);
     }
 
 }
