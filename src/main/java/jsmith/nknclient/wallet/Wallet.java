@@ -6,8 +6,6 @@ import jsmith.nknclient.utils.Base58;
 import jsmith.nknclient.utils.Crypto;
 import jsmith.nknclient.utils.HttpApi;
 import jsmith.nknclient.utils.PasswordString;
-import org.bouncycastle.crypto.digests.RIPEMD160Digest;
-import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.ECNamedCurveTable;

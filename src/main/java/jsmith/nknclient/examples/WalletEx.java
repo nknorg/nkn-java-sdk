@@ -4,8 +4,6 @@ import com.darkyen.tproll.LogFunction;
 import com.darkyen.tproll.TPLogger;
 import com.darkyen.tproll.logfunctions.FileLogFunction;
 import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
-import jsmith.nknclient.Const;
-import jsmith.nknclient.utils.HttpApi;
 import jsmith.nknclient.utils.PasswordString;
 import jsmith.nknclient.wallet.Wallet;
 
