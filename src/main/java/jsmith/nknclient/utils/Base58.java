@@ -95,7 +95,7 @@ public class Base58 {
                 digit58 = INDEXES[c];
             }
             if (digit58 < 0) {
-                throw new RuntimeException("Not a Base58 input: " + input);
+                throw new IllegalArgumentException("Not a Base58 input: " + input);
             }
 
             input58[i] = (byte) digit58;

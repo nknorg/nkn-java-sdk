@@ -56,8 +56,4 @@ public class HttpApi {
         return value;
     }
 
-    public static BigInteger getUTXO(InetSocketAddress server, Wallet w, String assetID) {
-        return getUTXO(server, w.getAddressAsString(), assetID);
-    }
-
 }

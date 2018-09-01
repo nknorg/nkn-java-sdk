@@ -4,6 +4,7 @@ import com.darkyen.tproll.LogFunction;
 import com.darkyen.tproll.TPLogger;
 import com.darkyen.tproll.logfunctions.FileLogFunction;
 import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
+import jsmith.nknclient.client.NKNExplorer;
 import jsmith.nknclient.utils.PasswordString;
 import jsmith.nknclient.wallet.Wallet;
 
@@ -36,6 +37,10 @@ public class WalletEx {
         } else {
             System.out.println("Failed to decrypt saved wallet");
         }
+
+
+        final String address = "NTyV6Yq1NbYf2ggwMRvHNkLHnrVFaeeQVD"; // Change/add/remove any char and see if it is still valid
+        System.out.println("Address " + address + " is " + (NKNExplorer.isAddressValid(address) ? "" : "not ") + "valid");
 
     }
 

@@ -2,6 +2,7 @@ package jsmith.nknclient.wallet;
 
 import com.darkyen.dave.WebbException;
 import jsmith.nknclient.Const;
+import jsmith.nknclient.client.NKNExplorer;
 import jsmith.nknclient.utils.Base58;
 import jsmith.nknclient.utils.Crypto;
 import jsmith.nknclient.utils.HttpApi;
@@ -152,7 +153,6 @@ public class Wallet {
         final BCECPrivateKey privateKey = (BCECPrivateKey) keyPair.getPrivate();
         final byte[] dArr = privateKey.getParameters().getN().subtract(privateKey.getD()).toByteArray();
 
-        System.out.println(dArr.length);
         final byte[] dArrTrimmed = new byte[32];
         System.arraycopy(dArr, dArr.length == 32 ? 0 : 1, dArrTrimmed, 0, dArrTrimmed.length);
 
@@ -177,32 +177,7 @@ public class Wallet {
         return queryBalance(Const.BOOTSTRAP_NODES_RPC);
     }
     public BigInteger queryBalance(InetSocketAddress bootstrapNodesRPC[]) {
-        // Choose one node using round robin
-
-        int bootstrapNodeIndex = (int)(Math.random() * bootstrapNodesRPC.length);
-        InetSocketAddress bootstrapNodeRpc = bootstrapNodesRPC[bootstrapNodeIndex];
-        int retries = Const.RETRIES;
-        BigInteger result;
-        WebbException error;
-        do {
-            try {
-                result = HttpApi.getUTXO(bootstrapNodeRpc, this, Const.BALANCE_ASSET_ID);
-                return result;
-            } catch (WebbException e) {
-                error = e;
-                retries --;
-                if (retries >= 0) {
-                    LOG.warn("Query balance RPC request failed, remaining retries: {}", retries);
-                } else {
-                    LOG.warn("Query balance RPC request failed");
-                }
-            } catch (WalletError e) {
-                LOG.warn("Failed to query balance", e);
-                throw e;
-            }
-        } while (retries >= 0);
-
-        throw new WalletError("Failed to query balance", error);
+        return NKNExplorer.queryBalance(bootstrapNodesRPC, getAddressAsString());
     }
 
     public String getPublicKeyAsHexString() {
