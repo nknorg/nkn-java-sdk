@@ -233,29 +233,14 @@ public class Wallet {
         s[1] = (byte) ((yEnc[yEnc.length - 1] % 2 == 0) ? 0x3 : 0x2);
         System.arraycopy(xEnc, 0, s, 2, xEnc.length);
 
-        final SHA256Digest sha256Digest = new SHA256Digest();
-        sha256Digest.update(s, 0, s.length);
-        final byte[] sha256 = new byte[sha256Digest.getDigestSize()];
-        sha256Digest.doFinal(sha256, 0);
 
-        final RIPEMD160Digest r160Digest = new RIPEMD160Digest();
-        r160Digest.update(sha256, 0, sha256.length);
-        final byte[] r160 = new byte[r160Digest.getDigestSize()];
-        r160Digest.doFinal(r160, 0);
+        final byte[] r160 = Crypto.r160(Crypto.sha256(s));
 
         final byte[] sh = new byte[r160.length + 1];
         sh[0] = 53;
         System.arraycopy(r160, 0, sh, 1, r160.length);
 
-        final SHA256Digest sha256Digest2 = new SHA256Digest();
-        sha256Digest.update(sh, 0, sh.length);
-        final byte[] sha2562 = new byte[sha256Digest2.getDigestSize()];
-        sha256Digest.doFinal(sha2562, 0);
-
-        final SHA256Digest sha256Digest3 = new SHA256Digest();
-        sha256Digest.update(sha2562, 0, sha2562.length);
-        final byte[] x = new byte[sha256Digest3.getDigestSize()];
-        sha256Digest.doFinal(x, 0);
+        final byte[] x = Crypto.doubleSha256(sh);
 
         final byte[] enc = new byte[sh.length + 4];
         System.arraycopy(sh, 0, enc, 0, sh.length);

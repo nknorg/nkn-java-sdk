@@ -1,5 +1,6 @@
 package jsmith.nknclient.utils;
 
+import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,15 @@ public class Crypto {
             LOG.error("SHA-256 checksum failed", e);
             throw new CryptoError("SHA-256 is not supported - no such algorithm");
         }
+    }
+
+    public static byte[] r160 (byte[] src) {
+        final RIPEMD160Digest r160Digest = new RIPEMD160Digest();
+        r160Digest.update(src, 0, src.length);
+        final byte[] r160 = new byte[r160Digest.getDigestSize()];
+        r160Digest.doFinal(r160, 0);
+
+        return r160;
     }
 
     public static byte[] doubleSha256 (byte[] src) {
