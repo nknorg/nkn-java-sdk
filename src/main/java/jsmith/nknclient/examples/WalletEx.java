@@ -28,10 +28,10 @@ public class WalletEx {
         TPLogger.attachUnhandledExceptionLogger();
 
         final Wallet w = Wallet.createNew();
-        w.save(new FileOutputStream(new File("tmpWallet.dat")), new PasswordString("a"));
+        w.save(new FileOutputStream(new File("tmpWallet.dat")), new PasswordString("a")); // PasswordString should be disposed by user after use
         System.out.println("Generated: " + w.getAddressAsString());
 
-        final Wallet w2 = Wallet.load(new FileInputStream(new File("tmpWallet.dat")), new PasswordString("a"));
+        final Wallet w2 = Wallet.load(new FileInputStream(new File("tmpWallet.dat")), new PasswordString("a")); // PasswordString should be disposed by user after use
         if (w2 != null) {
             System.out.println("Loaded: " + w2.getAddressAsString());
         } else {

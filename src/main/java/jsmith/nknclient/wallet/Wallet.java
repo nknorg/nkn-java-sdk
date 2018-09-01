@@ -96,8 +96,19 @@ public class Wallet {
 
     private static final String VERSION = "0.0.1";
     public static Wallet load(InputStream is, PasswordString password) {
+        return load(is, -1, password);
+    }
+    public static Wallet load(InputStream is, int streamByteLimit, PasswordString password) {
         try {
-            JSONObject json = new JSONObject(new String(is.readAllBytes(), "UTF-8"));
+            byte[] walletBytes;
+            if (streamByteLimit == -1) {
+                walletBytes = is.readAllBytes();
+            } else {
+                walletBytes = new byte[streamByteLimit];
+                is.readNBytes(walletBytes, 0, streamByteLimit);
+            }
+
+            JSONObject json = new JSONObject(new String(walletBytes, "UTF-8"));
 
             if (!json.getString("Version").equals(VERSION)) {
                 throw new WalletError("Unsuported version of wallet save file: " + json.getString("Version"));
