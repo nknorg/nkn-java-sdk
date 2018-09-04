@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -100,13 +101,16 @@ public class Wallet {
     }
     public static Wallet load(InputStream is, int streamByteLimit, PasswordString password) {
         try {
-            byte[] walletBytes;
-            if (streamByteLimit == -1) {
-                walletBytes = is.readAllBytes();
-            } else {
-                walletBytes = new byte[streamByteLimit];
-                is.readNBytes(walletBytes, 0, streamByteLimit);
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int read, limit = streamByteLimit == -1 ? buffer.length : streamByteLimit;
+            while ((read = is.read(buffer, 0, Math.min(buffer.length, limit))) != -1) {
+                baos.write(buffer, 0, read);
+                if (streamByteLimit != -1) limit -= read;
             }
+            baos.flush();
+            final byte[] walletBytes = baos.toByteArray();
+
 
             JSONObject json = new JSONObject(new String(walletBytes, "UTF-8"));
 
