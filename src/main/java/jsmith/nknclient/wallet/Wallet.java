@@ -60,6 +60,8 @@ public class Wallet {
 
             w.keyPair = g.generateKeyPair();
 
+            w.contractDataStr = Hex.toHexString(w.getSignatureData()) + "00" + w.getProgramHashAsHexString();
+
         } catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchProviderException e) {
             LOG.error("Couldn't generate wallet", e);
             throw new WalletError("Could not generate wallet", e);
@@ -87,6 +89,8 @@ public class Wallet {
                     kf.generatePublic(ecPubKeySpec),
                     privKey
             );
+
+            w.contractDataStr = Hex.toHexString(w.getSignatureData()) + "00" + w.getProgramHashAsHexString();
 
             return w;
 
@@ -209,18 +213,7 @@ public class Wallet {
     }
 
     public String getAddressAsString() {
-        assert keyPair != null : "KeyPair is null, this should never happen";
-
-        final BCECPublicKey pub = (BCECPublicKey)keyPair.getPublic();
-
-        final byte[] xEnc = pub.getQ().getAffineXCoord().getEncoded();
-        final byte[] yEnc = pub.getQ().getAffineYCoord().getEncoded();
-        final byte[] s = new byte[xEnc.length + 3];
-        s[0] = 0x21;
-        s[s.length - 1] = (byte) 0xAC;
-        s[1] = (byte) ((yEnc[yEnc.length - 1] % 2 == 0) ? 0x3 : 0x2);
-        System.arraycopy(xEnc, 0, s, 2, xEnc.length);
-
+        final byte[] s = getSignatureData();
 
         final byte[] r160 = Crypto.r160(Crypto.sha256(s));
 
@@ -243,6 +236,26 @@ public class Wallet {
         final byte[] programHash = new byte[address.length - 5];
         System.arraycopy(address, 1, programHash, 0, programHash.length);
         return Hex.toHexString(programHash);
+    }
+
+    public String getContractDataAsString() {
+        return contractDataStr;
+    }
+
+    private byte[] getSignatureData() {
+        assert keyPair != null : "KeyPair is null, this should never happen";
+
+        final BCECPublicKey pub = (BCECPublicKey)keyPair.getPublic();
+
+        final byte[] xEnc = pub.getQ().getAffineXCoord().getEncoded();
+        final byte[] yEnc = pub.getQ().getAffineYCoord().getEncoded();
+        final byte[] s = new byte[xEnc.length + 3];
+        s[0] = 0x21;
+        s[s.length - 1] = (byte) 0xAC;
+        s[1] = (byte) ((yEnc[yEnc.length - 1] % 2 == 0) ? 0x3 : 0x2);
+        System.arraycopy(xEnc, 0, s, 2, xEnc.length);
+
+        return s;
     }
 
 }
