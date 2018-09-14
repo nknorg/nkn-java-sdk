@@ -9,6 +9,7 @@ import jsmith.nknclient.wallet.WalletError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 
@@ -20,16 +21,16 @@ public class NKNExplorer {
     private static final Logger LOG = LoggerFactory.getLogger(NKNExplorer.class);
 
 
-    public static BigInteger queryBalance(String address) {
+    public static BigDecimal queryBalance(String address) {
         return queryBalance(Const.BOOTSTRAP_NODES_RPC, address);
     }
-    public static BigInteger queryBalance(InetSocketAddress bootstrapNodesRPC[], String address) {
+    public static BigDecimal queryBalance(InetSocketAddress bootstrapNodesRPC[], String address) {
         // Choose one node using round robin
 
         int bootstrapNodeIndex = (int)(Math.random() * bootstrapNodesRPC.length);
         InetSocketAddress bootstrapNodeRpc = bootstrapNodesRPC[bootstrapNodeIndex];
         int retries = Const.RETRIES;
-        BigInteger result;
+        BigDecimal result;
         WebbException error;
         do {
             try {

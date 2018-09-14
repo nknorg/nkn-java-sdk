@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.security.*;
@@ -192,10 +193,10 @@ public class Wallet {
 
     }
 
-    public BigInteger queryBalance() {
+    public BigDecimal queryBalance() {
         return queryBalance(Const.BOOTSTRAP_NODES_RPC);
     }
-    public BigInteger queryBalance(InetSocketAddress bootstrapNodesRPC[]) {
+    public BigDecimal queryBalance(InetSocketAddress bootstrapNodesRPC[]) {
         return NKNExplorer.queryBalance(bootstrapNodesRPC, getAddressAsString());
     }
 
