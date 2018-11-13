@@ -1,11 +1,9 @@
 package jsmith.nknclient.wallet;
 
-import com.darkyen.dave.WebbException;
 import jsmith.nknclient.Const;
 import jsmith.nknclient.client.NKNExplorer;
 import jsmith.nknclient.utils.Base58;
 import jsmith.nknclient.utils.Crypto;
-import jsmith.nknclient.utils.HttpApi;
 import jsmith.nknclient.utils.PasswordString;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
@@ -26,6 +24,7 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECParameterSpec;
@@ -116,8 +115,7 @@ public class Wallet {
             baos.flush();
             final byte[] walletBytes = baos.toByteArray();
 
-
-            JSONObject json = new JSONObject(new String(walletBytes, "UTF-8"));
+            JSONObject json = new JSONObject(new String(walletBytes, StandardCharsets.UTF_8));
 
             if (!json.getString("Version").equals(VERSION)) {
                 throw new WalletError("Unsuported version of wallet save file: " + json.getString("Version"));
@@ -140,7 +138,14 @@ public class Wallet {
 
             if (json.has("ContractData")) w.contractDataStr = json.getString("ContractData");
 
-            // TODO check saved and generated address and program hash to see if address are not corrupted
+            if (!json.has("ProgramHash") || !json.getString("ProgramHash").equals(w.getProgramHashAsHexString())) {
+                throw new WalletError("Key mismatch in wallet file. Generated ProgramHash does not match the loaded ProgramHash");
+            }
+
+            if (!json.has("Address") || !json.getString("Address").equals(w.getAddressAsString())) {
+                throw new WalletError("Key mismatch in wallet file. Generated Address does not match the loaded Address");
+            }
+
 
             return w;
         } catch (IOException e) {
@@ -185,7 +190,7 @@ public class Wallet {
         json.put("ContractData", contractDataStr);
 
         try {
-            os.write(json.toString().getBytes("UTF-8"));
+            os.write(json.toString().getBytes(StandardCharsets.UTF_8));
             os.flush();
         } catch (IOException ioe) {
             throw new WalletError("Wallet saving failed", ioe);
@@ -204,8 +209,6 @@ public class Wallet {
         assert keyPair != null : "KeyPair is null, this should never happen";
 
         final BCECPublicKey pub = (BCECPublicKey)keyPair.getPublic();
-
-        System.out.println(pub.getQ().getAffineXCoord().getEncoded().length);
 
         final String x = Hex.toHexString(pub.getQ().getAffineXCoord().getEncoded());
         final byte[] y = pub.getQ().getAffineYCoord().getEncoded();
