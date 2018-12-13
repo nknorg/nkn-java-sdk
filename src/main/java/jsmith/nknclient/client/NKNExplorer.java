@@ -4,13 +4,12 @@ import com.darkyen.dave.WebbException;
 import jsmith.nknclient.Const;
 import jsmith.nknclient.utils.Base58;
 import jsmith.nknclient.utils.Crypto;
-import jsmith.nknclient.utils.HttpApi;
+import jsmith.nknclient.network.HttpApi;
 import jsmith.nknclient.wallet.WalletError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.InetSocketAddress;
 
 /**
@@ -24,7 +23,7 @@ public class NKNExplorer {
     public static BigDecimal queryBalance(String address) {
         return queryBalance(Const.BOOTSTRAP_NODES_RPC, address);
     }
-    public static BigDecimal queryBalance(InetSocketAddress bootstrapNodesRPC[], String address) {
+    public static BigDecimal queryBalance(InetSocketAddress[] bootstrapNodesRPC, String address) {
         // Choose one node using round robin
 
         int bootstrapNodeIndex = (int)(Math.random() * bootstrapNodesRPC.length);

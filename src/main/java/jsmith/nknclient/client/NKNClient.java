@@ -2,8 +2,8 @@ package jsmith.nknclient.client;
 
 import com.darkyen.dave.WebbException;
 import jsmith.nknclient.Const;
-import jsmith.nknclient.utils.HttpApi;
-import jsmith.nknclient.utils.WsApi;
+import jsmith.nknclient.network.HttpApi;
+import jsmith.nknclient.network.WsApi;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ public class NKNClient {
     private static final Logger LOG = LoggerFactory.getLogger(NKNClient.class);
 
 
-    private InetSocketAddress routingNodesRpc[] = null;
+    private InetSocketAddress[] routingNodesRpc = null;
     private InetSocketAddress routingNodeRpc = null;
     private InetSocketAddress directNodeWS = null;
     private WsApi ws = null;
@@ -35,7 +35,7 @@ public class NKNClient {
         this(identity, Const.BOOTSTRAP_NODES_RPC);
     }
 
-    public NKNClient(Identity identity, InetSocketAddress bootstrapNodesRPC[]) {
+    public NKNClient(Identity identity, InetSocketAddress[] bootstrapNodesRPC) {
         this.identity = identity;
         this.routingNodesRpc = bootstrapNodesRPC;
     }
@@ -67,7 +67,7 @@ public class NKNClient {
         return this;
     }
 
-    public NKNClient close() {
+    public void close() {
         if (!running) throw new NKNClientError("Client is not (yet) running, cannot close");
 
         try {
@@ -75,7 +75,6 @@ public class NKNClient {
         } catch (InterruptedException ignored) {}
         running = false;
 
-        return this;
     }
 
     private final Object lock = new Object();
@@ -107,7 +106,7 @@ public class NKNClient {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean establishWsConnection() {
         LOG.debug("Client is connecting to node ws:", directNodeWS);
-        final boolean success[] = {true};
+        final boolean[] success = {true};
         ws = new WsApi(directNodeWS);
 
         ws.setMessageListener( json -> {
@@ -144,7 +143,7 @@ public class NKNClient {
                     break;
                 }
                 default:
-                    LOG.warn("Got unknown message (action={}), ignoring", json.get("Action").toString());
+                    LOG.warn("Got unknown message (action='{}'), ignoring", json.get("Action").toString());
             }
         });
 

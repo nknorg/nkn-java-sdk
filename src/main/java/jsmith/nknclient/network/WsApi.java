@@ -1,4 +1,4 @@
-package jsmith.nknclient.utils;
+package jsmith.nknclient.network;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -16,8 +16,6 @@ import java.util.function.Consumer;
 public class WsApi extends WebSocketClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(WsApi.class);
-    private static final boolean VERBOSE_LOGGING = true;
-
 
     private static int id = 0;
     private final int myId;
@@ -30,7 +28,7 @@ public class WsApi extends WebSocketClient {
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
-        if (VERBOSE_LOGGING) LOG.debug("WS#{} open, addr: '{}'", myId, getRemoteSocketAddress());
+        LOG.debug("WS#{} open, addr: '{}'", myId, getRemoteSocketAddress());
 
         if (openListener != null) {
             openListener.accept(handshakedata);
@@ -39,7 +37,7 @@ public class WsApi extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
-        if (VERBOSE_LOGGING) LOG.debug("WS#{} received message: '{}'", myId,  message);
+        LOG.debug("WS#{} received message: '{}'", myId,  message);
 
         if (messageListener != null) {
             final JSONObject messageJson = new JSONObject(message);
@@ -49,7 +47,7 @@ public class WsApi extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        if (VERBOSE_LOGGING) LOG.debug("WS#{} closed", myId);
+        LOG.debug("WS#{} closed", myId);
     }
 
     @Override
@@ -68,7 +66,7 @@ public class WsApi extends WebSocketClient {
 
     public void send(JSONObject json) {
         final String str = json.toString();
-        if (VERBOSE_LOGGING) LOG.debug("WS#{} sending: '{}'", myId, str);
+        LOG.debug("WS#{} sending text: '{}'", myId, str);
         send(str);
     }
 }

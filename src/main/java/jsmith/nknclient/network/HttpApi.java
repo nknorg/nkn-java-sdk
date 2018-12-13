@@ -1,14 +1,14 @@
-package jsmith.nknclient.utils;
+package jsmith.nknclient.network;
 
 import com.darkyen.dave.Response;
 import com.darkyen.dave.ResponseTranslator;
 import com.darkyen.dave.Webb;
-import jsmith.nknclient.wallet.Wallet;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.InetSocketAddress;
 
 /**
@@ -16,10 +16,17 @@ import java.net.InetSocketAddress;
  */
 public class HttpApi {
 
+    private static final Logger LOG = LoggerFactory.getLogger(HttpApi.class);
+
     private static final Webb webb = new Webb(null);
 
     public static String rpcCall(InetSocketAddress to, String method, JSONObject parameters) {
-        return rpcCallJson(to, method, parameters).get("result").toString();
+        final JSONObject result = rpcCallJson(to, method, parameters);
+        if (result.has("result")) return result.get("result").toString();
+
+        LOG.warn("Invalid response format");
+
+        return null;
     }
 
     public static JSONObject rpcCallJson(InetSocketAddress to, String method, JSONObject parameters) {
@@ -46,10 +53,10 @@ public class HttpApi {
 
         BigDecimal value = new BigDecimal("0");
 
-        final Object response = rpcCallJson(server, "getunspendoutput", params);
-        if (((JSONObject) response).isNull("result")) return value;
+        final JSONObject response = rpcCallJson(server, "getunspendoutput", params);
+        if (response.isNull("result")) return value;
 
-        final JSONArray arr = ((JSONObject) response).getJSONArray("result");
+        final JSONArray arr = response.getJSONArray("result");
         for (Object obj : arr) {
             value = value.add(((JSONObject)obj).getBigDecimal("Value"));
         }
