@@ -1,5 +1,6 @@
 package jsmith.nknclient.network;
 
+import com.google.protobuf.ByteString;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
@@ -38,11 +39,20 @@ public class WsApi extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
-        LOG.debug("WS#{} received message: '{}'", myId,  message);
+        LOG.debug("WS#{} received text message: '{}'", myId,  message);
 
-        if (messageListener != null) {
+        if (jsonMessageListener != null) {
             final JSONObject messageJson = new JSONObject(message);
-            messageListener.accept(messageJson);
+            jsonMessageListener.accept(messageJson);
+        }
+    }
+
+    @Override
+    public void onMessage(ByteBuffer bytes) {
+        LOG.debug("WS#{} received bin message, {} bytes", myId, bytes.limit());
+
+        if (protobufMessageListener != null) {
+            protobufMessageListener.accept(ByteString.copyFrom(bytes));
         }
     }
 
@@ -56,16 +66,25 @@ public class WsApi extends WebSocketClient {
         LOG.error("WS#{} error", myId, ex);
     }
 
-    private Consumer<JSONObject> messageListener;
-    public void setMessageListener(Consumer<JSONObject> listener) {
-        this.messageListener = listener;
+    private Consumer<JSONObject> jsonMessageListener;
+    public void setJsonMessageListener(Consumer<JSONObject> listener) {
+        this.jsonMessageListener = listener;
+    }
+    private Consumer<ByteString> protobufMessageListener;
+    public void setProtobufMessageListener(Consumer<ByteString> listener) {
+        this.protobufMessageListener = listener;
     }
     private Consumer<ServerHandshake> openListener;
     public void setOpenListener(Consumer<ServerHandshake> listener) {
         this.openListener = listener;
     }
 
-    public void send(JSONObject json) {
+    public void sendPacket(ByteString bin) {
+        LOG.debug("WS#{} sending bin, {} bytes", myId, bin.size());
+        send(bin.toByteArray());
+    }
+
+    public void sendPacket(JSONObject json) {
         final String str = json.toString();
         LOG.debug("WS#{} sending text: '{}'", myId, str);
         send(str);

@@ -6,7 +6,9 @@ import com.darkyen.tproll.logfunctions.FileLogFunction;
 import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
 import jsmith.nknclient.client.Identity;
 import jsmith.nknclient.client.NKNClient;
+import jsmith.nknclient.utils.Crypto;
 import jsmith.nknclient.wallet.Wallet;
+import org.bouncycastle.util.encoders.Hex;
 
 import java.io.File;
 
@@ -28,13 +30,16 @@ public class SimpleEx {
         final Identity identityB = new Identity("Node.B", Wallet.createNew());
 
         final NKNClient clientA = new NKNClient(identityA)
-                .onSimpleMessage((from, message) -> System.out.println("ClientA: New message from " + from + "\n  ==> " + message))
+                .onTextMessage((from, message) -> System.out.println("ClientA: New message from " + from + "\n  ==> " + message))
+                .onBinaryMessage((from, message) -> System.out.println("ClientA: New binary from " + from + "\n  ==> 0x" + Hex.toHexString(message.toByteArray())))
                 .start();
         final NKNClient clientB = new NKNClient(identityB)
-                .onSimpleMessage((from, message) -> System.out.println("ClientB: New message from " + from + "\n  ==> " + message))
+                .onTextMessage((from, message) -> System.out.println("ClientB: New message from " + from + "\n  ==> " + message))
+                .onBinaryMessage((from, message) -> System.out.println("ClientB: New binary from " + from + "\n  ==> 0x" + Hex.toHexString(message.toByteArray())))
                 .start();
 
-        clientA.sendSimpleMessage(identityB.getFullIdentifier(), "Hello!");
+        clientA.sendTextMessage(identityB.getFullIdentifier(), "Hello!");
+        clientB.sendBinaryMessage(identityA.getFullIdentifier(), new byte[] {(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE}); // Casts because java (byte) is signed and these numbers would overwrite the msb
 
         Thread.sleep(5000);
         clientA.close();

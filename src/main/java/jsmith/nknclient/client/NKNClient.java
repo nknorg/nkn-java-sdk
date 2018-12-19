@@ -1,9 +1,14 @@
 package jsmith.nknclient.client;
 
 import com.darkyen.dave.WebbException;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 import jsmith.nknclient.Const;
 import jsmith.nknclient.network.HttpApi;
 import jsmith.nknclient.network.WsApi;
+import jsmith.nknclient.network.proto.Messages;
+import jsmith.nknclient.network.proto.Payloads;
+import jsmith.nknclient.utils.Crypto;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,7 +114,7 @@ public class NKNClient {
         final boolean[] success = {true};
         ws = new WsApi(directNodeWS);
 
-        ws.setMessageListener( json -> {
+        ws.setJsonMessageListener(json -> {
             switch (json.get("Action").toString()) {
                 case "setClient": {
                     if (json.has("Error") && (int)json.get("Error") != 0) {
@@ -130,20 +135,39 @@ public class NKNClient {
                     // TODO // if ((int)json.get("Error") == 0) onMessageUpdateSigChainBlockHash(json.get("Result").toString());
                     break;
                 }
-                case "receivePacket": {
-                    if (!json.has("Error") || (int)json.get("Error") == 0) {
-                        if (onSimpleMessageL != null) onSimpleMessageL.accept(json.get("Src").toString(), json.get("Payload").toString());
-                    } else {
-                        LOG.warn("Error when receiving packet: {}", json.toString());
-                    }
-                    break;
-                }
-                case "sendPacket": {
-                    // TODO sent message confirmation and stuff
-                    break;
-                }
                 default:
                     LOG.warn("Got unknown message (action='{}'), ignoring", json.get("Action").toString());
+            }
+        });
+
+        ws.setProtobufMessageListener(bytes -> {
+            try {
+                final Messages.InboundMessage msg = Messages.InboundMessage.parseFrom(bytes);
+
+                final String from = msg.getSrc();
+                final Payloads.Payload payload = Payloads.Payload.parseFrom(msg.getPayload());
+                switch (payload.getType()) {
+                    case ACK: // TODO
+                        break;
+                    case TEXT:
+                        if (onTextMessageL != null) {
+                            onTextMessageL.accept(from, Payloads.TextData.parseFrom(payload.getData()).getText());
+                        }
+                        break;
+                    case BINARY:
+                        if (onBinaryMessageL != null) {
+                            onBinaryMessageL.accept(from, payload.getData());
+                        }
+                        break;
+
+                    default:
+                        LOG.warn("Got invalid payload type {}, ignoring", payload.getType());
+                        break;
+                }
+
+            } catch (InvalidProtocolBufferException e) {
+                LOG.warn("Got invalid binary message, ignoring");
+                e.printStackTrace();
             }
         });
 
@@ -152,7 +176,7 @@ public class NKNClient {
                     setClientReq.put("Action", "setClient");
                     setClientReq.put("Addr", identity.getFullIdentifier());
 
-                    ws.send(setClientReq);
+                    ws.sendPacket(setClientReq);
                 }
         );
         ws.connect();
@@ -165,22 +189,52 @@ public class NKNClient {
         return success[0];
     }
 
-    private BiConsumer<String, String> onSimpleMessageL = null;
-    public NKNClient onSimpleMessage(BiConsumer<String, String> listener) {
-        onSimpleMessageL = listener;
+    private BiConsumer<String, String> onTextMessageL = null;
+    public NKNClient onTextMessage(BiConsumer<String, String> listener) {
+        onTextMessageL = listener;
         return this;
     }
 
-    public void sendSimpleMessage(String destinationFullIdentifier, String message) {
+    private BiConsumer<String, ByteString> onBinaryMessageL = null;
+    public NKNClient onBinaryMessage(BiConsumer<String, ByteString> listener) {
+        onBinaryMessageL = listener;
+        return this;
+    }
+
+    public void sendTextMessage(String destinationFullIdentifier, String message) {
+        final Payloads.TextData td = Payloads.TextData.newBuilder()
+                .setText(message)
+                .build();
+
+        sendMessage(destinationFullIdentifier, Payloads.PayloadType.TEXT, td.toByteString());
+    }
+
+    public void sendBinaryMessage(String destinationFullIdentifier, byte[] message) {
+        sendBinaryMessage(destinationFullIdentifier, ByteString.copyFrom(message));
+    }
+
+    public void sendBinaryMessage(String destinationFullIdentifier, ByteString message) {
+        sendMessage(destinationFullIdentifier, Payloads.PayloadType.BINARY, message);
+    }
+
+    private void sendMessage(String destination, Payloads.PayloadType type, ByteString message) {
         if (!running) throw new NKNClientError("Client is not running, cannot send message");
 
-        final JSONObject messageJson = new JSONObject();
-        messageJson.put("Action", "sendPacket");
-        messageJson.put("Dest", destinationFullIdentifier);
-        messageJson.put("Payload", message);
-        messageJson.put("Signature", identity.signStringAsString(message));
+        final Payloads.Payload payload = Payloads.Payload.newBuilder()
+                .setType(type)
+                .setPid(ByteString.copyFrom(Crypto.nextRandom4B()))
+                .setReplyToPid(ByteString.copyFrom(new byte[0]))
+                .setData(message)
+                .build();
 
-        ws.send(messageJson);
+        final Messages.OutboundMessage binMsg = Messages.OutboundMessage.newBuilder()
+                .setDest(destination)
+                .setPayload(payload.toByteString())
+                // .addDests() // TODO multicast
+                .setMaxHoldingSeconds(0)
+                .build();
+
+        ws.sendPacket(binMsg.toByteString());
     }
 
 }

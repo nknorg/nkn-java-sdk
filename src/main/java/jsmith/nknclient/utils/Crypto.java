@@ -82,6 +82,23 @@ public class Crypto {
         }
     }
 
+    private static final SecureRandom randomId_sr = new SecureRandom();
+    public static byte[] nextRandom32B() {
+        final byte[] id = new byte[32];
+        randomId_sr.nextBytes(id);
+        return id;
+    }
+    public static byte[] nextRandom16B() {
+        final byte[] id = new byte[16];
+        randomId_sr.nextBytes(id);
+        return id;
+    }
+    public static byte[] nextRandom4B() {
+        final byte[] id = new byte[16];
+        randomId_sr.nextBytes(id);
+        return id;
+    }
+
     public static class CryptoError extends Error {
 
         public CryptoError(String message) {
