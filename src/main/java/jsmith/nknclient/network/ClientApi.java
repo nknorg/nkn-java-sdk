@@ -119,6 +119,14 @@ public class ClientApi extends Thread {
         }
     }
 
+    private final Object sigChainHashLock = new Object();
+    private String sigChainHash = "";
+    public String currentSigChainBlockHash() {
+        synchronized (sigChainHashLock) {
+            return sigChainHash;
+        }
+    }
+
     private boolean establishWsConnection() {
         LOG.debug("Client is connecting to node ws:", directNodeWS);
         final boolean[] success = {true};
@@ -142,7 +150,13 @@ public class ClientApi extends Thread {
                     break;
                 }
                 case "updateSigChainBlockHash": {
-                    // TODO // if ((int)json.get("Error") == 0) onMessageUpdateSigChainBlockHash(json.get("Result").toString());
+                    if ((int)json.get("Error") == 0) {
+                        final String newSigChainHash = json.get("Result").toString();
+                        synchronized (sigChainHashLock) {
+                            sigChainHash = newSigChainHash;
+                        }
+
+                    }
                     break;
                 }
                 default:

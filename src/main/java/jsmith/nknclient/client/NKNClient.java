@@ -84,6 +84,9 @@ public class NKNClient {
         return clientApi.sendMessage(destinationFullIdentifier, replyTo, message);
     }
 
+    public String getCurrentSigChainBlockHash() {
+        return clientApi.currentSigChainBlockHash();
+    }
 
     public static class ReceivedMessage {
 

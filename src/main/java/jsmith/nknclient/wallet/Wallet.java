@@ -45,7 +45,7 @@ public class Wallet {
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
-    private static final SecureRandom secureRandom = new SecureRandom(); // TODO: Does not look thread safe (using it, not creating)
+    private static final SecureRandom secureRandom = new SecureRandom();
 
     private KeyPair keyPair = null;
     private String contractDataStr = "";

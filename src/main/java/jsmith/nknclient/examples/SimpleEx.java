@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 public class SimpleEx {
 
     public static void main(String[] args) throws InterruptedException {
-        TPLogger.INFO();
+        TPLogger.DEBUG();
         TPLogger.setLogFunction(
                 new LogFunctionMultiplexer(
                         LogFunction.DEFAULT_LOG_FUNCTION, // Log to console
