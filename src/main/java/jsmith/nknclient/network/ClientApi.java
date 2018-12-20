@@ -15,8 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -225,14 +224,32 @@ public class ClientApi extends Thread {
             synchronized (jobLock) {
                 final long now = System.currentTimeMillis();
                 final Iterator<MessageJob> iterator = waitingForReply.iterator();
-                while (iterator.hasNext()) {
+
+                jobI: while (iterator.hasNext()) {
                     final MessageJob j = iterator.next();
 
-                    if (j.receivedAck) {
-                        j.promise.complete(j.ack);
-                        iterator.remove();
-                    } else if (j.timeoutAt >= now) {
-                        j.promise.completeExceptionally(new NKNClientError.MessageAckTimeout(j.messageID));
+
+                    for (int i = 0; i < j.receivedAck.size(); i++) {
+                        if (j.receivedAck.get(i)) {
+                            j.promise.get(i).complete(j.ack.get(i));
+
+                            if (j.receivedAck.size() > 1) {
+
+                                j.promise.remove(i);
+                                j.ack.remove(i);
+                                j.receivedAck.remove(i);
+                                j.destination.remove(i);
+
+                                i--;
+                            } else {
+                                iterator.remove();
+                                continue jobI;
+                            }
+                        }
+                    }
+
+                    if (j.timeoutAt <= now) {
+                        j.promise.forEach(p -> p.completeExceptionally(new NKNClientError.MessageAckTimeout(j.messageID)));
                         iterator.remove();
                     } else {
                         if (nextWake == -1) {
@@ -295,26 +312,37 @@ public class ClientApi extends Thread {
         synchronized (jobLock) {
             for (MessageJob j : waitingForReply) {
                 if (j.messageID.equals(replyTo)) {
+                    final int indexOf = j.destination.indexOf(from);
                     if (type == Payloads.PayloadType.TEXT) {
                         try {
-                            j.ack = new NKNClient.ReceivedMessage(
-                                    from,
-                                    messageID,
-                                    Payloads.PayloadType.TEXT,
-                                    Payloads.TextData.parseFrom(message.getData()).getText()
-                            );
+                            j.ack.set(indexOf,
+                                    new NKNClient.ReceivedMessage(
+                                        from,
+                                        messageID,
+                                        Payloads.PayloadType.TEXT,
+                                        Payloads.TextData.parseFrom(message.getData()).getText()
+                                ));
                         } catch (InvalidProtocolBufferException e) {
                             LOG.warn("Received packet is of type TEXT but does not contain valid text data");
                         }
                     } else if (type == Payloads.PayloadType.BINARY) {
-                        j.ack = new NKNClient.ReceivedMessage(
-                                from,
-                                messageID,
-                                Payloads.PayloadType.BINARY,
-                                message.getData()
-                        );
+                        j.ack.set(indexOf,
+                                new NKNClient.ReceivedMessage(
+                                    from,
+                                    messageID,
+                                    Payloads.PayloadType.BINARY,
+                                    message.getData()
+                            ));
+                    } else if (type == Payloads.PayloadType.ACK) {
+                        j.ack.set(indexOf,
+                                new NKNClient.ReceivedMessage(
+                                        from,
+                                        messageID,
+                                        Payloads.PayloadType.ACK,
+                                        null
+                                ));
                     }
-                    j.receivedAck = true;
+                    j.receivedAck.set(indexOf, true);
                     isReplyTo = true;
                 }
             }
@@ -346,13 +374,13 @@ public class ClientApi extends Thread {
                     sendAckMessage(from, messageID);
                 }
             } else {
-                sendMessage(from, messageID, ackMessage);
+                sendMessage(Collections.singletonList(from), messageID, ackMessage);
             }
         }
 
     }
 
-    public CompletableFuture<NKNClient.ReceivedMessage> sendMessage(String destination, ByteString replyTo, Object message) {
+    public List<CompletableFuture<NKNClient.ReceivedMessage>> sendMessage(List<String> destination, ByteString replyTo, Object message) {
         if (message instanceof String) {
             return sendMessage(destination, replyTo, Payloads.PayloadType.TEXT, Payloads.TextData.newBuilder().setText((String) message).build().toByteString());
         } else if (message instanceof ByteString) {
@@ -365,7 +393,7 @@ public class ClientApi extends Thread {
         }
     }
 
-    public CompletableFuture<NKNClient.ReceivedMessage> sendMessage(String destination, ByteString replyTo, Payloads.PayloadType type, ByteString message) {
+    public List<CompletableFuture<NKNClient.ReceivedMessage>> sendMessage(List<String> destination, ByteString replyTo, Payloads.PayloadType type, ByteString message) {
         final ByteString messageID = ByteString.copyFrom(Crypto.nextRandom4B());
         final ByteString replyToMessageID = replyTo == null ? ByteString.copyFrom(new byte[0]) : replyTo;
 
@@ -382,18 +410,22 @@ public class ClientApi extends Thread {
         return sendOutboundMessage(destination, messageID, payload.toByteString());
     }
 
-    private CompletableFuture<NKNClient.ReceivedMessage> sendOutboundMessage(String destination, ByteString messageID, ByteString payload) {
+    private List<CompletableFuture<NKNClient.ReceivedMessage>> sendOutboundMessage(List<String> destination, ByteString messageID, ByteString payload) {
+        if (destination.size() == 0) throw new NKNClientError("At least one address is required for multicast");
 
         final Messages.OutboundMessage binMsg = Messages.OutboundMessage.newBuilder()
-                .setDest(destination)
+                .setDest(destination.get(0))
                 .setPayload(payload)
-                // .addDests() // TODO multicast
+                .addAllDests(destination.subList(1, destination.size()))
                 .setMaxHoldingSeconds(0)
                 .build();
 
-        final CompletableFuture<NKNClient.ReceivedMessage> promise = new CompletableFuture<>();
+        final ArrayList<CompletableFuture<NKNClient.ReceivedMessage>> promises = new ArrayList<>();
+        for (String ignored : destination) {
+            promises.add(new CompletableFuture<>());
+        }
 
-        final MessageJob j = new MessageJob(destination, messageID, binMsg.toByteString(), promise, System.currentTimeMillis() + Const.MESSAGE_ACK_TIMEOUT_MS);
+        final MessageJob j = new MessageJob(destination, messageID, binMsg.toByteString(), promises, System.currentTimeMillis() + Const.MESSAGE_ACK_TIMEOUT_MS);
 
         LOG.debug("Queueing new MessageJob");
         synchronized (jobLock) {
@@ -401,7 +433,7 @@ public class ClientApi extends Thread {
             jobLock.notify();
         }
 
-        return promise;
+        return promises;
     }
 
     public void sendAckMessage(String destination, ByteString replyTo) {
@@ -424,20 +456,25 @@ public class ClientApi extends Thread {
 
     private static class MessageJob {
 
-        private final String destination;
+        private final List<String> destination;
         private final ByteString messageID, payload;
-        private final CompletableFuture<NKNClient.ReceivedMessage> promise;
+        private final List<CompletableFuture<NKNClient.ReceivedMessage>> promise;
         private final long timeoutAt;
 
-        private boolean receivedAck = false;
-        private NKNClient.ReceivedMessage ack = null;
+        private final List<Boolean> receivedAck = new ArrayList<>();
+        private final List<NKNClient.ReceivedMessage> ack = new ArrayList<>();
 
-        MessageJob(String destination, ByteString messageID, ByteString payload, CompletableFuture<NKNClient.ReceivedMessage> promise, long timeoutAt) {
+        MessageJob(List<String> destination, ByteString messageID, ByteString payload, List<CompletableFuture<NKNClient.ReceivedMessage>> promise, long timeoutAt) {
             this.destination = destination;
             this.messageID = messageID;
             this.payload = payload;
             this.promise = promise;
             this.timeoutAt = timeoutAt;
+
+            for (String ignored : destination) {
+                receivedAck.add(false);
+                ack.add(null);
+            }
         }
 
     }

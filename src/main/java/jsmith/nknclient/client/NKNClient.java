@@ -7,7 +7,12 @@ import jsmith.nknclient.network.proto.Payloads;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Array;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -69,7 +74,7 @@ public class NKNClient {
                 .setText(message)
                 .build();
 
-        return clientApi.sendMessage(destinationFullIdentifier, replyTo, Payloads.PayloadType.TEXT, td.toByteString());
+        return clientApi.sendMessage(Collections.singletonList(destinationFullIdentifier), replyTo, Payloads.PayloadType.TEXT, td.toByteString()).get(0);
     }
 
     public CompletableFuture<ReceivedMessage> sendBinaryMessage(String destinationFullIdentifier, ByteString replyTo, byte[] message) {
@@ -77,10 +82,49 @@ public class NKNClient {
     }
 
     public CompletableFuture<ReceivedMessage> sendBinaryMessage(String destinationFullIdentifier, ByteString replyTo, ByteString message) {
-        return clientApi.sendMessage(destinationFullIdentifier, replyTo, Payloads.PayloadType.BINARY, message);
+        return clientApi.sendMessage(Collections.singletonList(destinationFullIdentifier), replyTo, Payloads.PayloadType.BINARY, message).get(0);
     }
 
     public CompletableFuture<ReceivedMessage> sendMessage(String destinationFullIdentifier, ByteString replyTo, Object message) {
+        return clientApi.sendMessage(Collections.singletonList(destinationFullIdentifier), replyTo, message).get(0);
+    }
+
+    public List<CompletableFuture<ReceivedMessage>> sendTextMessageMulticast(String[] destinationFullIdentifier, ByteString replyTo, String message) {
+        final ArrayList<String> list = new ArrayList<>(Arrays.asList(destinationFullIdentifier));
+        return sendTextMessageMulticast(list, replyTo, message);
+    }
+
+    public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticast(String[] destinationFullIdentifier, ByteString replyTo, byte[] message) {
+        return sendBinaryMessageMulticast(destinationFullIdentifier, replyTo, ByteString.copyFrom(message));
+    }
+
+    public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticast(String[] destinationFullIdentifier, ByteString replyTo, ByteString message) {
+        final ArrayList<String> list = new ArrayList<>(Arrays.asList(destinationFullIdentifier));
+        return sendBinaryMessageMulticast(list, replyTo, message);
+    }
+
+    public List<CompletableFuture<ReceivedMessage>> sendMessageMulticast(String[] destinationFullIdentifier, ByteString replyTo, Object message) {
+        final ArrayList<String> list = new ArrayList<>(Arrays.asList(destinationFullIdentifier));
+        return sendMessageMulticast(list, replyTo, message);
+    }
+
+    public List<CompletableFuture<ReceivedMessage>> sendTextMessageMulticast(List<String> destinationFullIdentifier, ByteString replyTo, String message) {
+        final Payloads.TextData td = Payloads.TextData.newBuilder()
+                .setText(message)
+                .build();
+
+        return clientApi.sendMessage(destinationFullIdentifier, replyTo, Payloads.PayloadType.TEXT, td.toByteString());
+    }
+
+    public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticast(List<String> destinationFullIdentifier, ByteString replyTo, byte[] message) {
+        return sendBinaryMessageMulticast(destinationFullIdentifier, replyTo, ByteString.copyFrom(message));
+    }
+
+    public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticast(List<String> destinationFullIdentifier, ByteString replyTo, ByteString message) {
+        return clientApi.sendMessage(destinationFullIdentifier, replyTo, Payloads.PayloadType.BINARY, message);
+    }
+
+    public List<CompletableFuture<ReceivedMessage>> sendMessageMulticast(List<String> destinationFullIdentifier, ByteString replyTo, Object message) {
         return clientApi.sendMessage(destinationFullIdentifier, replyTo, message);
     }
 
@@ -97,6 +141,7 @@ public class NKNClient {
         public final String textData;
         public final boolean isBinary;
         public final boolean isText;
+        public final boolean isAck;
 
         public ReceivedMessage(String from, ByteString msgId, Payloads.PayloadType type, Object data) {
             this.from = from;
@@ -105,15 +150,25 @@ public class NKNClient {
                 isText = true;
                 textData = (String) data;
 
+                isAck = false;
                 isBinary = false;
                 binaryData = null;
             } else if (type == Payloads.PayloadType.BINARY) {
                 isBinary = true;
                 binaryData = (ByteString) data;
 
+                isAck = false;
                 isText = false;
                 textData = null;
+            } else if (type == Payloads.PayloadType.ACK) {
+                isAck = true;
+
+                isText = false;
+                textData = null;
+                isBinary = false;
+                binaryData = null;
             } else {
+                isAck = false;
                 isText = false;
                 textData = null;
                 isBinary = false;
