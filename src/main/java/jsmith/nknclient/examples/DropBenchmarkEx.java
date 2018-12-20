@@ -43,12 +43,10 @@ public class DropBenchmarkEx {
             final NKNClient clientA = new NKNClient(identityA)
                     .start();
             final NKNClient clientB = new NKNClient(identityB)
-                    .onTextMessage((from, message) -> {
-                        received[0] = true;
-                    })
+                    .onNewMessage(receivedMessage -> received[0] = true)
                     .start();
 
-            clientA.sendTextMessage(identityB.getFullIdentifier(), "Message");
+            clientA.sendTextMessage(identityB.getFullIdentifier(), null, "Message");
 
             Thread.sleep(timeout);
 

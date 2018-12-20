@@ -6,11 +6,11 @@ import com.darkyen.tproll.logfunctions.FileLogFunction;
 import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
 import jsmith.nknclient.client.Identity;
 import jsmith.nknclient.client.NKNClient;
-import jsmith.nknclient.utils.Crypto;
 import jsmith.nknclient.wallet.Wallet;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.io.File;
+import java.util.concurrent.CompletableFuture;
 
 /**
  *
@@ -26,22 +26,41 @@ public class SimpleEx {
                 ));
         TPLogger.attachUnhandledExceptionLogger();
 
-        final Identity identityA = new Identity("Node.A", Wallet.createNew());
-        final Identity identityB = new Identity("Node.B", Wallet.createNew());
+        final Identity identityA = new Identity("Client A", Wallet.createNew());
+        final Identity identityB = new Identity("Client B", Wallet.createNew());
 
         final NKNClient clientA = new NKNClient(identityA)
-                .onTextMessage((from, message) -> System.out.println("ClientA: New message from " + from + "\n  ==> " + message))
-                .onBinaryMessage((from, message) -> System.out.println("ClientA: New binary from " + from + "\n  ==> 0x" + Hex.toHexString(message.toByteArray())))
+                .onNewMessage(receivedMessage -> {
+                    if (receivedMessage.isText) {
+                        System.out.println("ClientA: New message from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
+                    } else if (receivedMessage.isBinary) {
+                        System.out.println("ClientA: New binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
+                    }
+                })
                 .start();
         final NKNClient clientB = new NKNClient(identityB)
-                .onTextMessage((from, message) -> System.out.println("ClientB: New message from " + from + "\n  ==> " + message))
-                .onBinaryMessage((from, message) -> System.out.println("ClientB: New binary from " + from + "\n  ==> 0x" + Hex.toHexString(message.toByteArray())))
+                .onNewMessageWithReply(receivedMessage -> {
+                    if (receivedMessage.isText) {
+                        System.out.println("ClientB: New message from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
+                    } else if (receivedMessage.isBinary) {
+                        System.out.println("ClientB: New binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
+                    }
+                    return "Text message ACK!";
+                })
                 .start();
 
-        clientA.sendTextMessage(identityB.getFullIdentifier(), "Hello!");
-        clientB.sendBinaryMessage(identityA.getFullIdentifier(), new byte[] {(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE}); // Casts because java (byte) is signed and these numbers would overwrite the msb
+        final CompletableFuture<NKNClient.ReceivedMessage> promise = clientA.sendTextMessage(identityB.getFullIdentifier(), null, "Hello!");
+        promise.whenComplete((response, error) -> {
+            if (error == null) {
+                System.out.println("  Response ==> " + response.textData);
+                clientB.sendBinaryMessage(identityA.getFullIdentifier(), null, new byte[]{(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE}); // Casts because java (byte) is signed and these numbers would overwrite the msb
+            } else {
+                error.printStackTrace();
+            }
+        });
 
-        Thread.sleep(5000);
+
+        Thread.sleep(10_000);
         clientA.close();
         clientB.close();
 
