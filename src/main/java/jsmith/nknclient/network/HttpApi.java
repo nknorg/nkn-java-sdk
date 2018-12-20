@@ -3,6 +3,7 @@ package jsmith.nknclient.network;
 import com.darkyen.dave.Response;
 import com.darkyen.dave.ResponseTranslator;
 import com.darkyen.dave.Webb;
+import jsmith.nknclient.Const;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ public class HttpApi {
         final JSONObject result = rpcCallJson(to, method, parameters);
         if (result.has("result")) return result.get("result").toString();
 
-        LOG.warn("Invalid response format");
+        LOG.warn("Invalid response format, does not contain field result: {}", result);
 
         return null;
     }
@@ -40,6 +41,8 @@ public class HttpApi {
                 .post("http://" + to.getHostString() + ":" + to.getPort())
                 .ensureSuccess()
                 .bodyJson(requestBody.toString())
+                .connectTimeout(Const.RPC_CALL_TIMEOUT_MS)
+                .readTimeout(Const.RPC_CALL_TIMEOUT_MS)
                 .execute(ResponseTranslator.STRING_TRANSLATOR);
 
         return new JSONObject(response.getBody());

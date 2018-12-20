@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 public class SimpleEx {
 
     public static void main(String[] args) throws InterruptedException {
-        TPLogger.DEBUG();
+        TPLogger.INFO();
         TPLogger.setLogFunction(
                 new LogFunctionMultiplexer(
                         LogFunction.DEFAULT_LOG_FUNCTION, // Log to console
@@ -32,18 +32,18 @@ public class SimpleEx {
         final NKNClient clientA = new NKNClient(identityA)
                 .onNewMessage(receivedMessage -> {
                     if (receivedMessage.isText) {
-                        System.out.println("ClientA: New text from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
+                        System.out.println("Client A: New text from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
                     } else if (receivedMessage.isBinary) {
-                        System.out.println("ClientA: New binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
+                        System.out.println("Client A: New binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
                     }
                 })
                 .start();
         final NKNClient clientB = new NKNClient(identityB)
                 .onNewMessageWithReply(receivedMessage -> {
                     if (receivedMessage.isText) {
-                        System.out.println("ClientB: New text from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
+                        System.out.println("Client B: New text from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
                     } else if (receivedMessage.isBinary) {
-                        System.out.println("ClientB: New binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
+                        System.out.println("Client B: New binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
                     }
                     return "Text message ACK!";
                 })
@@ -52,15 +52,15 @@ public class SimpleEx {
         final CompletableFuture<NKNClient.ReceivedMessage> promise = clientA.sendTextMessage(identityB.getFullIdentifier(), null, "Hello!");
         promise.whenComplete((response, error) -> {
             if (error == null) {
-                System.out.println("  Response ==> " + response.textData);
-                clientB.sendBinaryMessage(identityA.getFullIdentifier(), null, new byte[]{(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE}); // Casts because java (byte) is signed and these numbers would overwrite the msb
+                System.out.println("A: Response ==> " + response.textData);
+                clientA.sendBinaryMessage(identityB.getFullIdentifier(), null, new byte[]{(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE}); // Casts because java (byte) is signed and these numbers would overwrite the msb
             } else {
                 error.printStackTrace();
             }
         });
 
 
-        Thread.sleep(10_000);
+        Thread.sleep(7_000);
         clientA.close();
         clientB.close();
 
