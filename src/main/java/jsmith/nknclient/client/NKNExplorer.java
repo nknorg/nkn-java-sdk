@@ -2,9 +2,9 @@ package jsmith.nknclient.client;
 
 import com.darkyen.dave.WebbException;
 import jsmith.nknclient.Const;
+import jsmith.nknclient.network.HttpApi;
 import jsmith.nknclient.utils.Base58;
 import jsmith.nknclient.utils.Crypto;
-import jsmith.nknclient.network.HttpApi;
 import jsmith.nknclient.wallet.WalletError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
