@@ -28,7 +28,6 @@ public class ClientApi extends Thread {
     private static final Logger LOG = LoggerFactory.getLogger(ClientApi.class);
 
     private int retries = Const.RETRIES;
-    private int messageReplyTimeoutMS = 5000;
     private boolean running = false;
 
     private InetSocketAddress[] routingNodesRpc;
@@ -195,6 +194,11 @@ public class ClientApi extends Thread {
     }
 
 
+    private boolean noAck = false;
+    public void setNoAutomaticACKs(boolean noAck) {
+        this.noAck = noAck;
+    }
+
     private final Object jobLock = new Object();
     private final ArrayList<MessageJob> jobs = new ArrayList<>();
     private final ArrayList<MessageJob> waitingForReply = new ArrayList<>();
@@ -324,7 +328,7 @@ public class ClientApi extends Thread {
 
         if (type != Payloads.PayloadType.ACK) {
             if (ackMessage == null) {
-                if (true /* auto ACK */) {
+                if (!message.getNoAck()) {
                     sendAckMessage(from, messageID);
                 }
             } else {
@@ -357,6 +361,7 @@ public class ClientApi extends Thread {
                 .setPid(messageID)
                 .setReplyToPid(replyToMessageID)
                 .setData(message)
+                .setNoAck(noAck)
                 .build();
 
 
@@ -374,7 +379,7 @@ public class ClientApi extends Thread {
 
         final CompletableFuture<NKNClient.ReceivedMessage> promise = new CompletableFuture<>();
 
-        final MessageJob j = new MessageJob(destination, messageID, binMsg.toByteString(), promise, System.currentTimeMillis() + messageReplyTimeoutMS);
+        final MessageJob j = new MessageJob(destination, messageID, binMsg.toByteString(), promise, System.currentTimeMillis() + Const.MESSAGE_ACK_TIMEOUT_MS);
 
         LOG.debug("Queueing new MessageJob");
         synchronized (jobLock) {
@@ -390,6 +395,7 @@ public class ClientApi extends Thread {
                 .setType(Payloads.PayloadType.ACK)
                 .setPid(ByteString.copyFrom(Crypto.nextRandom4B()))
                 .setReplyToPid(replyTo)
+                .setNoAck(true)
                 .build();
 
         final Messages.OutboundMessage binMsg = Messages.OutboundMessage.newBuilder()

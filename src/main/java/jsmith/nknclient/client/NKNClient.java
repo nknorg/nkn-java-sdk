@@ -55,6 +55,14 @@ public class NKNClient {
         return this;
     }
 
+    private boolean noAutomaticACKs = false;
+    public void setNoAutomaticACKs(boolean noAutomaticACKs) {
+        clientApi.setNoAutomaticACKs(noAutomaticACKs);
+        this.noAutomaticACKs  = noAutomaticACKs;
+    }
+    public boolean isNoAutomaticACKs() {
+        return noAutomaticACKs;
+    }
 
     public CompletableFuture<ReceivedMessage> sendTextMessage(String destinationFullIdentifier, ByteString replyTo, String message) {
         final Payloads.TextData td = Payloads.TextData.newBuilder()

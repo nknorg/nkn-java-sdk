@@ -32,7 +32,7 @@ public class SimpleEx {
         final NKNClient clientA = new NKNClient(identityA)
                 .onNewMessage(receivedMessage -> {
                     if (receivedMessage.isText) {
-                        System.out.println("ClientA: New message from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
+                        System.out.println("ClientA: New text from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
                     } else if (receivedMessage.isBinary) {
                         System.out.println("ClientA: New binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
                     }
@@ -41,7 +41,7 @@ public class SimpleEx {
         final NKNClient clientB = new NKNClient(identityB)
                 .onNewMessageWithReply(receivedMessage -> {
                     if (receivedMessage.isText) {
-                        System.out.println("ClientB: New message from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
+                        System.out.println("ClientB: New text from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
                     } else if (receivedMessage.isBinary) {
                         System.out.println("ClientB: New binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
                     }
