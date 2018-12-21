@@ -89,8 +89,7 @@ public class NKNClient {
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendTextMessageMulticast(String[] destinationFullIdentifier, ByteString replyTo, String message) {
-        final ArrayList<String> list = new ArrayList<>(Arrays.asList(destinationFullIdentifier));
-        return sendTextMessageMulticast(list, replyTo, message);
+        return sendTextMessageMulticast(Arrays.asList(destinationFullIdentifier), replyTo, message);
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticast(String[] destinationFullIdentifier, ByteString replyTo, byte[] message) {
@@ -98,13 +97,11 @@ public class NKNClient {
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticast(String[] destinationFullIdentifier, ByteString replyTo, ByteString message) {
-        final ArrayList<String> list = new ArrayList<>(Arrays.asList(destinationFullIdentifier));
-        return sendBinaryMessageMulticast(list, replyTo, message);
+        return sendBinaryMessageMulticast(Arrays.asList(destinationFullIdentifier), replyTo, message);
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendMessageMulticast(String[] destinationFullIdentifier, ByteString replyTo, Object message) {
-        final ArrayList<String> list = new ArrayList<>(Arrays.asList(destinationFullIdentifier));
-        return sendMessageMulticast(list, replyTo, message);
+        return sendMessageMulticast(Arrays.asList(destinationFullIdentifier), replyTo, message);
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendTextMessageMulticast(List<String> destinationFullIdentifier, ByteString replyTo, String message) {

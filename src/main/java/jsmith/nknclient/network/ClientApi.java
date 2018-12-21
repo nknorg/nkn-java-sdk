@@ -428,7 +428,7 @@ public class ClientApi extends Thread {
             promises.add(new CompletableFuture<>());
         }
 
-        final MessageJob j = new MessageJob(destination, messageID, binMsg.toByteString(), promises, System.currentTimeMillis() + Const.MESSAGE_ACK_TIMEOUT_MS);
+        final MessageJob j = new MessageJob(new ArrayList<>(destination), messageID, binMsg.toByteString(), new ArrayList<>(promises), System.currentTimeMillis() + Const.MESSAGE_ACK_TIMEOUT_MS);
 
         LOG.debug("Queueing new MessageJob");
         synchronized (jobLock) {
