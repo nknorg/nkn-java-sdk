@@ -9,16 +9,13 @@ import jsmith.nknclient.utils.PasswordString;
 import jsmith.nknclient.wallet.Wallet;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 
 /**
  *
  */
 public class WalletEx {
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
         TPLogger.DEBUG();
         TPLogger.setLogFunction(
                 new LogFunctionMultiplexer(
@@ -28,10 +25,10 @@ public class WalletEx {
         TPLogger.attachUnhandledExceptionLogger();
 
         final Wallet w = Wallet.createNew();
-        w.save(new FileOutputStream(new File("tmpWallet.dat")), new PasswordString("a")); // PasswordString should be disposed by user after use
+        w.save(new File("tmpWallet.dat"), new PasswordString("a")); // PasswordString should be disposed by user after use
         System.out.println("Generated: " + w.getAddressAsString());
 
-        final Wallet w2 = Wallet.load(new FileInputStream(new File("tmpWallet.dat")), new PasswordString("a")); // PasswordString should be disposed by user after use
+        final Wallet w2 = Wallet.load(new File("tmpWallet.dat"), new PasswordString("a")); // PasswordString should be disposed by user after use
         if (w2 != null) {
             System.out.println("Loaded: " + w2.getAddressAsString());
         } else {

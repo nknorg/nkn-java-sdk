@@ -17,10 +17,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
@@ -100,6 +97,13 @@ public class Wallet {
     }
 
     private static final String VERSION = "0.0.1";
+    public static Wallet load(File f, PasswordString password) {
+        try {
+            return load(new FileInputStream(f), -1, password);
+        } catch (FileNotFoundException e) {
+            throw new WalletError("Wallet loading failed - could not open file", e);
+        }
+    }
     public static Wallet load(InputStream is, PasswordString password) {
         return load(is, -1, password);
     }
@@ -149,12 +153,22 @@ public class Wallet {
 
             return w;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new WalletError("Wallet loading failed - could not open file", e);
         }
-
-        return null;
     }
 
+    public void transferTo(String toAddress, BigDecimal amount) {
+
+
+    }
+
+    public void save(File file, PasswordString password) {
+        try {
+            save(new FileOutputStream(file), password);
+        } catch (FileNotFoundException e) {
+            throw new WalletError("Wallet saving failed", e);
+        }
+    }
     public void save(OutputStream os, PasswordString password) {
         byte[] passwd = sha256(password.sha256());
 
