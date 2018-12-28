@@ -4,6 +4,7 @@ import com.darkyen.dave.Response;
 import com.darkyen.dave.ResponseTranslator;
 import com.darkyen.dave.Webb;
 import jsmith.nknclient.Const;
+import jsmith.nknclient.wallet.Asset;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -48,10 +49,10 @@ public class HttpApi {
         return new JSONObject(response.getBody());
     }
 
-    public static BigDecimal getSumUTXO(InetSocketAddress server, String nknAddress, String assetID) {
+    public static BigDecimal getSumUTXO(InetSocketAddress server, String nknAddress, Asset asset) {
         BigDecimal value = new BigDecimal("0");
 
-        final JSONArray arr = getListUTXO(server, nknAddress, assetID);
+        final JSONArray arr = getListUTXO(server, nknAddress, asset);
         if (arr == null) return value;
         for (Object obj : arr) {
             value = value.add(((JSONObject)obj).getBigDecimal("Value"));
@@ -60,11 +61,11 @@ public class HttpApi {
         return value;
     }
 
-    public static JSONArray getListUTXO(InetSocketAddress server, String nknAddress, String assetID) {
+    public static JSONArray getListUTXO(InetSocketAddress server, String nknAddress, Asset asset) {
 
         final JSONObject params = new JSONObject();
         params.put("address", nknAddress);
-        params.put("assetid", assetID);
+        params.put("assetid", asset.ID);
 
         final JSONObject response = rpcCallJson(server, "getunspendoutput", params);
         if (response.isNull("result")) return null;

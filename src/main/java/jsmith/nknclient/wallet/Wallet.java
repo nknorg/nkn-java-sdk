@@ -167,8 +167,8 @@ public class Wallet {
     public String transferTo(AssetTransfer ... transfers) {
 
         final String inputsAndOutputsStr = WalletUtils.genInputsAndOutputs(
-                Const.BALANCE_ASSET_ID,
-                HttpApi.getListUTXO(Const.BOOTSTRAP_NODES_RPC[0], getAddressAsString(), Const.BALANCE_ASSET_ID),
+                Asset.T_NKN,
+                HttpApi.getListUTXO(Const.BOOTSTRAP_NODES_RPC[0], getAddressAsString(), Asset.T_NKN),
                 getProgramHashAsHexString(),
                 transfers
         );

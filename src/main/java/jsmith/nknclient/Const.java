@@ -20,6 +20,6 @@ public class Const {
 
     public static final int MESSAGE_ACK_TIMEOUT_MS = 5000;
 
-    public static final String BALANCE_ASSET_ID = "4945ca009174097e6614d306b66e1f9cb1fce586cb857729be9e1c5cc04c9c02";
+    public static final int NKN_ACC_MUL = 100000000;
 
 }

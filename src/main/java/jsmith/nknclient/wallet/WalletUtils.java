@@ -14,7 +14,7 @@ import java.util.Vector;
  */
 public class WalletUtils {
 
-    public static String genInputsAndOutputs(String assetId, JSONArray utxoList, String walletProgramHash, AssetTransfer ... targets) {
+    public static String genInputsAndOutputs(Asset asset, JSONArray utxoList, String walletProgramHash, AssetTransfer ... targets) {
         BigDecimal targetValue = new BigDecimal(0);
         for (AssetTransfer target : targets) {
             targetValue = targetValue.add(target.amount);
@@ -49,7 +49,7 @@ public class WalletUtils {
             throw new WalletError("Not enough assets to transfer");
         }
 
-        final String assetIdString = reverseHexStr(assetId);
+        final String assetIdString = reverseHexStr(asset.ID);
 
         for (AssetTransfer target : targets) {
             StringBuilder outputValString = new StringBuilder(reverseHexStr(target.amount.multiply(new BigDecimal(Const.NKN_ACC_MUL)).toBigInteger().toString(16)));
@@ -71,7 +71,7 @@ public class WalletUtils {
             }
 
             outputRaw
-                    .append(reverseHexStr(assetId))
+                    .append(assetIdString)
                     .append(changeString.toString())
                     .append(walletProgramHash);
 

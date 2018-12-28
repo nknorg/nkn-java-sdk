@@ -5,6 +5,7 @@ import jsmith.nknclient.Const;
 import jsmith.nknclient.network.HttpApi;
 import jsmith.nknclient.utils.Base58;
 import jsmith.nknclient.utils.Crypto;
+import jsmith.nknclient.wallet.Asset;
 import jsmith.nknclient.wallet.WalletError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class NKNExplorer {
         WebbException error;
         do {
             try {
-                result = HttpApi.getSumUTXO(bootstrapNodeRpc, address, Const.BALANCE_ASSET_ID);
+                result = HttpApi.getSumUTXO(bootstrapNodeRpc, address, Asset.T_NKN);
                 return result;
             } catch (WebbException e) {
                 error = e;
