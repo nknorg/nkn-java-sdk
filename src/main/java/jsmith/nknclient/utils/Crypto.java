@@ -2,6 +2,7 @@ package jsmith.nknclient.utils;
 
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +80,58 @@ public class Crypto {
 
         } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
             throw new CryptoError("Could not encrypt block", e);
+        }
+    }
+
+    public static byte[] sha256andSign(PrivateKey key, byte[] data) {
+        try {
+            Signature ecdsaSign = Signature.getInstance("SHA256withECDSA", "BC");
+            ecdsaSign.initSign(key);
+            ecdsaSign.update(data);
+            final byte[] der = ecdsaSign.sign();
+            final byte[] raw = new byte[64];
+
+            final int rLen = der[3];
+            final int sLen = der[3 + rLen + 2];
+
+            System.arraycopy(der, 4 + (rLen > 32 ? 1 : 0), raw, Math.max(0, 32 - rLen), Math.min(32, rLen));
+            System.arraycopy(der, 4 + rLen + 2 + (sLen > 32 ? 1 : 0), raw, 32 + Math.max(0, 32 - sLen), Math.min(32, sLen));
+
+
+            return Arrays.reverse(raw);
+        } catch (NoSuchAlgorithmException | SignatureException | NoSuchProviderException | InvalidKeyException e) {
+            throw new CryptoError("Could not sign block", e);
+        }
+    }
+
+    public static boolean sha256andVerify(PublicKey key, byte[] data, byte[] signature) {
+        try {
+            Signature ecdsaVerify = Signature.getInstance("SHA256withECDSA", "BC");
+            ecdsaVerify.initVerify(key);
+            ecdsaVerify.update(data);
+
+            if (signature.length == 64) { // Assuming raw encoding
+                final boolean extendR = signature[0] < 0;
+                final boolean extendS = signature[32] < 0;
+
+                final byte[] der = new byte[2 + 2 + 32 + (extendR ? 1 : 0) + 2 + 32 + (extendS ? 1 : 0)];
+                der[0] = 0x30;
+                der[1] = (byte)(2 + 32 + (extendR ? 1 : 0) + 2 + 32 + (extendS ? 1 : 0));
+
+                der[2] = 0x02;
+                der[3] = (byte)(32 + (extendR ? 1 : 0));
+                System.arraycopy(signature, 0, der, 4 + (extendR ? 1 : 0), 32);
+
+                der[der[3] + 4] = 0x02;
+                der[der[3] + 5] = (byte)(32 + (extendS ? 1 : 0));
+                System.arraycopy(signature, 32, der, der[3] + 6 + (extendS ? 1 : 0), 32);
+
+                return ecdsaVerify.verify(der);
+            } else { // Assuming DER encoding
+                return ecdsaVerify.verify(signature);
+            }
+        } catch (NoSuchAlgorithmException | SignatureException | NoSuchProviderException | InvalidKeyException e) {
+            throw new CryptoError("Could not verify block", e);
         }
     }
 

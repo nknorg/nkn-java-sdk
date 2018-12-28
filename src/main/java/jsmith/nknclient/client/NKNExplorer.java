@@ -33,7 +33,7 @@ public class NKNExplorer {
         WebbException error;
         do {
             try {
-                result = HttpApi.getUTXO(bootstrapNodeRpc, address, Const.BALANCE_ASSET_ID);
+                result = HttpApi.getSumUTXO(bootstrapNodeRpc, address, Const.BALANCE_ASSET_ID);
                 return result;
             } catch (WebbException e) {
                 error = e;

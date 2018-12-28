@@ -2,6 +2,7 @@ package jsmith.nknclient.wallet;
 
 import jsmith.nknclient.Const;
 import jsmith.nknclient.client.NKNExplorer;
+import jsmith.nknclient.network.HttpApi;
 import jsmith.nknclient.utils.Base58;
 import jsmith.nknclient.utils.Crypto;
 import jsmith.nknclient.utils.PasswordString;
@@ -157,9 +158,49 @@ public class Wallet {
         }
     }
 
-    public void transferTo(String toAddress, BigDecimal amount) {
+    public String transferTo(String toAddress, BigDecimal amount) {
+        return transferTo(toAddress, amount, null);
+    }
+    public String transferTo(String toAddress, BigDecimal amount, String message) {
+        return transferTo(new AssetTransfer(toAddress, amount, message));
+    }
+    public String transferTo(AssetTransfer ... transfers) {
 
+        final String inputsAndOutputsStr = WalletUtils.genInputsAndOutputs(
+                Const.BALANCE_ASSET_ID,
+                HttpApi.getListUTXO(Const.BOOTSTRAP_NODES_RPC[0], getAddressAsString(), Const.BALANCE_ASSET_ID),
+                getProgramHashAsHexString(),
+                transfers
+        );
 
+        final String baseTransfer = WalletUtils.rawBaseTransfer(inputsAndOutputsStr);
+        final String signature = transferSignature(baseTransfer);
+
+        final String signatureRedeem = "23" + "21" + getPublicKeyAsHexString() + "ac";
+        final String rawTxString = baseTransfer + signature + signatureRedeem;
+
+        final JSONObject params = new JSONObject();
+        params.put("tx", rawTxString);
+
+        final JSONObject result = HttpApi.rpcCallJson(Const.BOOTSTRAP_NODES_RPC[0], "sendrawtransaction", params);
+        if (result.has("result")) return result.getString("result");
+
+        System.out.println("Error: " + result.toString());
+
+        return null;
+    }
+
+    private String transferSignature(String baseTransferRawString) {
+        final byte[] transferBytes = Hex.decode(baseTransferRawString);
+
+        final String signature = Hex.toHexString(Crypto.sha256andSign(keyPair.getPrivate(), transferBytes));
+        System.out.println(signature);
+
+        final String signatureCount = "01";
+        final String signatureStructLength = "41";
+        final String signatureLength = "40";
+
+        return signatureCount + signatureStructLength + signatureLength + signature;
     }
 
     public void save(File file, PasswordString password) {
@@ -249,7 +290,10 @@ public class Wallet {
     }
 
     public String getProgramHashAsHexString() {
-        final String addressStr = getAddressAsString();
+        return getProgramHashAsHexString(getAddressAsString());
+    }
+
+    static String getProgramHashAsHexString(String addressStr) {
         final byte[] address = Base58.decode(addressStr);
         final byte[] programHash = new byte[address.length - 5];
         System.arraycopy(address, 1, programHash, 0, programHash.length);

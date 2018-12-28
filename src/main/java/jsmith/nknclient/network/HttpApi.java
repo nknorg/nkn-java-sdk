@@ -48,23 +48,28 @@ public class HttpApi {
         return new JSONObject(response.getBody());
     }
 
-    public static BigDecimal getUTXO(InetSocketAddress server, String nknAddress, String assetID) {
-
-        final JSONObject params = new JSONObject();
-        params.put("address", nknAddress);
-        params.put("assetid", assetID);
-
+    public static BigDecimal getSumUTXO(InetSocketAddress server, String nknAddress, String assetID) {
         BigDecimal value = new BigDecimal("0");
 
-        final JSONObject response = rpcCallJson(server, "getunspendoutput", params);
-        if (response.isNull("result")) return value;
-
-        final JSONArray arr = response.getJSONArray("result");
+        final JSONArray arr = getListUTXO(server, nknAddress, assetID);
+        if (arr == null) return value;
         for (Object obj : arr) {
             value = value.add(((JSONObject)obj).getBigDecimal("Value"));
         }
 
         return value;
+    }
+
+    public static JSONArray getListUTXO(InetSocketAddress server, String nknAddress, String assetID) {
+
+        final JSONObject params = new JSONObject();
+        params.put("address", nknAddress);
+        params.put("assetid", assetID);
+
+        final JSONObject response = rpcCallJson(server, "getunspendoutput", params);
+        if (response.isNull("result")) return null;
+
+        return response.getJSONArray("result");
     }
 
 }
