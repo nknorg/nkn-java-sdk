@@ -4,9 +4,7 @@ import com.darkyen.tproll.LogFunction;
 import com.darkyen.tproll.TPLogger;
 import com.darkyen.tproll.logfunctions.FileLogFunction;
 import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
-import jsmith.nknclient.Const;
 import jsmith.nknclient.client.NKNExplorer;
-import jsmith.nknclient.network.HttpApi;
 import jsmith.nknclient.utils.PasswordString;
 import jsmith.nknclient.wallet.AssetTransfer;
 import jsmith.nknclient.wallet.Wallet;
@@ -60,7 +58,10 @@ public class WalletEx {
         System.out.println("Transferring 1 NKN from " + from.getAddressAsString() + " to " + to.getAddressAsString());
 
         // final String txID = from.transferTo(to.getAddressAsString(), new BigDecimal(1)); // Simple single transaction
-        final String txID = from.transferTo(new AssetTransfer(to.getAddressAsString(), new BigDecimal(1)), new AssetTransfer(to.getAddressAsString(), new BigDecimal(1))); // Multi transaction
+        final String txID = from.transferTo(
+                new AssetTransfer(to.getAddressAsString(), new BigDecimal(1)),
+                new AssetTransfer(to.getAddressAsString(), new BigDecimal(1))
+        ); // Multi transaction
 
         if (txID != null) {
             System.out.println("Transaction successful: " + txID);

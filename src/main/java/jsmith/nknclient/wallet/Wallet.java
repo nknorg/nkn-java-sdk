@@ -6,6 +6,7 @@ import jsmith.nknclient.network.HttpApi;
 import jsmith.nknclient.utils.Base58;
 import jsmith.nknclient.utils.Crypto;
 import jsmith.nknclient.utils.PasswordString;
+import jsmith.nknclient.wallet.transactions.TransactionUtils;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.ECNamedCurveTable;
@@ -78,7 +79,6 @@ public class Wallet {
             final org.bouncycastle.jce.spec.ECParameterSpec ecbcSpec = new org.bouncycastle.jce.spec.ECParameterSpec(ecNamedSpec.getCurve(), ecNamedSpec.getG(), ecNamedSpec.getN());
             final KeyFactory kf = KeyFactory.getInstance("ECDSA", "BC");
 
-            // TODO: investigate // negative private key for compatibility reasons, weird hack
             final ECPrivateKeySpec ecPrivKeySpec = new ECPrivateKeySpec(new BigInteger(-1, privateKey), ecSpec);
             final BCECPrivateKey privKey = (BCECPrivateKey) kf.generatePrivate(ecPrivKeySpec);
             final ECPublicKeySpec ecPubKeySpec = new ECPublicKeySpec(ecNamedSpec.getG().multiply(privKey.getD()), ecbcSpec);
@@ -165,16 +165,19 @@ public class Wallet {
         return transferTo(new AssetTransfer(toAddress, amount, message));
     }
     public String transferTo(AssetTransfer ... transfers) {
+        return transferTo(Asset.T_NKN, transfers);
+    }
+    public String transferTo(Asset asset, AssetTransfer ... transfers) {
 
-        final String inputsAndOutputsStr = WalletUtils.genInputsAndOutputs(
-                Asset.T_NKN,
-                HttpApi.getListUTXO(Const.BOOTSTRAP_NODES_RPC[0], getAddressAsString(), Asset.T_NKN),
+        final String inputsAndOutputsStr = TransactionUtils.genTxInputsAndOutputs(
+                asset,
+                HttpApi.getListUTXO(Const.BOOTSTRAP_NODES_RPC[0], getAddressAsString(), asset),
                 getProgramHashAsHexString(),
                 transfers
         );
 
-        final String baseTransfer = WalletUtils.rawBaseTransfer(inputsAndOutputsStr);
-        final String signature = transferSignature(baseTransfer);
+        final String baseTransfer = TransactionUtils.rawBaseTransfer(inputsAndOutputsStr);
+        final String signature = WalletUtils.transferSignature(baseTransfer, keyPair.getPrivate());
 
         final String signatureRedeem = "23" + "21" + getPublicKeyAsHexString() + "ac";
         final String rawTxString = baseTransfer + signature + signatureRedeem;
@@ -188,19 +191,6 @@ public class Wallet {
         System.out.println("Error: " + result.toString());
 
         return null;
-    }
-
-    private String transferSignature(String baseTransferRawString) {
-        final byte[] transferBytes = Hex.decode(baseTransferRawString);
-
-        final String signature = Hex.toHexString(Crypto.sha256andSign(keyPair.getPrivate(), transferBytes));
-        System.out.println(signature);
-
-        final String signatureCount = "01";
-        final String signatureStructLength = "41";
-        final String signatureLength = "40";
-
-        return signatureCount + signatureStructLength + signatureLength + signature;
     }
 
     public void save(File file, PasswordString password) {
@@ -229,7 +219,6 @@ public class Wallet {
         json.put("IV", Hex.toHexString(iv));
         json.put("MasterKey", Hex.toHexString(aesEncryptAligned(masterKey, passwd, iv)));
 
-        // negative private key for compatibility with compatibility mode (see comments in createFromPrivateKey function)
         final BCECPrivateKey privateKey = (BCECPrivateKey) keyPair.getPrivate();
         final byte[] dArr = privateKey.getParameters().getN().subtract(privateKey.getD()).toByteArray();
 
@@ -256,7 +245,7 @@ public class Wallet {
     public BigDecimal queryBalance() {
         return queryBalance(Const.BOOTSTRAP_NODES_RPC);
     }
-    public BigDecimal queryBalance(InetSocketAddress bootstrapNodesRPC[]) {
+    public BigDecimal queryBalance(InetSocketAddress[] bootstrapNodesRPC) {
         return NKNExplorer.queryBalance(bootstrapNodesRPC, getAddressAsString());
     }
 
@@ -290,14 +279,7 @@ public class Wallet {
     }
 
     public String getProgramHashAsHexString() {
-        return getProgramHashAsHexString(getAddressAsString());
-    }
-
-    static String getProgramHashAsHexString(String addressStr) {
-        final byte[] address = Base58.decode(addressStr);
-        final byte[] programHash = new byte[address.length - 5];
-        System.arraycopy(address, 1, programHash, 0, programHash.length);
-        return Hex.toHexString(programHash);
+        return WalletUtils.getProgramHashAsHexString(getAddressAsString());
     }
 
     public String getContractDataAsString() {
