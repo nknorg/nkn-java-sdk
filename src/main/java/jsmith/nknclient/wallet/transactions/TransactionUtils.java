@@ -146,7 +146,7 @@ public class TransactionUtils {
                     .append(Hex.toHexString(data));
         }
 
-        return Hex.toHexString(new byte[] { txType }) + payloadVersion + attrRawString + inputsAndOutputs;
+        return Hex.toHexString(new byte[] { txType, payloadVersion }) + attrRawString + inputsAndOutputs;
     }
 
 

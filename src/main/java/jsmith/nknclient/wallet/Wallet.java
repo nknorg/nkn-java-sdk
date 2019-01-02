@@ -79,7 +79,7 @@ public class Wallet {
             final org.bouncycastle.jce.spec.ECParameterSpec ecbcSpec = new org.bouncycastle.jce.spec.ECParameterSpec(ecNamedSpec.getCurve(), ecNamedSpec.getG(), ecNamedSpec.getN());
             final KeyFactory kf = KeyFactory.getInstance("ECDSA", "BC");
 
-            final ECPrivateKeySpec ecPrivKeySpec = new ECPrivateKeySpec(new BigInteger(-1, privateKey), ecSpec);
+            final ECPrivateKeySpec ecPrivKeySpec = new ECPrivateKeySpec(new BigInteger(privateKey), ecSpec);
             final BCECPrivateKey privKey = (BCECPrivateKey) kf.generatePrivate(ecPrivKeySpec);
             final ECPublicKeySpec ecPubKeySpec = new ECPublicKeySpec(ecNamedSpec.getG().multiply(privKey.getD()), ecbcSpec);
 
@@ -168,7 +168,6 @@ public class Wallet {
         return transferTo(Asset.T_NKN, transfers);
     }
     public String transferTo(Asset asset, AssetTransfer ... transfers) {
-
         final String inputsAndOutputsStr = TransactionUtils.genTxInputsAndOutputs(
                 asset,
                 HttpApi.getListUTXO(Const.BOOTSTRAP_NODES_RPC[0], getAddressAsString(), asset),
@@ -220,7 +219,7 @@ public class Wallet {
         json.put("MasterKey", Hex.toHexString(aesEncryptAligned(masterKey, passwd, iv)));
 
         final BCECPrivateKey privateKey = (BCECPrivateKey) keyPair.getPrivate();
-        final byte[] dArr = privateKey.getParameters().getN().subtract(privateKey.getD()).toByteArray();
+        final byte[] dArr = privateKey.getD().toByteArray();
 
         final byte[] dArrTrimmed = new byte[32];
         System.arraycopy(dArr, dArr.length == 32 ? 0 : 1, dArrTrimmed, 0, dArrTrimmed.length);
@@ -257,7 +256,7 @@ public class Wallet {
         final String x = Hex.toHexString(pub.getQ().getAffineXCoord().getEncoded());
         final byte[] y = pub.getQ().getAffineYCoord().getEncoded();
 
-        return ((y[y.length - 1] % 2 == 0) ? "03" : "02") + x;
+        return ((y[y.length - 1] % 2 == 0) ? "02" : "03") + x;
     }
 
     public String getAddressAsString() {
@@ -296,7 +295,7 @@ public class Wallet {
         final byte[] s = new byte[xEnc.length + 3];
         s[0] = 0x21;
         s[s.length - 1] = (byte) 0xAC;
-        s[1] = (byte) ((yEnc[yEnc.length - 1] % 2 == 0) ? 0x3 : 0x2);
+        s[1] = (byte) ((yEnc[yEnc.length - 1] % 2 == 0) ? 0x2 : 0x3);
         System.arraycopy(xEnc, 0, s, 2, xEnc.length);
 
         return s;

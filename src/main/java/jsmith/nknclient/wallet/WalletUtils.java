@@ -15,7 +15,6 @@ public class WalletUtils {
         final byte[] transferBytes = Hex.decode(baseTransferRawString);
 
         final String signature = Hex.toHexString(Crypto.sha256andSign(privateKey, transferBytes));
-        System.out.println(signature);
 
         final String signatureCount = "01";
         final String signatureStructLength = "41";

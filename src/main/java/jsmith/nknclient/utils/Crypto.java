@@ -1,8 +1,11 @@
 package jsmith.nknclient.utils;
 
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
+import org.bouncycastle.jce.ECNamedCurveTable;
+import org.bouncycastle.jce.ECPointUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.util.Arrays;
+import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+import org.bouncycastle.jce.spec.ECNamedCurveSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +16,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.*;
+import java.security.spec.ECPoint;
+import java.security.spec.ECPublicKeySpec;
+import java.security.spec.InvalidKeySpecException;
 
 /**
  *
@@ -27,14 +33,14 @@ public class Crypto {
     public static byte[] sha256 (byte[] src) {
         try {
 
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            MessageDigest md = MessageDigest.getInstance("SHA-256", "BC");
 
             md.update(src);
             return md.digest();
 
-        } catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
             LOG.error("SHA-256 checksum failed", e);
-            throw new CryptoError("SHA-256 is not supported - no such algorithm");
+            throw new CryptoError("SHA-256 failed");
         }
     }
 
@@ -97,13 +103,18 @@ public class Crypto {
             System.arraycopy(der, 4 + (rLen > 32 ? 1 : 0), raw, Math.max(0, 32 - rLen), Math.min(32, rLen));
             System.arraycopy(der, 4 + rLen + 2 + (sLen > 32 ? 1 : 0), raw, 32 + Math.max(0, 32 - sLen), Math.min(32, sLen));
 
-
-            return Arrays.reverse(raw);
+            return raw;
         } catch (NoSuchAlgorithmException | SignatureException | NoSuchProviderException | InvalidKeyException e) {
             throw new CryptoError("Could not sign block", e);
         }
     }
-
+    public static boolean sha256andVerify(byte[] key, byte[] data, byte[] signature) {
+        try {
+            return sha256andVerify(getPublicKeyFromBytes(key), data, signature);
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeySpecException e) {
+            throw new CryptoError("Could not reconstruct public key", e);
+        }
+    }
     public static boolean sha256andVerify(PublicKey key, byte[] data, byte[] signature) {
         try {
             Signature ecdsaVerify = Signature.getInstance("SHA256withECDSA", "BC");
@@ -133,6 +144,15 @@ public class Crypto {
         } catch (NoSuchAlgorithmException | SignatureException | NoSuchProviderException | InvalidKeyException e) {
             throw new CryptoError("Could not verify block", e);
         }
+    }
+
+    private static PublicKey getPublicKeyFromBytes(byte[] keyBytes) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
+        final ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec("prime256v1"); // prime256v1 // secp256r1
+        final KeyFactory kf = KeyFactory.getInstance("ECDSA", "BC");
+        final ECNamedCurveSpec params = new ECNamedCurveSpec("prime256v1", spec.getCurve(), spec.getG(), spec.getN());
+        final ECPoint point =  ECPointUtil.decodePoint(params.getCurve(), keyBytes);
+        final ECPublicKeySpec pubKeySpec = new ECPublicKeySpec(point, params);
+        return kf.generatePublic(pubKeySpec);
     }
 
     private static final SecureRandom randomId_sr = new SecureRandom();
