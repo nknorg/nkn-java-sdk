@@ -127,14 +127,20 @@ public class TransactionUtils {
         return hexSb.toString();
     }
 
-    public static String rawBaseTransfer(String inputsAndOutputs) {
+    public static String rawBaseTransfer(String txDescription, String inputsAndOutputs) {
 
         final byte txType = TxType.TRANSFER_ASSET.type;
         final byte payloadVersion = 0;
 
-        final Attribute[] attributes = new Attribute[] {
+        Attribute[] attributes = new Attribute[] {
                 new Attribute.Nonce()
         };
+        if (txDescription != null) {
+            attributes = new Attribute[] {
+                    new Attribute.Nonce(),
+                    new Attribute.Description(txDescription)
+            };
+        }
 
         final StringBuilder attrRawString = new StringBuilder(rawTxLengthString(attributes.length));
         for (Attribute attr : attributes) {

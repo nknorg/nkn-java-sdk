@@ -52,11 +52,10 @@ public class WalletEx {
         final Wallet from = Wallet.load(fromFile, new PasswordString("pwd"));
         final Wallet to = Wallet.load(toFile, new PasswordString("pwd"));
 
-        System.out.println("Target wallet balance: " + to.queryBalance());
 
-        System.out.println("Transferring 1 NKN from " + from.getAddressAsString() + " to " + to.getAddressAsString());
+        System.out.println("Transferring 1 tNKN from " + from.getAddressAsString() + " (" + from.queryBalance() + " tNKN) to " + to.getAddressAsString() + " (" + to.queryBalance() + " tNKN)");
 
-        final String txID = from.transferTo(to.getAddressAsString(), new BigDecimal(1)); // Simple single transaction
+        final String txID = from.transferTo("Hello world!", to.getAddressAsString(), new BigDecimal(1)); // Simple single transaction
 //        final String txID = from.transferTo(
 //                new AssetTransfer(to.getAddressAsString(), new BigDecimal(1)),
 //                new AssetTransfer(to.getAddressAsString(), new BigDecimal(1))

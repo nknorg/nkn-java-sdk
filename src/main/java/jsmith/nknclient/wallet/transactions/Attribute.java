@@ -2,6 +2,8 @@ package jsmith.nknclient.wallet.transactions;
 
 import jsmith.nknclient.utils.Crypto;
 
+import java.nio.charset.Charset;
+
 /**
  *
  */
@@ -24,6 +26,21 @@ public abstract class Attribute {
         public Nonce() {
             super((byte) 0x00);
             this.data = Crypto.nextRandom32B();
+        }
+
+        @Override
+        public byte[] getData() {
+            return data;
+        }
+    }
+
+    public static class Description extends Attribute {
+
+        final byte[] data;
+
+        public Description(String description) {
+            super((byte) 0x90);
+            this.data = description.getBytes(Charset.forName("UTF-8"));
         }
 
         @Override

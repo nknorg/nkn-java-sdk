@@ -159,15 +159,15 @@ public class Wallet {
     }
 
     public String transferTo(String toAddress, BigDecimal amount) {
-        return transferTo(toAddress, amount, null);
+        return transferTo(null, toAddress, amount);
     }
-    public String transferTo(String toAddress, BigDecimal amount, String message) {
-        return transferTo(new AssetTransfer(toAddress, amount, message));
+    public String transferTo(String txDescription, String toAddress, BigDecimal amount) {
+        return transferTo(txDescription, new AssetTransfer(toAddress, amount));
     }
-    public String transferTo(AssetTransfer ... transfers) {
-        return transferTo(Asset.T_NKN, transfers);
+    public String transferTo(String txDescription, AssetTransfer ... transfers) {
+        return transferTo(txDescription, Asset.T_NKN, transfers);
     }
-    public String transferTo(Asset asset, AssetTransfer ... transfers) {
+    public String transferTo(String txDescription, Asset asset, AssetTransfer ... transfers) {
         final String inputsAndOutputsStr = TransactionUtils.genTxInputsAndOutputs(
                 asset,
                 HttpApi.getListUTXO(Const.BOOTSTRAP_NODES_RPC[0], getAddressAsString(), asset),
@@ -175,7 +175,7 @@ public class Wallet {
                 transfers
         );
 
-        final String baseTransfer = TransactionUtils.rawBaseTransfer(inputsAndOutputsStr);
+        final String baseTransfer = TransactionUtils.rawBaseTransfer(txDescription, inputsAndOutputsStr);
         final String signature = WalletUtils.transferSignature(baseTransfer, keyPair.getPrivate());
 
         final String signatureRedeem = "23" + "21" + getPublicKeyAsHexString() + "ac";
