@@ -242,10 +242,16 @@ public class Wallet {
     }
 
     public BigDecimal queryBalance() {
-        return queryBalance(Const.BOOTSTRAP_NODES_RPC);
+        return queryBalance(Const.BOOTSTRAP_NODES_RPC, null);
+    }
+    public BigDecimal queryBalance(Asset asset) {
+        return queryBalance(Const.BOOTSTRAP_NODES_RPC, asset);
     }
     public BigDecimal queryBalance(InetSocketAddress[] bootstrapNodesRPC) {
-        return NKNExplorer.queryBalance(bootstrapNodesRPC, getAddressAsString());
+        return queryBalance(bootstrapNodesRPC, null);
+    }
+    public BigDecimal queryBalance(InetSocketAddress[] bootstrapNodesRPC, Asset asset) {
+        return NKNExplorer.queryBalance(bootstrapNodesRPC, asset, getAddressAsString());
     }
 
     public String getPublicKeyAsHexString() {

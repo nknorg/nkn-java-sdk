@@ -21,10 +21,16 @@ public class NKNExplorer {
     private static final Logger LOG = LoggerFactory.getLogger(NKNExplorer.class);
 
 
+    public static BigDecimal queryBalance(Asset asset, String address) {
+        return queryBalance(Const.BOOTSTRAP_NODES_RPC, asset, address);
+    }
     public static BigDecimal queryBalance(String address) {
         return queryBalance(Const.BOOTSTRAP_NODES_RPC, address);
     }
     public static BigDecimal queryBalance(InetSocketAddress[] bootstrapNodesRPC, String address) {
+        return queryBalance(bootstrapNodesRPC, null, address);
+    }
+    public static BigDecimal queryBalance(InetSocketAddress[] bootstrapNodesRPC, Asset asset, String address) {
         // Choose one node using round robin
 
         int bootstrapNodeIndex = (int)(Math.random() * bootstrapNodesRPC.length);
@@ -34,7 +40,7 @@ public class NKNExplorer {
         WebbException error;
         do {
             try {
-                result = HttpApi.getSumUTXO(bootstrapNodeRpc, address, Asset.T_NKN);
+                result = HttpApi.getSumUTXO(bootstrapNodeRpc, address, asset == null ? Asset.T_NKN : asset);
                 return result;
             } catch (WebbException e) {
                 error = e;
