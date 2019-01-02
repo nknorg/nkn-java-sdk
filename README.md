@@ -18,6 +18,10 @@ Simple as that.
 
 For more information about `wemi` build system, visit github page: [Darkyenus/WEMI](https://github.com/Darkyenus/wemi) 
 
+## Where to start?
+
+Have a look at the [examples](src/main/java/jsmith/nknclient/examples) for basic introduction to API. Explore classes mentioned in examples. Some proper tutorial/documentation is coming soon
+
 ## Contributions
 
 __Can I submit a bug, suggestion or feature request?__
