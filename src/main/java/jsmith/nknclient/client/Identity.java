@@ -38,12 +38,4 @@ public class Identity {
         return name + "." + wallet.getPublicKeyAsHexString();
     }
 
-
-    public String signStringAsString(String data) {
-
-        LOG.warn("TODO: signStringAsString invoked, but not implemented yet."); // TODO
-
-        return "";
-    }
-
 }

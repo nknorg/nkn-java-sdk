@@ -1,6 +1,7 @@
 package jsmith.nknclient.wallet;
 
-import jsmith.nknclient.Const;
+import com.darkyen.dave.WebbException;
+import jsmith.nknclient.network.ConnectionProvider;
 import jsmith.nknclient.client.NKNExplorer;
 import jsmith.nknclient.network.HttpApi;
 import jsmith.nknclient.utils.Base58;
@@ -15,6 +16,7 @@ import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.jce.spec.ECNamedCurveSpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.util.encoders.Hex;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,9 +170,21 @@ public class Wallet {
         return transferTo(txDescription, Asset.T_NKN, transfers);
     }
     public String transferTo(String txDescription, Asset asset, AssetTransfer ... transfers) {
+        int retries = 0;
+        JSONArray utxoList;
+        while (true) {
+            InetSocketAddress node = ConnectionProvider.nextNode(retries++);
+            if (node != null) {
+                utxoList = HttpApi.getListUTXO(node, getAddressAsString(), asset);
+                if (utxoList != null) break;
+            } else {
+                throw new WalletError("Transfer failed - connection to network failed");
+            }
+        }
+
         final String inputsAndOutputsStr = TransactionUtils.genTxInputsAndOutputs(
                 asset,
-                HttpApi.getListUTXO(Const.BOOTSTRAP_NODES_RPC[0], getAddressAsString(), asset),
+                utxoList,
                 getProgramHashAsHexString(),
                 transfers
         );
@@ -184,12 +198,22 @@ public class Wallet {
         final JSONObject params = new JSONObject();
         params.put("tx", rawTxString);
 
-        final JSONObject result = HttpApi.rpcCallJson(Const.BOOTSTRAP_NODES_RPC[0], "sendrawtransaction", params);
-        if (result.has("result")) return result.getString("result");
-
-        System.out.println("Error: " + result.toString());
-
-        return null;
+        retries = 0;
+        while (true) {
+            InetSocketAddress node = ConnectionProvider.nextNode(retries++);
+            if (node != null) {
+                try {
+                    final JSONObject result = HttpApi.rpcCallJson(node, "sendrawtransaction", params);
+                    if (result.has("result")) {
+                        return result.getString("result");
+                    } else {
+                        LOG.warn("Transfer error: {}", result.toString());
+                    }
+                } catch (WebbException ignored) {}
+            } else {
+                throw new WalletError("Transfer failed - connection to network failed");
+            }
+        }
     }
 
     public void save(File file, PasswordString password) {
@@ -242,16 +266,10 @@ public class Wallet {
     }
 
     public BigDecimal queryBalance() {
-        return queryBalance(Const.BOOTSTRAP_NODES_RPC, null);
+        return queryBalance(Asset.T_NKN);
     }
     public BigDecimal queryBalance(Asset asset) {
-        return queryBalance(Const.BOOTSTRAP_NODES_RPC, asset);
-    }
-    public BigDecimal queryBalance(InetSocketAddress[] bootstrapNodesRPC) {
-        return queryBalance(bootstrapNodesRPC, null);
-    }
-    public BigDecimal queryBalance(InetSocketAddress[] bootstrapNodesRPC, Asset asset) {
-        return NKNExplorer.queryBalance(bootstrapNodesRPC, asset, getAddressAsString());
+        return NKNExplorer.queryBalance(asset, getAddressAsString());
     }
 
     public String getPublicKeyAsHexString() {

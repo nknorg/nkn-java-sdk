@@ -3,7 +3,6 @@ package jsmith.nknclient.network;
 import com.darkyen.dave.WebbException;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import jsmith.nknclient.Const;
 import jsmith.nknclient.client.Identity;
 import jsmith.nknclient.client.NKNClient;
 import jsmith.nknclient.client.NKNClientError;
@@ -29,17 +28,14 @@ public class ClientApi extends Thread {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClientApi.class);
 
-    private int retries = Const.RETRIES;
     private boolean running = false;
 
-    private InetSocketAddress[] routingNodesRpc;
     private InetSocketAddress directNodeWS = null;
     private WsApi ws = null;
 
     private final Identity identity;
 
-    public ClientApi(Identity identity, InetSocketAddress[] routingNodesRpc) {
-        this.routingNodesRpc = routingNodesRpc;
+    public ClientApi(Identity identity) {
         this.identity = identity;
     }
 
@@ -49,21 +45,14 @@ public class ClientApi extends Thread {
         if (running) throw new NKNClientError("Client is already running, cannot start again");
 
         boolean success = false;
+        int retries = 0;
 
-        // Choose one node using round robin
-        int routingNodeIdx = (int)(Math.random() * routingNodesRpc.length);
-        InetSocketAddress routingNodeRpc = routingNodesRpc[routingNodeIdx];
-
-        while (retries >= 0) {
-            if (!routingNode(routingNodeRpc) || !establishWsConnection()) {
-                retries --;
-                if (retries >= 0) {
-                    routingNodeIdx ++;
-                    if (routingNodeIdx >= routingNodesRpc.length) routingNodeIdx -= routingNodesRpc.length;
-                    routingNodeRpc = routingNodesRpc[routingNodeIdx];
-                }
-            } else {
+        while (true) {
+            InetSocketAddress bootstrapNode = ConnectionProvider.nextNode(retries++);
+            if (bootstrapNode != null && routingNode(bootstrapNode) && establishWsConnection()) {
                 success = true;
+                break;
+            } else if (bootstrapNode == null) {
                 break;
             }
         }
@@ -116,7 +105,7 @@ public class ClientApi extends Thread {
 
             return true;
         } catch (WebbException e) {
-            LOG.warn("RPC Request failed, remaining retries: {}", retries);
+            LOG.warn("RPC Request failed");
             return false;
         }
     }
@@ -138,7 +127,7 @@ public class ClientApi extends Thread {
             switch (json.get("Action").toString()) {
                 case "setClient": {
                     if (json.has("Error") && (int)json.get("Error") != 0) {
-                        LOG.warn("WS connection failed, remaining retries: {}", retries);
+                        LOG.warn("WS connection failed");
                         ws.close();
                         success[0] = false;
                         synchronized (closeLock) {
@@ -428,7 +417,7 @@ public class ClientApi extends Thread {
             promises.add(new CompletableFuture<>());
         }
 
-        final MessageJob j = new MessageJob(new ArrayList<>(destination), messageID, binMsg.toByteString(), new ArrayList<>(promises), System.currentTimeMillis() + Const.MESSAGE_ACK_TIMEOUT_MS);
+        final MessageJob j = new MessageJob(new ArrayList<>(destination), messageID, binMsg.toByteString(), new ArrayList<>(promises), System.currentTimeMillis() + ConnectionProvider.messageAckTimeoutMS());
 
         LOG.debug("Queueing new MessageJob");
         synchronized (jobLock) {

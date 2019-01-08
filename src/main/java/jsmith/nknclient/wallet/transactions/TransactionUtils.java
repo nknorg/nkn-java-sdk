@@ -1,6 +1,5 @@
 package jsmith.nknclient.wallet.transactions;
 
-import jsmith.nknclient.Const;
 import jsmith.nknclient.wallet.Asset;
 import jsmith.nknclient.wallet.AssetTransfer;
 import jsmith.nknclient.wallet.WalletError;
@@ -56,7 +55,7 @@ public class TransactionUtils {
         final String assetIdString = reverseHexStr(asset.ID);
 
         for (AssetTransfer target : targets) {
-            StringBuilder outputValString = new StringBuilder(reverseHexStr(target.amount.multiply(new BigDecimal(Const.NKN_ACC_MUL)).toBigInteger().toString(16)));
+            StringBuilder outputValString = new StringBuilder(reverseHexStr(target.amount.multiply(new BigDecimal(asset.mul)).toBigInteger().toString(16)));
             while (outputValString.length() < 16) {
                 outputValString.append("0");
             }
@@ -69,7 +68,7 @@ public class TransactionUtils {
 
         if (value.compareTo(targetValue) > 0) {
             final BigDecimal change = value.subtract(targetValue);
-            StringBuilder changeString = new StringBuilder(reverseHexStr(change.multiply(new BigDecimal(Const.NKN_ACC_MUL)).toBigInteger().toString(16)));
+            StringBuilder changeString = new StringBuilder(reverseHexStr(change.multiply(new BigDecimal(asset.mul)).toBigInteger().toString(16)));
             while (changeString.length() < 16) {
                 changeString.append("0");
             }

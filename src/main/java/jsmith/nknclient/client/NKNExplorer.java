@@ -1,7 +1,7 @@
 package jsmith.nknclient.client;
 
 import com.darkyen.dave.WebbException;
-import jsmith.nknclient.Const;
+import jsmith.nknclient.network.ConnectionProvider;
 import jsmith.nknclient.network.HttpApi;
 import jsmith.nknclient.utils.Base58;
 import jsmith.nknclient.utils.Crypto;
@@ -22,41 +22,29 @@ public class NKNExplorer {
 
 
     public static BigDecimal queryBalance(Asset asset, String address) {
-        return queryBalance(Const.BOOTSTRAP_NODES_RPC, asset, address);
-    }
-    public static BigDecimal queryBalance(String address) {
-        return queryBalance(Const.BOOTSTRAP_NODES_RPC, address);
-    }
-    public static BigDecimal queryBalance(InetSocketAddress[] bootstrapNodesRPC, String address) {
-        return queryBalance(bootstrapNodesRPC, null, address);
-    }
-    public static BigDecimal queryBalance(InetSocketAddress[] bootstrapNodesRPC, Asset asset, String address) {
-        // Choose one node using round robin
-
-        int bootstrapNodeIndex = (int)(Math.random() * bootstrapNodesRPC.length);
-        InetSocketAddress bootstrapNodeRpc = bootstrapNodesRPC[bootstrapNodeIndex];
-        int retries = Const.RETRIES;
+        int retries = 0;
         BigDecimal result;
-        WebbException error;
+        WebbException error = null;
         do {
-            try {
-                result = HttpApi.getSumUTXO(bootstrapNodeRpc, address, asset == null ? Asset.T_NKN : asset);
-                return result;
-            } catch (WebbException e) {
-                error = e;
-                retries --;
-                if (retries >= 0) {
-                    LOG.warn("Query balance RPC request failed, remaining retries: {}", retries);
-                } else {
+            final InetSocketAddress bootstrapNode = ConnectionProvider.nextNode(retries++);
+            if (bootstrapNode != null) {
+                try {
+                    result = HttpApi.getSumUTXO(bootstrapNode, address, asset == null ? Asset.T_NKN : asset);
+                    return result;
+                } catch (WebbException e) {
+                    error = e;
                     LOG.warn("Query balance RPC request failed");
+                } catch (WalletError e) {
+                    LOG.warn("Failed to query balance", e);
+                    throw e;
                 }
-            } catch (WalletError e) {
-                LOG.warn("Failed to query balance", e);
-                throw e;
             }
         } while (retries >= 0);
 
         throw new WalletError("Failed to query balance", error);
+    }
+    public static BigDecimal queryBalance(String address) {
+        return queryBalance(Asset.T_NKN, address);
     }
 
 

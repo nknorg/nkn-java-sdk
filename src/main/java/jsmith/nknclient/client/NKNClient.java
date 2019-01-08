@@ -1,7 +1,7 @@
 package jsmith.nknclient.client;
 
 import com.google.protobuf.ByteString;
-import jsmith.nknclient.Const;
+import jsmith.nknclient.network.ConnectionProvider;
 import jsmith.nknclient.network.ClientApi;
 import jsmith.nknclient.network.proto.Payloads;
 import org.slf4j.Logger;
@@ -27,12 +27,8 @@ public class NKNClient {
     private final ClientApi clientApi;
 
     public NKNClient(Identity identity) {
-        this(identity, Const.BOOTSTRAP_NODES_RPC);
-    }
-
-    public NKNClient(Identity identity, InetSocketAddress[] bootstrapNodesRPC) {
         this.identity = identity;
-        this.clientApi = new ClientApi(identity, bootstrapNodesRPC);
+        this.clientApi = new ClientApi(identity);
     }
 
     public NKNClient start() {
@@ -40,9 +36,8 @@ public class NKNClient {
         return this;
     }
 
-    public NKNClient close() {
+    public void close() {
         clientApi.close();
-        return this;
     }
 
     public NKNClient onNewMessage(Consumer<ReceivedMessage> listener) {
@@ -171,7 +166,6 @@ public class NKNClient {
             }
 
         }
-
 
     }
 
