@@ -56,7 +56,7 @@ public class MulticastEx {
         LOG.info("All clients ready, broadcasting");
 
         // Change one of the addresses or dont start one client to see what happens if the message is not sent and received correctly
-        final List<CompletableFuture<NKNClient.ReceivedMessage>> promises = clientSender.sendTextMessageMulticast(new String[] {
+        final List<CompletableFuture<NKNClient.ReceivedMessage>> promises = clientSender.sendTextMessageMulticastAsync(new String[] {
                 identityA.getFullIdentifier(),
                 identityB.getFullIdentifier(),
                 identityC.getFullIdentifier()

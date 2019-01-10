@@ -4,7 +4,7 @@ import wemi.Keys.runDirectory
 val NknClient by project {
 
     projectName set { "NknClient" }
-    projectGroup set { "nkn" }
+    projectGroup set { "cz.jsmith.nkn" }
     projectVersion set { "0.1-SNAPSHOT" }
 
     repositories add { repository("jitpack", "https://jitpack.io") }

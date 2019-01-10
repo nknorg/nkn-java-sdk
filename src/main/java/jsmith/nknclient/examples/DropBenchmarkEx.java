@@ -46,7 +46,7 @@ public class DropBenchmarkEx {
                     .onNewMessage(receivedMessage -> received[0] = true)
                     .start();
 
-            clientA.sendTextMessage(identityB.getFullIdentifier(), null, "Message");
+            clientA.sendTextMessageAsync(identityB.getFullIdentifier(), null, "Message");
 
             Thread.sleep(timeout);
 

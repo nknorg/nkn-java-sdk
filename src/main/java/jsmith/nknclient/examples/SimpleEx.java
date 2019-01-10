@@ -49,11 +49,11 @@ public class SimpleEx {
                 })
                 .start();
 
-        final CompletableFuture<NKNClient.ReceivedMessage> promise = clientA.sendTextMessage(identityB.getFullIdentifier(), null, "Hello!");
+        final CompletableFuture<NKNClient.ReceivedMessage> promise = clientA.sendTextMessageAsync(identityB.getFullIdentifier(), null, "Hello!");
         promise.whenComplete((response, error) -> {
             if (error == null) {
                 System.out.println("A: Response ==> " + response.textData);
-                clientA.sendBinaryMessage(identityB.getFullIdentifier(), null, new byte[]{(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE}); // Casts because java (byte) is signed and these numbers would overwrite the msb
+                clientA.sendBinaryMessageAsync(identityB.getFullIdentifier(), null, new byte[]{(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE}); // Casts because java (byte) is signed and these numbers would overwrite the msb
             } else {
                 error.printStackTrace();
             }

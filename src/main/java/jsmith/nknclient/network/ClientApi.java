@@ -366,26 +366,26 @@ public class ClientApi extends Thread {
                     sendAckMessage(from, messageID);
                 }
             } else {
-                sendMessage(Collections.singletonList(from), messageID, ackMessage);
+                sendMessageAsync(Collections.singletonList(from), messageID, ackMessage);
             }
         }
 
     }
 
-    public List<CompletableFuture<NKNClient.ReceivedMessage>> sendMessage(List<String> destination, ByteString replyTo, Object message) {
+    public List<CompletableFuture<NKNClient.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, Object message) {
         if (message instanceof String) {
-            return sendMessage(destination, replyTo, Payloads.PayloadType.TEXT, Payloads.TextData.newBuilder().setText((String) message).build().toByteString());
+            return sendMessageAsync(destination, replyTo, Payloads.PayloadType.TEXT, Payloads.TextData.newBuilder().setText((String) message).build().toByteString());
         } else if (message instanceof ByteString) {
-            return sendMessage(destination, replyTo, Payloads.PayloadType.BINARY, (ByteString) message);
+            return sendMessageAsync(destination, replyTo, Payloads.PayloadType.BINARY, (ByteString) message);
         } else if (message instanceof byte[]) {
-            return sendMessage(destination, replyTo, Payloads.PayloadType.BINARY, ByteString.copyFrom((byte[]) message));
+            return sendMessageAsync(destination, replyTo, Payloads.PayloadType.BINARY, ByteString.copyFrom((byte[]) message));
         } else {
             LOG.error("Cannot serialize '{}' to NKN protobuf message", message.getClass());
             throw new NKNClientError.UnknownObjectType("Cannot serialize '" + message.getClass() + "' to NKN message");
         }
     }
 
-    public List<CompletableFuture<NKNClient.ReceivedMessage>> sendMessage(List<String> destination, ByteString replyTo, Payloads.PayloadType type, ByteString message) {
+    public List<CompletableFuture<NKNClient.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, Payloads.PayloadType type, ByteString message) {
         final ByteString messageID = ByteString.copyFrom(Crypto.nextRandom4B());
         final ByteString replyToMessageID = replyTo == null ? ByteString.copyFrom(new byte[0]) : replyTo;
 
