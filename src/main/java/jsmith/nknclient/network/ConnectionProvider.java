@@ -1,11 +1,17 @@
 package jsmith.nknclient.network;
 
+import jsmith.nknclient.utils.ThrowingLambda;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.InetSocketAddress;
 
 /**
  *
  */
 public class ConnectionProvider {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectionProvider.class);
 
     private static final Object lock = new Object();
 
@@ -29,6 +35,7 @@ public class ConnectionProvider {
         }
     }
     public static void maxRetries(int maxRetries) {
+        if (maxRetries < 0) throw new IllegalArgumentException("Max retries must be non-negative number");
         synchronized (lock) {
             ConnectionProvider.maxRetries = maxRetries;
         }
@@ -40,6 +47,7 @@ public class ConnectionProvider {
         }
     }
     public static void rpcCallTimeoutMS(int rpcCallTimeoutMS) {
+        if (rpcCallTimeoutMS < 0) throw new IllegalArgumentException("Timeout must be non-negative number");
         synchronized (lock) {
             ConnectionProvider.rpcCallTimeoutMS = rpcCallTimeoutMS;
         }
@@ -51,6 +59,7 @@ public class ConnectionProvider {
         }
     }
     public static void messageAckTimeoutMS(int messageAckTimeoutMS) {
+        if (messageAckTimeoutMS < 0) throw new IllegalArgumentException("Timeout must be non-negative number");
         synchronized (lock) {
             ConnectionProvider.messageAckTimeoutMS = messageAckTimeoutMS;
         }
@@ -62,11 +71,24 @@ public class ConnectionProvider {
         }
     }
 
-    public static InetSocketAddress nextNode(int retries) {
-        synchronized (lock) {
-            if (retries > maxRetries) return null;
-            return bootstrapNodes[(int) (Math.random() * bootstrapNodes.length)];
+    public static <T> T attempt(ThrowingLambda<InetSocketAddress, T> action) throws Throwable {
+        final int retries = maxRetries();
+        Throwable error = null;
+
+        int nextNodeI = (int) (Math.random() * bootstrapNodes.length);
+
+        for (int i = 0; i <= retries; i++) {
+            try {
+                return action.apply(bootstrapNodes[nextNodeI]);
+            } catch (Throwable t) {
+                error = t;
+                LOG.warn("Attempt {} failed", i);
+            }
+            nextNodeI ++;
+            if (nextNodeI >= bootstrapNodes.length) nextNodeI -= bootstrapNodes.length;
         }
+        assert error != null;
+        throw error;
     }
 
 }

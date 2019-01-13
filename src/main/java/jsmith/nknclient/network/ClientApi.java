@@ -43,20 +43,12 @@ public class ClientApi extends Thread {
     public void startClient() throws NKNClientException {
         if (running) throw new IllegalStateException("Client is already running, cannot start again");
 
-        boolean success = false;
-        int retries = 0;
-
-        while (true) {
-            InetSocketAddress bootstrapNode = ConnectionProvider.nextNode(retries++);
-            if (bootstrapNode != null && routingNode(bootstrapNode) && establishWsConnection()) {
-                success = true;
-                break;
-            } else if (bootstrapNode == null) {
-                break;
-            }
+        try {
+            ConnectionProvider.attempt((bootstrapNode) -> routingNode(bootstrapNode) && establishWsConnection());
+        } catch (Throwable t) {
+            if (t instanceof NKNClientException) throw (NKNClientException) t;
+            throw new NKNClientException("Failed to connect to network", t);
         }
-
-        if (!success) throw new NKNClientException("Failed to connect to network");
         running = true;
 
         setDaemon(true);

@@ -1,8 +1,7 @@
 package jsmith.nknclient.wallet;
 
-import com.darkyen.dave.WebbException;
-import jsmith.nknclient.network.ConnectionProvider;
 import jsmith.nknclient.client.NKNExplorer;
+import jsmith.nknclient.network.ConnectionProvider;
 import jsmith.nknclient.network.HttpApi;
 import jsmith.nknclient.utils.Base58;
 import jsmith.nknclient.utils.Crypto;
@@ -24,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
@@ -175,17 +173,19 @@ public class Wallet {
         return transferTo(txDescription, Asset.T_NKN, transfers);
     }
     public String transferTo(String txDescription, Asset asset, AssetTransfer ... transfers) throws WalletException {
-        int retries = 0;
         JSONArray utxoList;
-        while (true) {
-            InetSocketAddress node = ConnectionProvider.nextNode(retries++);
-            if (node != null) {
-                utxoList = HttpApi.getListUTXO(node, getAddressAsString(), asset);
-                if (utxoList != null) break;
-            } else {
-                throw new WalletException("Transfer failed - connection to network failed");
-            }
+
+        try {
+            utxoList = ConnectionProvider.attempt((node) -> {
+                final JSONArray list = HttpApi.getListUTXO(node, getAddressAsString(), asset);
+                if (list == null) throw new NullPointerException("Received 'null' instead of valid UTXO list");
+                return list;
+            });
+        } catch (Throwable t) {
+            if (t instanceof WalletException) throw (WalletException) t;
+            throw new WalletException("Submitting a transaction failed", t);
         }
+
 
         final String inputsAndOutputsStr = TransactionUtils.genTxInputsAndOutputs(
                 asset,
@@ -203,21 +203,18 @@ public class Wallet {
         final JSONObject params = new JSONObject();
         params.put("tx", rawTxString);
 
-        retries = 0;
-        while (true) {
-            InetSocketAddress node = ConnectionProvider.nextNode(retries++);
-            if (node != null) {
-                try {
-                    final JSONObject result = HttpApi.rpcCallJson(node, "sendrawtransaction", params);
-                    if (result.has("result")) {
-                        return result.getString("result");
-                    } else {
-                        LOG.warn("Transfer error: {}", result.toString());
-                    }
-                } catch (WebbException ignored) {}
-            } else {
-                throw new WalletException("Transfer failed - connection to network failed");
-            }
+        try {
+            return ConnectionProvider.attempt((node) -> {
+                final JSONObject result = HttpApi.rpcCallJson(node, "sendrawtransaction", params);
+                if (result.has("result") && result.getString("result") != null) {
+                    return result.getString("result");
+                } else {
+                    throw new WalletException("Invalid response to query");
+                }
+            });
+        } catch (Throwable t) {
+            if (t instanceof WalletException) throw (WalletException) t;
+            throw new WalletException("Submitting a transaction failed", t);
         }
     }
 

@@ -1,6 +1,5 @@
 package jsmith.nknclient.client;
 
-import com.darkyen.dave.WebbException;
 import jsmith.nknclient.network.ConnectionProvider;
 import jsmith.nknclient.network.HttpApi;
 import jsmith.nknclient.utils.Base58;
@@ -11,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.net.InetSocketAddress;
 
 /**
  *
@@ -22,23 +20,12 @@ public class NKNExplorer {
 
 
     public static BigDecimal queryBalance(Asset asset, String address) throws WalletException {
-        int retries = 0;
-        BigDecimal result;
-        WebbException error = null;
-        do {
-            final InetSocketAddress bootstrapNode = ConnectionProvider.nextNode(retries++);
-            if (bootstrapNode != null) {
-                try {
-                    result = HttpApi.getSumUTXO(bootstrapNode, address, asset == null ? Asset.T_NKN : asset);
-                    return result;
-                } catch (WebbException e) {
-                    error = e;
-                    LOG.warn("Query balance RPC request failed");
-                }
-            }
-        } while (retries >= 0);
-
-        throw new WalletException("Failed to query balance", error);
+        try {
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getSumUTXO(bootstrapNode, address, asset == null ? Asset.T_NKN : asset));
+        } catch (Throwable t) {
+            if (t instanceof WalletException) throw (WalletException) t;
+            throw new WalletException("Failed to query balance", t);
+        }
     }
     public static BigDecimal queryBalance(String address) throws WalletException {
         return queryBalance(Asset.T_NKN, address);
