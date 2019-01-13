@@ -29,8 +29,8 @@ public class NKNClient {
         this.clientApi = new ClientApi(identity);
     }
 
-    public NKNClient start() {
-        clientApi.start();
+    public NKNClient start() throws NKNClientException {
+        clientApi.startClient();
         return this;
     }
 
@@ -65,6 +65,7 @@ public class NKNClient {
                 .setText(message)
                 .build();
 
+        LOG.debug("Sending text message: {}", message);
         return clientApi.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, Payloads.PayloadType.TEXT, td.toByteString()).get(0);
     }
 
@@ -73,10 +74,12 @@ public class NKNClient {
     }
 
     public CompletableFuture<ReceivedMessage> sendBinaryMessageAsync(String destinationFullIdentifier, ByteString replyTo, ByteString message) {
+        LOG.debug("Sending binary message");
         return clientApi.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, Payloads.PayloadType.BINARY, message).get(0);
     }
 
     public CompletableFuture<ReceivedMessage> sendMessageAsync(String destinationFullIdentifier, ByteString replyTo, Object message) {
+        LOG.debug("Sending multicast message");
         return clientApi.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, message).get(0);
     }
 
@@ -101,6 +104,7 @@ public class NKNClient {
                 .setText(message)
                 .build();
 
+        LOG.debug("Sending multicast text message: {}", message);
         return clientApi.sendMessageAsync(destinationFullIdentifier, replyTo, Payloads.PayloadType.TEXT, td.toByteString());
     }
 
@@ -109,10 +113,12 @@ public class NKNClient {
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, ByteString message) {
+        LOG.debug("Sending multicast binary message");
         return clientApi.sendMessageAsync(destinationFullIdentifier, replyTo, Payloads.PayloadType.BINARY, message);
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendMessageMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, Object message) {
+        LOG.debug("Sending multicast message");
         return clientApi.sendMessageAsync(destinationFullIdentifier, replyTo, message);
     }
 

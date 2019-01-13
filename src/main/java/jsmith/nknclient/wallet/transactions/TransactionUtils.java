@@ -2,7 +2,7 @@ package jsmith.nknclient.wallet.transactions;
 
 import jsmith.nknclient.wallet.Asset;
 import jsmith.nknclient.wallet.AssetTransfer;
-import jsmith.nknclient.wallet.WalletError;
+import jsmith.nknclient.wallet.WalletException;
 import jsmith.nknclient.wallet.WalletUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONArray;
@@ -17,7 +17,7 @@ import java.util.Vector;
 public class TransactionUtils {
 
 
-    public static String genTxInputsAndOutputs(Asset asset, JSONArray utxoList, String walletProgramHash, AssetTransfer... targets) {
+    public static String genTxInputsAndOutputs(Asset asset, JSONArray utxoList, String walletProgramHash, AssetTransfer... targets) throws WalletException {
         BigDecimal targetValue = new BigDecimal(0);
         for (AssetTransfer target : targets) {
             targetValue = targetValue.add(target.amount);
@@ -49,7 +49,7 @@ public class TransactionUtils {
         }
 
         if (notEnough) {
-            throw new WalletError("Not enough assets to transfer");
+            throw new WalletException("Not enough assets to transfer");
         }
 
         final String assetIdString = reverseHexStr(asset.ID);

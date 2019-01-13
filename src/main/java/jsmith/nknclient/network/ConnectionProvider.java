@@ -13,6 +13,8 @@ public class ConnectionProvider {
 //            new InetSocketAddress("cluster2-oregon.nkn.org", 30003),
 //            new InetSocketAddress("node00002.nkn.org", 30003),
 //            new InetSocketAddress("104.196.227.157", 30003),
+
+//            new InetSocketAddress("localhost", 30003),
             new InetSocketAddress("testnet-node-0001.nkn.org", 30003),
     };
 

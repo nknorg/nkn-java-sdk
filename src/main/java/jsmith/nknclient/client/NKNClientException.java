@@ -5,21 +5,22 @@ import com.google.protobuf.ByteString;
 /**
  *
  */
-public class NKNClientError extends Error {
+public class NKNClientException extends Exception {
 
-    public NKNClientError(String message) {
+    public NKNClientException(String message) {
         super(message);
     }
 
-    public NKNClientError(String message, Throwable cause) {
+    public NKNClientException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public static class MessageAckTimeout extends Error {
+    public static class MessageAckTimeout extends NKNClientException {
 
         public final ByteString messageID;
 
         public MessageAckTimeout(ByteString messageID) {
+            super("");
             this.messageID = messageID;
         }
 

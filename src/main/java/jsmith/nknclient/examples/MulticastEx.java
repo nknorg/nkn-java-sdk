@@ -6,6 +6,7 @@ import com.darkyen.tproll.logfunctions.FileLogFunction;
 import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
 import jsmith.nknclient.client.Identity;
 import jsmith.nknclient.client.NKNClient;
+import jsmith.nknclient.client.NKNClientException;
 import jsmith.nknclient.wallet.Wallet;
 import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ public class MulticastEx {
 
     private static final Logger LOG = LoggerFactory.getLogger(MulticastEx.class);
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, NKNClientException {
         TPLogger.INFO();
         TPLogger.setLogFunction(
                 new LogFunctionMultiplexer(

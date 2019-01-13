@@ -13,7 +13,7 @@ public class AssetTransfer {
     public final BigDecimal amount;
 
     public AssetTransfer(String toAddress, BigDecimal amount) {
-        if (!NKNExplorer.isAddressValid(toAddress)) throw new WalletError("Receiving address is not valid NKN address");
+        if (!NKNExplorer.isAddressValid(toAddress)) throw new IllegalArgumentException("Receiving address is not valid NKN address");
         this.toAddress = toAddress;
         this.amount = amount;
     }

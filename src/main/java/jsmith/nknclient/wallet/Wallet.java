@@ -65,7 +65,7 @@ public class Wallet {
 
         } catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchProviderException e) {
             LOG.error("Couldn't generate wallet", e);
-            throw new WalletError("Could not generate wallet", e);
+            throw new WalletException.WalletCryptoError("Could not generate wallet", e);
         }
 
         return w;
@@ -95,22 +95,27 @@ public class Wallet {
             return w;
 
         } catch (InvalidKeySpecException | NoSuchProviderException | NoSuchAlgorithmException e) {
-            throw new WalletError("Creating wallet from private key failed", e);
+            throw new WalletException.WalletCryptoError("Creating wallet from private key failed", e);
         }
     }
 
     private static final String VERSION = "0.0.1";
-    public static Wallet load(File f, PasswordString password) {
+    public static Wallet load(File f, PasswordString password) throws WalletException {
         try {
-            return load(new FileInputStream(f), -1, password);
+            final FileInputStream fis = new FileInputStream(f);
+            final Wallet w = load(fis, -1, password);
+            fis.close();
+            return w;
         } catch (FileNotFoundException e) {
-            throw new WalletError("Wallet loading failed - could not open file", e);
+            throw new WalletException("Wallet loading failed - could not open file", e);
+        } catch (IOException e) {
+            throw new WalletException("Wallet loading failed - IOException", e);
         }
     }
-    public static Wallet load(InputStream is, PasswordString password) {
+    public static Wallet load(InputStream is, PasswordString password) throws WalletException {
         return load(is, -1, password);
     }
-    public static Wallet load(InputStream is, int streamByteLimit, PasswordString password) {
+    public static Wallet load(InputStream is, int streamByteLimit, PasswordString password) throws WalletException {
         try {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
@@ -125,7 +130,7 @@ public class Wallet {
             JSONObject json = new JSONObject(new String(walletBytes, StandardCharsets.UTF_8));
 
             if (!json.getString("Version").equals(VERSION)) {
-                throw new WalletError("Unsuported version of wallet save file: " + json.getString("Version"));
+                throw new WalletException("Unsuported version of wallet save file: " + json.getString("Version"));
             }
 
             byte[] passwd = sha256(password.sha256());
@@ -146,30 +151,30 @@ public class Wallet {
             if (json.has("ContractData")) w.contractDataStr = json.getString("ContractData");
 
             if (!json.has("ProgramHash") || !json.getString("ProgramHash").equals(w.getProgramHashAsHexString())) {
-                throw new WalletError("Key mismatch in wallet file. Generated ProgramHash does not match the loaded ProgramHash");
+                throw new WalletException("Key mismatch in wallet file. Generated ProgramHash does not match the loaded ProgramHash");
             }
 
             if (!json.has("Address") || !json.getString("Address").equals(w.getAddressAsString())) {
-                throw new WalletError("Key mismatch in wallet file. Generated Address does not match the loaded Address");
+                throw new WalletException("Key mismatch in wallet file. Generated Address does not match the loaded Address");
             }
 
 
             return w;
         } catch (IOException e) {
-            throw new WalletError("Wallet loading failed - could not open file", e);
+            throw new WalletException("Wallet loading failed - could not read file", e);
         }
     }
 
-    public String transferTo(String toAddress, BigDecimal amount) {
+    public String transferTo(String toAddress, BigDecimal amount) throws WalletException {
         return transferTo(null, toAddress, amount);
     }
-    public String transferTo(String txDescription, String toAddress, BigDecimal amount) {
+    public String transferTo(String txDescription, String toAddress, BigDecimal amount) throws WalletException {
         return transferTo(txDescription, new AssetTransfer(toAddress, amount));
     }
-    public String transferTo(String txDescription, AssetTransfer ... transfers) {
+    public String transferTo(String txDescription, AssetTransfer ... transfers) throws WalletException {
         return transferTo(txDescription, Asset.T_NKN, transfers);
     }
-    public String transferTo(String txDescription, Asset asset, AssetTransfer ... transfers) {
+    public String transferTo(String txDescription, Asset asset, AssetTransfer ... transfers) throws WalletException {
         int retries = 0;
         JSONArray utxoList;
         while (true) {
@@ -178,7 +183,7 @@ public class Wallet {
                 utxoList = HttpApi.getListUTXO(node, getAddressAsString(), asset);
                 if (utxoList != null) break;
             } else {
-                throw new WalletError("Transfer failed - connection to network failed");
+                throw new WalletException("Transfer failed - connection to network failed");
             }
         }
 
@@ -211,19 +216,23 @@ public class Wallet {
                     }
                 } catch (WebbException ignored) {}
             } else {
-                throw new WalletError("Transfer failed - connection to network failed");
+                throw new WalletException("Transfer failed - connection to network failed");
             }
         }
     }
 
-    public void save(File file, PasswordString password) {
+    public void save(File file, PasswordString password) throws WalletException {
         try {
-            save(new FileOutputStream(file), password);
+            final FileOutputStream fos = new FileOutputStream(file);
+            save(fos, password);
+            fos.close();
         } catch (FileNotFoundException e) {
-            throw new WalletError("Wallet saving failed", e);
+            throw new WalletException("Wallet saving failed. Cannot create missing file", e);
+        } catch (IOException ioe) {
+            throw new WalletException("Wallet saving failed, IOException", ioe);
         }
     }
-    public void save(OutputStream os, PasswordString password) {
+    public void save(OutputStream os, PasswordString password) throws WalletException {
         byte[] passwd = sha256(password.sha256());
 
         final JSONObject json = new JSONObject();
@@ -260,15 +269,15 @@ public class Wallet {
             os.write(json.toString().getBytes(StandardCharsets.UTF_8));
             os.flush();
         } catch (IOException ioe) {
-            throw new WalletError("Wallet saving failed", ioe);
+            throw new WalletException("Wallet saving failed, IOException", ioe);
         }
 
     }
 
-    public BigDecimal queryBalance() {
+    public BigDecimal queryBalance() throws WalletException {
         return queryBalance(Asset.T_NKN);
     }
-    public BigDecimal queryBalance(Asset asset) {
+    public BigDecimal queryBalance(Asset asset) throws WalletException {
         return NKNExplorer.queryBalance(asset, getAddressAsString());
     }
 

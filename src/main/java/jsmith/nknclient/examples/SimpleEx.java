@@ -6,6 +6,7 @@ import com.darkyen.tproll.logfunctions.FileLogFunction;
 import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
 import jsmith.nknclient.client.Identity;
 import jsmith.nknclient.client.NKNClient;
+import jsmith.nknclient.client.NKNClientException;
 import jsmith.nknclient.wallet.Wallet;
 import org.bouncycastle.util.encoders.Hex;
 
@@ -17,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class SimpleEx {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, NKNClientException {
         TPLogger.DEBUG();
         TPLogger.setLogFunction(
                 new LogFunctionMultiplexer(

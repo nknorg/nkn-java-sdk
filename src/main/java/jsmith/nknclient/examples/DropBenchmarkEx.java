@@ -6,6 +6,7 @@ import com.darkyen.tproll.logfunctions.FileLogFunction;
 import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
 import jsmith.nknclient.client.Identity;
 import jsmith.nknclient.client.NKNClient;
+import jsmith.nknclient.client.NKNClientException;
 import jsmith.nknclient.wallet.Wallet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ public class DropBenchmarkEx {
 
     private static final Logger LOG = LoggerFactory.getLogger(DropBenchmarkEx.class);
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, NKNClientException {
         TPLogger.DEBUG();
         TPLogger.setLogFunction(
                 new LogFunctionMultiplexer(

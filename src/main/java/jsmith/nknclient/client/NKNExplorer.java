@@ -6,7 +6,7 @@ import jsmith.nknclient.network.HttpApi;
 import jsmith.nknclient.utils.Base58;
 import jsmith.nknclient.utils.Crypto;
 import jsmith.nknclient.wallet.Asset;
-import jsmith.nknclient.wallet.WalletError;
+import jsmith.nknclient.wallet.WalletException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,7 @@ public class NKNExplorer {
     private static final Logger LOG = LoggerFactory.getLogger(NKNExplorer.class);
 
 
-    public static BigDecimal queryBalance(Asset asset, String address) {
+    public static BigDecimal queryBalance(Asset asset, String address) throws WalletException {
         int retries = 0;
         BigDecimal result;
         WebbException error = null;
@@ -34,16 +34,13 @@ public class NKNExplorer {
                 } catch (WebbException e) {
                     error = e;
                     LOG.warn("Query balance RPC request failed");
-                } catch (WalletError e) {
-                    LOG.warn("Failed to query balance", e);
-                    throw e;
                 }
             }
         } while (retries >= 0);
 
-        throw new WalletError("Failed to query balance", error);
+        throw new WalletException("Failed to query balance", error);
     }
-    public static BigDecimal queryBalance(String address) {
+    public static BigDecimal queryBalance(String address) throws WalletException {
         return queryBalance(Asset.T_NKN, address);
     }
 

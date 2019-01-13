@@ -7,6 +7,7 @@ import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
 import jsmith.nknclient.client.NKNExplorer;
 import jsmith.nknclient.utils.PasswordString;
 import jsmith.nknclient.wallet.Wallet;
+import jsmith.nknclient.wallet.WalletException;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -16,7 +17,7 @@ import java.math.BigDecimal;
  */
 public class WalletEx {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws WalletException {
         TPLogger.DEBUG();
         TPLogger.setLogFunction(
                 new LogFunctionMultiplexer(

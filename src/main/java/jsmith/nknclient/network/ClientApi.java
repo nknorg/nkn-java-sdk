@@ -5,7 +5,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import jsmith.nknclient.client.Identity;
 import jsmith.nknclient.client.NKNClient;
-import jsmith.nknclient.client.NKNClientError;
+import jsmith.nknclient.client.NKNClientException;
 import jsmith.nknclient.network.proto.Messages;
 import jsmith.nknclient.network.proto.Payloads;
 import jsmith.nknclient.utils.Crypto;
@@ -40,9 +40,8 @@ public class ClientApi extends Thread {
     }
 
 
-    @Override
-    public void start() {
-        if (running) throw new NKNClientError("Client is already running, cannot start again");
+    public void startClient() throws NKNClientException {
+        if (running) throw new IllegalStateException("Client is already running, cannot start again");
 
         boolean success = false;
         int retries = 0;
@@ -57,7 +56,7 @@ public class ClientApi extends Thread {
             }
         }
 
-        if (!success) throw new NKNClientError("Failed to connect to network");
+        if (!success) throw new NKNClientException("Failed to connect to network");
         running = true;
 
         setDaemon(true);
@@ -65,7 +64,7 @@ public class ClientApi extends Thread {
     }
 
     public void close() {
-        if (!running) throw new NKNClientError("Client is not (yet) running, cannot close");
+        if (!running) throw new IllegalStateException("Client is not (yet) running, cannot close");
 
         try {
             ws.closeBlocking();
@@ -96,11 +95,11 @@ public class ClientApi extends Thread {
                     directNodeWS = new InetSocketAddress(parts[0], Integer.parseInt(parts[1]));
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                     LOG.error("Failed to reconstruct node address from string '{}'", wsAddr);
-                    throw new NKNClientError("Could not initialize connection. Caused by illegal format of ws address");
+                    return false;
                 }
             } else {
-                LOG.error("Did not receive valid rpc result, containing node address");
-                throw new NKNClientError("Could not initialize connection. Did not receive valid response from server");
+                LOG.error("Did not receive valid rpc result. Result does not contain node address");
+                return false;
             }
 
             return true;
@@ -241,7 +240,7 @@ public class ClientApi extends Thread {
                     }
 
                     if (j.timeoutAt <= now) {
-                        j.promise.forEach(p -> p.completeExceptionally(new NKNClientError.MessageAckTimeout(j.messageID)));
+                        j.promise.forEach(p -> p.completeExceptionally(new NKNClientException.MessageAckTimeout(j.messageID)));
                         iterator.remove();
                     } else {
                         if (nextWake == -1) {
@@ -372,7 +371,7 @@ public class ClientApi extends Thread {
 
     }
 
-    public List<CompletableFuture<NKNClient.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, Object message) {
+    public List<CompletableFuture<NKNClient.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, Object message) throws NKNClientException.UnknownObjectType {
         if (message instanceof String) {
             return sendMessageAsync(destination, replyTo, Payloads.PayloadType.TEXT, Payloads.TextData.newBuilder().setText((String) message).build().toByteString());
         } else if (message instanceof ByteString) {
@@ -381,7 +380,7 @@ public class ClientApi extends Thread {
             return sendMessageAsync(destination, replyTo, Payloads.PayloadType.BINARY, ByteString.copyFrom((byte[]) message));
         } else {
             LOG.error("Cannot serialize '{}' to NKN protobuf message", message.getClass());
-            throw new NKNClientError.UnknownObjectType("Cannot serialize '" + message.getClass() + "' to NKN message");
+            throw new NKNClientException.UnknownObjectType("Cannot serialize '" + message.getClass() + "' to NKN message");
         }
     }
 
@@ -403,7 +402,7 @@ public class ClientApi extends Thread {
     }
 
     private List<CompletableFuture<NKNClient.ReceivedMessage>> sendOutboundMessage(List<String> destination, ByteString messageID, ByteString payload) {
-        if (destination.size() == 0) throw new NKNClientError("At least one address is required for multicast");
+        if (destination.size() == 0) throw new IllegalArgumentException("At least one address is required for multicast");
 
         final Messages.OutboundMessage binMsg = Messages.OutboundMessage.newBuilder()
                 .setDest(destination.get(0))
