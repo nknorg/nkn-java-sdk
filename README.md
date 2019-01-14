@@ -1,4 +1,4 @@
-# NKN Client for JVM
+# NKN Client for Java/Kotlin/JVM
 
 
 Java implementation of [NKN](https://github.com/nknorg/nkn/)  client.
@@ -22,7 +22,7 @@ For more information about `wemi` build system, visit github page: [Darkyenus/WE
 
 There is [wiki documentation](wiki) of the client.
 
-You can also have a look at the [examples](src/main/java/jsmith/nknclient/examples) for basic introduction to API. Explore classes mentioned in examples
+You can also have a look at the [examples](examples/src/jsmith/nknskd/examples) for basic introduction to API. Explore classes mentioned in examples
 
 ## Contributions
 
@@ -30,6 +30,6 @@ __Can I submit a bug, suggestion or feature request?__
 
 Yes. Please open an issue for that.
 
-__Can I contribute code to NKN-java-client project?__
+__Can I contribute code to NKN-java-sdk project?__
 
 Yes please, we appreciate your help! To make contributions, please fork the repo, push your changes to the forked repo, and open a pull request here.
