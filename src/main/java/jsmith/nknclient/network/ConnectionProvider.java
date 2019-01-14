@@ -75,17 +75,22 @@ public class ConnectionProvider {
         final int retries = maxRetries();
         Throwable error = null;
 
-        int nextNodeI = (int) (Math.random() * bootstrapNodes.length);
+        InetSocketAddress[] nodes = null;
+        synchronized (lock) {
+            nodes = bootstrapNodes;
+        }
+
+        int nextNodeI = (int) (Math.random() * nodes.length);
 
         for (int i = 0; i <= retries; i++) {
             try {
-                return action.apply(bootstrapNodes[nextNodeI]);
+                return action.apply(nodes[nextNodeI]);
             } catch (Throwable t) {
                 error = t;
                 LOG.warn("Attempt {} failed", i);
             }
             nextNodeI ++;
-            if (nextNodeI >= bootstrapNodes.length) nextNodeI -= bootstrapNodes.length;
+            if (nextNodeI >= nodes.length) nextNodeI -= nodes.length;
         }
         assert error != null;
         throw error;
