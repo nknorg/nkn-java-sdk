@@ -44,7 +44,7 @@ public class ClientApi extends Thread {
         if (running) throw new IllegalStateException("Client is already running, cannot start again");
 
         try {
-            ConnectionProvider.attempt((bootstrapNode) -> routingNode(bootstrapNode) && establishWsConnection());
+            ConnectionProvider.attempt((bootstrapNode) -> bootstrapNode(bootstrapNode) && establishWsConnection());
         } catch (Throwable t) {
             if (t instanceof NKNClientException) throw (NKNClientException) t;
             throw new NKNClientException("Failed to connect to network", t);
@@ -71,15 +71,15 @@ public class ClientApi extends Thread {
     }
 
     private final Object closeLock = new Object();
-    private boolean routingNode(InetSocketAddress routingNode) {
+    private boolean bootstrapNode(InetSocketAddress bootstrapNode) {
         try {
 
             final JSONObject parameters = new JSONObject();
             parameters.put("address", identity.getFullIdentifier());
 
-            LOG.debug("Client is connecting to routingNode node:", routingNode);
+            LOG.debug("Client is connecting to bootstrapNode node:", bootstrapNode);
 
-            final String wsAddr = HttpApi.rpcCall(routingNode, "getwsaddr", parameters);
+            final String wsAddr = HttpApi.rpcCall(bootstrapNode, "getwsaddr", parameters);
 
             if (wsAddr != null) {
                 try {

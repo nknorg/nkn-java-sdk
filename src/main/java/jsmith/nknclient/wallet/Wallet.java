@@ -4,8 +4,6 @@ import jsmith.nknclient.client.NKNExplorer;
 import jsmith.nknclient.network.ConnectionProvider;
 import jsmith.nknclient.network.HttpApi;
 import jsmith.nknclient.utils.Base58;
-import jsmith.nknclient.utils.Crypto;
-import jsmith.nknclient.utils.PasswordString;
 import jsmith.nknclient.wallet.transactions.TransactionUtils;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
@@ -23,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
@@ -31,8 +30,7 @@ import java.security.spec.ECPrivateKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 
-import static jsmith.nknclient.utils.Crypto.aesEncryptAligned;
-import static jsmith.nknclient.utils.Crypto.sha256;
+import static jsmith.nknclient.utils.Crypto.*;
 
 /**
  *
@@ -69,6 +67,10 @@ public class Wallet {
         return w;
     }
 
+    public static Wallet createFromPrivateKey(String hexPrivateKey) {
+        return createFromPrivateKey(Hex.decode(hexPrivateKey));
+    }
+
     public static Wallet createFromPrivateKey(byte[] privateKey) {
         try {
 
@@ -98,7 +100,7 @@ public class Wallet {
     }
 
     private static final String VERSION = "0.0.1";
-    public static Wallet load(File f, PasswordString password) throws WalletException {
+    public static Wallet load(File f, String password) throws WalletException {
         try {
             final FileInputStream fis = new FileInputStream(f);
             final Wallet w = load(fis, -1, password);
@@ -110,10 +112,10 @@ public class Wallet {
             throw new WalletException("Wallet loading failed - IOException", e);
         }
     }
-    public static Wallet load(InputStream is, PasswordString password) throws WalletException {
+    public static Wallet load(InputStream is, String password) throws WalletException {
         return load(is, -1, password);
     }
-    public static Wallet load(InputStream is, int streamByteLimit, PasswordString password) throws WalletException {
+    public static Wallet load(InputStream is, int streamByteLimit, String password) throws WalletException {
         try {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
@@ -131,7 +133,7 @@ public class Wallet {
                 throw new WalletException("Unsuported version of wallet save file: " + json.getString("Version"));
             }
 
-            byte[] passwd = sha256(password.sha256());
+            byte[] passwd = doubleSha256(password.getBytes(Charset.forName("UTF-8")));
             final byte[] passwordHash = Hex.decode(json.getString("PasswordHash"));
             if (!Arrays.equals(sha256(passwd), passwordHash)) {
                    LOG.warn("Unlocking wallet failed, wrong password");
@@ -141,8 +143,8 @@ public class Wallet {
             final byte[] iv = Hex.decode(json.getString("IV"));
             final byte[] masterKeyEnc = Hex.decode(json.getString("MasterKey"));
 
-            final byte[] masterKey = Crypto.aesDecryptAligned(masterKeyEnc, passwd, iv);
-            final byte[] privateKey = Crypto.aesDecryptAligned(Hex.decode(json.getString("PrivateKeyEncrypted")), masterKey, iv);
+            final byte[] masterKey = aesDecryptAligned(masterKeyEnc, passwd, iv);
+            final byte[] privateKey = aesDecryptAligned(Hex.decode(json.getString("PrivateKeyEncrypted")), masterKey, iv);
 
             final Wallet w = createFromPrivateKey(privateKey);
 
@@ -171,6 +173,9 @@ public class Wallet {
     }
     public String transferTo(String txDescription, AssetTransfer ... transfers) throws WalletException {
         return transferTo(txDescription, Asset.T_NKN, transfers);
+    }
+    public String transferTo(Asset asset, AssetTransfer ... transfers) throws WalletException {
+        return transferTo(null, asset, transfers);
     }
     public String transferTo(String txDescription, Asset asset, AssetTransfer ... transfers) throws WalletException {
         JSONArray utxoList;
@@ -218,7 +223,7 @@ public class Wallet {
         }
     }
 
-    public void save(File file, PasswordString password) throws WalletException {
+    public void save(File file, String password) throws WalletException {
         try {
             final FileOutputStream fos = new FileOutputStream(file);
             save(fos, password);
@@ -229,8 +234,8 @@ public class Wallet {
             throw new WalletException("Wallet saving failed, IOException", ioe);
         }
     }
-    public void save(OutputStream os, PasswordString password) throws WalletException {
-        byte[] passwd = sha256(password.sha256());
+    public void save(OutputStream os, String password) throws WalletException {
+        byte[] passwd = doubleSha256(password.getBytes(Charset.forName("UTF-8")));
 
         final JSONObject json = new JSONObject();
 
@@ -272,7 +277,7 @@ public class Wallet {
     }
 
     public BigDecimal queryBalance() throws WalletException {
-        return queryBalance(Asset.T_NKN);
+        return NKNExplorer.queryBalance(getAddressAsString());
     }
     public BigDecimal queryBalance(Asset asset) throws WalletException {
         return NKNExplorer.queryBalance(asset, getAddressAsString());
@@ -292,13 +297,13 @@ public class Wallet {
     public String getAddressAsString() {
         final byte[] s = getSignatureData();
 
-        final byte[] r160 = Crypto.r160(Crypto.sha256(s));
+        final byte[] r160 = r160(sha256(s));
 
         final byte[] sh = new byte[r160.length + 1];
         sh[0] = 53;
         System.arraycopy(r160, 0, sh, 1, r160.length);
 
-        final byte[] x = Crypto.doubleSha256(sh);
+        final byte[] x = doubleSha256(sh);
 
         final byte[] enc = new byte[sh.length + 4];
         System.arraycopy(sh, 0, enc, 0, sh.length);

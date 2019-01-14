@@ -60,6 +60,10 @@ public class NKNClient {
         return noAutomaticACKs;
     }
 
+    public CompletableFuture<ReceivedMessage> sendTextMessageAsync(String destinationFullIdentifier, String message) {
+        return sendTextMessageAsync(destinationFullIdentifier, null, message);
+    }
+
     public CompletableFuture<ReceivedMessage> sendTextMessageAsync(String destinationFullIdentifier, ByteString replyTo, String message) {
         final Payloads.TextData td = Payloads.TextData.newBuilder()
                 .setText(message)
@@ -67,6 +71,14 @@ public class NKNClient {
 
         LOG.debug("Sending text message: {}", message);
         return clientApi.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, Payloads.PayloadType.TEXT, td.toByteString()).get(0);
+    }
+
+    public CompletableFuture<ReceivedMessage> sendBinaryMessageAsync(String destinationFullIdentifier, byte[] message) {
+        return sendBinaryMessageAsync(destinationFullIdentifier, null, message);
+    }
+
+    public CompletableFuture<ReceivedMessage> sendBinaryMessageAsync(String destinationFullIdentifier, ByteString message) {
+        return sendBinaryMessageAsync(destinationFullIdentifier, null, message);
     }
 
     public CompletableFuture<ReceivedMessage> sendBinaryMessageAsync(String destinationFullIdentifier, ByteString replyTo, byte[] message) {
@@ -83,8 +95,20 @@ public class NKNClient {
         return clientApi.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, message).get(0);
     }
 
+    public List<CompletableFuture<ReceivedMessage>> sendTextMessageMulticastAsync(String[] destinationFullIdentifier, String message) {
+        return sendTextMessageMulticastAsync(destinationFullIdentifier, null, message);
+    }
+
     public List<CompletableFuture<ReceivedMessage>> sendTextMessageMulticastAsync(String[] destinationFullIdentifier, ByteString replyTo, String message) {
         return sendTextMessageMulticastAsync(Arrays.asList(destinationFullIdentifier), replyTo, message);
+    }
+
+    public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticastAsync(String[] destinationFullIdentifier, byte[] message) {
+        return sendBinaryMessageMulticastAsync(destinationFullIdentifier, null, ByteString.copyFrom(message));
+    }
+
+    public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticastAsync(String[] destinationFullIdentifier, ByteString message) {
+        return sendBinaryMessageMulticastAsync(destinationFullIdentifier, null, message);
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticastAsync(String[] destinationFullIdentifier, ByteString replyTo, byte[] message) {
@@ -97,6 +121,10 @@ public class NKNClient {
 
     public List<CompletableFuture<ReceivedMessage>> sendMessageMulticastAsync(String[] destinationFullIdentifier, ByteString replyTo, Object message) {
         return sendMessageMulticastAsync(Arrays.asList(destinationFullIdentifier), replyTo, message);
+    }
+
+    public List<CompletableFuture<ReceivedMessage>> sendTextMessageMulticastAsync(List<String> destinationFullIdentifier, String message) {
+        return sendTextMessageMulticastAsync(destinationFullIdentifier, null, message);
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendTextMessageMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, String message) {

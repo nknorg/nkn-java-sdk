@@ -46,11 +46,11 @@ public class SimpleEx {
                     } else if (receivedMessage.isBinary) {
                         System.out.println("Client B: New binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
                     }
-                    return "Text message ACK!";
+                    return "Text message reply!";
                 })
                 .start();
 
-        final CompletableFuture<NKNClient.ReceivedMessage> promise = clientA.sendTextMessageAsync(identityB.getFullIdentifier(), null, "Hello!");
+        final CompletableFuture<NKNClient.ReceivedMessage> promise = clientA.sendTextMessageAsync(identityB.getFullIdentifier(), "Hello!");
         promise.whenComplete((response, error) -> {
             if (error == null) {
                 System.out.println("A: Response ==> " + response.textData);

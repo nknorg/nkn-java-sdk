@@ -61,7 +61,7 @@ public class MulticastEx {
                 identityA.getFullIdentifier(),
                 identityB.getFullIdentifier(),
                 identityC.getFullIdentifier()
-        }, null, "Hello!");
+        }, "Hello!");
 
         promises.forEach(p -> p.whenComplete((response, error) -> {
             if (error == null) {

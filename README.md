@@ -20,7 +20,9 @@ For more information about `wemi` build system, visit github page: [Darkyenus/WE
 
 ## Where to start?
 
-Have a look at the [examples](src/main/java/jsmith/nknclient/examples) for basic introduction to API. Explore classes mentioned in examples. Some proper tutorial/documentation is coming soon
+There is [wiki documentation](wiki) of the client.
+
+You can also have a look at the [examples](src/main/java/jsmith/nknclient/examples) for basic introduction to API. Explore classes mentioned in examples
 
 ## Contributions
 

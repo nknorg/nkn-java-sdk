@@ -5,7 +5,6 @@ import com.darkyen.tproll.TPLogger;
 import com.darkyen.tproll.logfunctions.FileLogFunction;
 import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
 import jsmith.nknclient.client.NKNExplorer;
-import jsmith.nknclient.utils.PasswordString;
 import jsmith.nknclient.wallet.Wallet;
 import jsmith.nknclient.wallet.WalletException;
 
@@ -27,10 +26,10 @@ public class WalletEx {
         TPLogger.attachUnhandledExceptionLogger();
 
         final Wallet w = Wallet.createNew();
-        w.save(new File("tmpWallet.dat"), new PasswordString("a")); // PasswordString should be disposed by user after use
+        w.save(new File("tmpWallet.dat"), "a"); // PasswordString should be disposed by user after use
         System.out.println("Generated: " + w.getAddressAsString());
 
-        final Wallet w2 = Wallet.load(new File("tmpWallet.dat"), new PasswordString("a")); // PasswordString should be disposed by user after use
+        final Wallet w2 = Wallet.load(new File("tmpWallet.dat"), "a"); // PasswordString should be disposed by user after use
         if (w2 != null) {
             System.out.println("Loaded: " + w2.getAddressAsString());
         } else {
@@ -47,11 +46,11 @@ public class WalletEx {
         final File fromFile = new File("from.dat");
         final File toFile = new File("to.dat");
 
-        if (!fromFile.exists()) Wallet.createNew().save(fromFile, new PasswordString("pwd"));  // PasswordString should be disposed by user after use
-        if (!toFile.exists()) Wallet.createNew().save(toFile, new PasswordString("pwd"));
+        if (!fromFile.exists()) Wallet.createNew().save(fromFile, "pwd");  // PasswordString should be disposed by user after use
+        if (!toFile.exists()) Wallet.createNew().save(toFile, "pwd");
 
-        final Wallet from = Wallet.load(fromFile, new PasswordString("pwd"));
-        final Wallet to = Wallet.load(toFile, new PasswordString("pwd"));
+        final Wallet from = Wallet.load(fromFile, "pwd");
+        final Wallet to = Wallet.load(toFile, "pwd");
 
 
         System.out.println("Transferring 1 tNKN from " + from.getAddressAsString() + " (" + from.queryBalance() + " tNKN) to " + to.getAddressAsString() + " (" + to.queryBalance() + " tNKN)");
@@ -62,12 +61,7 @@ public class WalletEx {
 //                new AssetTransfer(to.getAddressAsString(), new BigDecimal(1))
 //        ); // Multi transaction
 
-
-        if (txID != null) {
-            System.out.println("Transaction successful: " + txID);
-        } else {
-            System.out.println("Transaction failed");
-        }
+        System.out.println("Transaction successful: " + txID);
 
     }
 
