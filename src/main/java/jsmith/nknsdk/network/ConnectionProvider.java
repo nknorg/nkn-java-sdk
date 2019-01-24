@@ -88,6 +88,7 @@ public class ConnectionProvider {
             } catch (Throwable t) {
                 error = t;
                 LOG.warn("Attempt {} failed", i);
+                LOG.debug("Caused by: {}", t);
             }
             nextNodeI ++;
             if (nextNodeI >= nodes.length) nextNodeI -= nodes.length;
