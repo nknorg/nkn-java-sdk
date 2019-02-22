@@ -21,7 +21,15 @@ public class ConnectionProvider {
 //            new InetSocketAddress("104.196.227.157", 30003),
 
 //            new InetSocketAddress("localhost", 30003),
-            new InetSocketAddress("testnet-node-0001.nkn.org", 30003),
+
+            new InetSocketAddress("testnet-seed-0001.nkn.org", 30003),
+            new InetSocketAddress("testnet-seed-0002.nkn.org", 30003),
+            new InetSocketAddress("testnet-seed-0003.nkn.org", 30003),
+            new InetSocketAddress("testnet-seed-0004.nkn.org", 30003),
+            new InetSocketAddress("testnet-seed-0005.nkn.org", 30003),
+            new InetSocketAddress("testnet-seed-0006.nkn.org", 30003),
+            new InetSocketAddress("testnet-seed-0007.nkn.org", 30003),
+            new InetSocketAddress("testnet-seed-0008.nkn.org", 30003)
     };
 
     private static int maxRetries = 3;
