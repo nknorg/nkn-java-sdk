@@ -195,7 +195,7 @@ public class ClientApi extends Thread {
 
         ws.setProtobufMessageListener(bytes -> {
             try {
-                final Messages.InboundMessage msg = Messages.InboundMessage.parseFrom(bytes);
+                final Messages.NodeToClientMessage msg = Messages.NodeToClientMessage.parseFrom(bytes);
 
                 final String from = msg.getSrc();
                 final Payloads.Payload payload = Payloads.Payload.parseFrom(msg.getPayload());
@@ -469,7 +469,7 @@ public class ClientApi extends Thread {
     private List<CompletableFuture<NKNClient.ReceivedMessage>> sendOutboundMessage(List<String> destination, ByteString messageID, ByteString payload) {
         if (destination.size() == 0) throw new IllegalArgumentException("At least one address is required for multicast");
 
-        final Messages.OutboundMessage binMsg = Messages.OutboundMessage.newBuilder()
+        final Messages.ClientToNodeMessage binMsg = Messages.ClientToNodeMessage.newBuilder()
                 .setDest(destination.get(0))
                 .setPayload(payload)
                 .addAllDests(destination.subList(1, destination.size()))
@@ -500,7 +500,7 @@ public class ClientApi extends Thread {
                 .setNoAck(true)
                 .build();
 
-        final Messages.OutboundMessage binMsg = Messages.OutboundMessage.newBuilder()
+        final Messages.ClientToNodeMessage binMsg = Messages.ClientToNodeMessage.newBuilder()
                 .setDest(destination)
                 .setPayload(payload.toByteString())
                 .setMaxHoldingSeconds(0)

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package jsmith.nknclient.network.proto;
+package jsmith.nknsdk.network.proto;
 
 //import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 //
@@ -12,14 +12,14 @@ package jsmith.nknclient.network.proto;
 //option (gogoproto.unmarshaler_all) = true;
 
 
-message OutboundMessage {
+message ClientToNodeMessage {
     string dest = 1;
     bytes payload = 2;
     repeated string dests = 3;
     uint32 max_holding_seconds = 4;
 }
 
-message InboundMessage {
+message NodeToClientMessage {
     string src = 1;
     bytes payload = 2;
 }

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package jsmith.nknclient.network.proto;
+package jsmith.nknsdk.network.proto;
 
 enum PayloadType {
   BINARY = 0;
