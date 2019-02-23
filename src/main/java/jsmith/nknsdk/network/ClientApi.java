@@ -3,6 +3,7 @@ package jsmith.nknsdk.network;
 import com.darkyen.dave.WebbException;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import jsmith.nknsdk.client.ErrorCodes;
 import jsmith.nknsdk.client.Identity;
 import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
@@ -128,7 +129,7 @@ public class ClientApi extends Thread {
         ws = new WsApi(directNodeWS);
 
         ws.setJsonMessageListener(json -> {
-            if (json.has("Error") && json.getInt("Error") == 48001) { // Wrong node to connect // TODO create error constants
+            if (json.has("Error") && json.getInt("Error") == ErrorCodes.WRONG_NODE) { // Wrong node to connect // TODO create error constants
                 LOG.info("Network topology changed, re-establishing connection");
 
                 messageHold.incrementAndGet();
@@ -166,7 +167,7 @@ public class ClientApi extends Thread {
 
                 switch (json.getString("Action")) {
                     case "setClient": {
-                        if (json.has("Error") && json.getInt("Error") != 0) {
+                        if (json.has("Error") && json.getInt("Error") != ErrorCodes.SUCCESS) {
                             LOG.warn("WS connection failed");
                             ws.close();
                             success[0] = false;
@@ -177,7 +178,7 @@ public class ClientApi extends Thread {
                         break;
                     }
                     case "updateSigChainBlockHash": {
-                        if (json.getInt("Error") == 0) {
+                        if (json.getInt("Error") == ErrorCodes.SUCCESS) {
                             final String newSigChainHash = json.getString("Result");
                             synchronized (sigChainHashLock) {
                                 sigChainHash = newSigChainHash;
