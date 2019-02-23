@@ -40,6 +40,9 @@ public class SimpleEx {
                 })
                 .start();
 
+        System.out.println("Started!");
+        Thread.sleep(5000);
+
         final CompletableFuture<NKNClient.ReceivedMessage> promise = clientA.sendTextMessageAsync(identityB.getFullIdentifier(), "Hello!");
         promise.whenComplete((response, error) -> {
             if (error == null) {
@@ -52,6 +55,7 @@ public class SimpleEx {
 
 
         Thread.sleep(7_000);
+        System.out.println("Closing!");
         clientA.close();
         clientB.close();
 

@@ -13,12 +13,14 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.websocket.CloseReason;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 /**
@@ -32,6 +34,7 @@ public class ClientApi extends Thread {
 
     private InetSocketAddress directNodeWS = null;
     private WsApi ws = null;
+    private AtomicInteger messageHold = new AtomicInteger(1);
 
     private final Identity identity;
 
@@ -45,14 +48,10 @@ public class ClientApi extends Thread {
     public void startClient() throws NKNClientException {
         if (running) throw new IllegalStateException("Client is already running, cannot start again");
 
-        try {
-            ConnectionProvider.attempt((bootstrapNode) -> bootstrapNode(bootstrapNode) && establishWsConnection());
-        } catch (Throwable t) {
-            if (t instanceof NKNClientException) throw (NKNClientException) t;
-            throw new NKNClientException("Failed to connect to network", t);
-        }
-        running = true;
+        reconnect();
+        messageHold.decrementAndGet();
 
+        running = true;
         setDaemon(true);
         super.start();
     }
@@ -70,7 +69,20 @@ public class ClientApi extends Thread {
         } catch (InterruptedException ignored) {}
     }
 
-    private final Object closeLock = new Object();
+    private void reconnect() throws NKNClientException {
+        try {
+            ConnectionProvider.attempt((bootstrapNode) -> {
+                if (!(bootstrapNode(bootstrapNode) && establishWsConnection())) {
+                    throw new NKNClientException("Connection to network refused");
+                }
+                return true;
+            });
+        } catch (Throwable t) {
+            if (t instanceof NKNClientException) throw (NKNClientException) t;
+            throw new NKNClientException("Failed to connect to network", t);
+        }
+    }
+
     private boolean bootstrapNode(InetSocketAddress bootstrapNode) {
         try {
 
@@ -112,37 +124,71 @@ public class ClientApi extends Thread {
     private boolean establishWsConnection() {
         LOG.debug("Client is connecting to node ws:", directNodeWS);
         final boolean[] success = {true};
+        final Object closeLock = new Object();
         ws = new WsApi(directNodeWS);
 
         ws.setJsonMessageListener(json -> {
-            switch (json.get("Action").toString()) {
-                case "setClient": {
-                    if (json.has("Error") && (int)json.get("Error") != 0) {
-                        LOG.warn("WS connection failed");
-                        ws.close();
-                        success[0] = false;
-                        synchronized (closeLock) {
-                            closeLock.notify();
-                        }
-                    } else {
-                        synchronized (closeLock) {
-                            closeLock.notify();
-                        }
-                    }
-                    break;
-                }
-                case "updateSigChainBlockHash": {
-                    if ((int)json.get("Error") == 0) {
-                        final String newSigChainHash = json.get("Result").toString();
-                        synchronized (sigChainHashLock) {
-                            sigChainHash = newSigChainHash;
+            if (json.has("Error") && json.getInt("Error") == 48001) { // Wrong node to connect // TODO create error constants
+                LOG.info("Network topology changed, re-establishing connection");
+
+                messageHold.incrementAndGet();
+                ws.close();
+
+                try {
+                    ConnectionProvider.attempt((bootstrapNode) -> {
+                        final String[] parts = json.getString("Result").split(":");
+                        directNodeWS = new InetSocketAddress(parts[0], Integer.parseInt(parts[1]));
+
+                        if (!establishWsConnection()) {
+                            throw new NKNClientException("Connection to network refused");
                         }
 
+                        return true;
+                    });
+                    success[0] = true;
+                } catch (Throwable t) {
+                    if (t instanceof NKNClientException) {
+                        LOG.error("Failed to reconnect to ws", t);
+                    } else {
+                        LOG.error("Failed to reconnect to ws", new NKNClientException("Failed to connect to network", t));
                     }
-                    break;
+                    crashClose = true;
+                    success[0] = false;
+                    close();
                 }
-                default:
-                    LOG.warn("Got unknown message (action='{}'), ignoring", json.get("Action").toString());
+
+                messageHold.decrementAndGet();
+                synchronized (closeLock) {
+                    closeLock.notify();
+                }
+
+            } else {
+
+                switch (json.getString("Action")) {
+                    case "setClient": {
+                        if (json.has("Error") && json.getInt("Error") != 0) {
+                            LOG.warn("WS connection failed");
+                            ws.close();
+                            success[0] = false;
+                        }
+                        synchronized (closeLock) {
+                            closeLock.notify();
+                        }
+                        break;
+                    }
+                    case "updateSigChainBlockHash": {
+                        if (json.getInt("Error") == 0) {
+                            final String newSigChainHash = json.getString("Result");
+                            synchronized (sigChainHashLock) {
+                                sigChainHash = newSigChainHash;
+                            }
+
+                        }
+                        break;
+                    }
+                    default:
+                        LOG.warn("Got unknown message (action='{}'), ignoring", json.getString("Action"));
+                }
             }
         });
 
@@ -176,9 +222,28 @@ public class ClientApi extends Thread {
                     setClientReq.put("Action", "setClient");
                     setClientReq.put("Addr", identity.getFullIdentifier());
 
-                    ws.sendPacket(setClientReq);
+            ws.sendPacket(setClientReq);
+        });
+        ws.setCLoseListener( (reason) -> {
+            if (!crashClose && !stop && (reason.getCloseCode() == CloseReason.CloseCodes.CLOSED_ABNORMALLY)) {
+                LOG.info("Connection closed, reconnecting");
+                messageHold.incrementAndGet();
+                ws.close();
+                try {
+                    reconnect();
+                    success[0] = true;
+                } catch (NKNClientException e) {
+                    LOG.error("Failed to reconnect to ws", e);
+                    success[0] = false;
+                    crashClose = true;
+                    close();
                 }
-        );
+                messageHold.decrementAndGet();
+                synchronized (closeLock) {
+                    closeLock.notify();
+                }
+            }
+        });
         ws.connect();
 
         synchronized (closeLock) {
@@ -199,10 +264,11 @@ public class ClientApi extends Thread {
     private final ArrayList<MessageJob> jobs = new ArrayList<>();
     private final ArrayList<MessageJob> waitingForReply = new ArrayList<>();
     private boolean stop = false;
+    private boolean crashClose = false;
 
     @Override
     public void run() {
-        while (!stop || !jobs.isEmpty()) {
+        while (!stop || (!jobs.isEmpty() && !crashClose)) {
             long nextWake = -1;
             synchronized (jobLock) {
                 final long now = System.currentTimeMillis();
@@ -245,10 +311,16 @@ public class ClientApi extends Thread {
             }
 
             MessageJob j = null;
-            synchronized (jobLock) {
-                if (!jobs.isEmpty()) {
-                    j = jobs.remove(0);
+            if (messageHold.get() == 0) {
+                synchronized (jobLock) {
+                    if (!jobs.isEmpty()) {
+                        j = jobs.remove(0);
+                    }
                 }
+            } else {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException ignored) {}
             }
             if (j != null) {
                 waitingForReply.add(j);

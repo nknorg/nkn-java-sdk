@@ -72,7 +72,10 @@ public class WsApi {
     public void onClose(Session session, CloseReason reason) {
         LOG.debug("WS#{} closed, {}", myId, reason);
         this.session = null;
-        // TODO on close CB
+
+        if (closeListener != null) {
+            closeListener.accept(reason);
+        }
     }
 
     @OnError
@@ -97,6 +100,10 @@ public class WsApi {
         this.protobufMessageListener = listener;
     }
     private Runnable openListener;
+    private Consumer<CloseReason> closeListener;
+    public void setCLoseListener(Consumer<CloseReason> listener) {
+        this.closeListener = listener;
+    }
     public void setOpenListener(Runnable listener) {
         this.openListener = listener;
     }

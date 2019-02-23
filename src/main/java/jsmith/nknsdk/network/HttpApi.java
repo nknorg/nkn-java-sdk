@@ -23,7 +23,7 @@ public class HttpApi {
 
     public static String rpcCall(InetSocketAddress to, String method, JSONObject parameters) {
         final JSONObject result = rpcCallJson(to, method, parameters);
-        if (result.has("result")) return result.get("result").toString();
+        if (result.has("result")) return result.getString("result");
 
         LOG.warn("Invalid response format, does not contain field result: {}", result);
 
