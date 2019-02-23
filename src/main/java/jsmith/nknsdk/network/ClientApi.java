@@ -35,7 +35,9 @@ public class ClientApi extends Thread {
 
     private final Identity identity;
 
+    private static int myID = 0;
     public ClientApi(Identity identity) {
+        setName("Client-" + ++myID);
         this.identity = identity;
     }
 
@@ -58,9 +60,7 @@ public class ClientApi extends Thread {
     public void close() {
         if (!running) throw new IllegalStateException("Client is not (yet) running, cannot close");
 
-        try {
-            ws.closeBlocking();
-        } catch (InterruptedException ignored) {}
+        ws.close();
         synchronized (jobLock) {
             stop = true;
             jobLock.notify();
@@ -171,7 +171,7 @@ public class ClientApi extends Thread {
             }
         });
 
-        ws.setOpenListener( ignored -> {
+        ws.setOpenListener( () -> {
                     final JSONObject setClientReq = new JSONObject();
                     setClientReq.put("Action", "setClient");
                     setClientReq.put("Addr", identity.getFullIdentifier());
