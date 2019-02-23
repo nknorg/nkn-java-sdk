@@ -1,7 +1,7 @@
-# NKN Client for Java/Kotlin/JVM
+# NKN SDK for Java/Kotlin/JVM
 
 
-Java implementation of [NKN](https://github.com/nknorg/nkn/)  client.
+Java implementation of [NKN](https://github.com/nknorg/nkn/) sdk.
 
 Send and receive messages between any NKN clients.
 
@@ -20,7 +20,7 @@ For more information about `wemi` build system, visit github page: [Darkyenus/WE
 
 ## Where to start?
 
-There is [wiki documentation](wiki) of the client.
+There is [wiki documentation](https://github.com/RealJohnSmith/nkn-java-sdk/wiki) of the client.
 
 You can also have a look at the [examples](examples/src/jsmith/nknskd/examples) for basic introduction to API. Explore classes mentioned in examples
 
