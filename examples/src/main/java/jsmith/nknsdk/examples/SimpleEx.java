@@ -1,16 +1,12 @@
 package jsmith.nknsdk.examples;
 
-import com.darkyen.tproll.LogFunction;
 import com.darkyen.tproll.TPLogger;
-import com.darkyen.tproll.logfunctions.FileLogFunction;
-import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
 import jsmith.nknsdk.client.Identity;
 import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
 import jsmith.nknsdk.wallet.Wallet;
 import org.bouncycastle.util.encoders.Hex;
 
-import java.io.File;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -19,13 +15,7 @@ import java.util.concurrent.CompletableFuture;
 public class SimpleEx {
 
     public static void main(String[] args) throws InterruptedException, NKNClientException {
-        TPLogger.DEBUG();
-        TPLogger.setLogFunction(
-                new LogFunctionMultiplexer(
-                        LogFunction.DEFAULT_LOG_FUNCTION, // Log to console
-                        new FileLogFunction(new File("logs")) // & Log to file in "logs" directory
-                ));
-        TPLogger.attachUnhandledExceptionLogger();
+        LogUtils.setupLogging(TPLogger.DEBUG);
 
         final Identity identityA = new Identity("Client A", Wallet.createNew());
         final Identity identityB = new Identity("Client B", Wallet.createNew());
@@ -49,9 +39,6 @@ public class SimpleEx {
                     return "Text message reply!";
                 })
                 .start();
-
-        System.out.println("Started");
-        Thread.sleep(5000);
 
         final CompletableFuture<NKNClient.ReceivedMessage> promise = clientA.sendTextMessageAsync(identityB.getFullIdentifier(), "Hello!");
         promise.whenComplete((response, error) -> {

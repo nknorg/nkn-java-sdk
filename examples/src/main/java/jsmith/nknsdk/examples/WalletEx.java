@@ -11,19 +11,15 @@ import jsmith.nknsdk.wallet.WalletException;
 import java.io.File;
 import java.math.BigDecimal;
 
+import static jsmith.nknsdk.examples.LogUtils.setupLogging;
+
 /**
  *
  */
 public class WalletEx {
 
     public static void main(String[] args) throws WalletException {
-        TPLogger.DEBUG();
-        TPLogger.setLogFunction(
-                new LogFunctionMultiplexer(
-                        LogFunction.DEFAULT_LOG_FUNCTION, // Log to console
-                        new FileLogFunction(new File("logs")) // & Log to file in "logs" directory
-                ));
-        TPLogger.attachUnhandledExceptionLogger();
+        setupLogging(TPLogger.DEBUG);
 
         final Wallet w = Wallet.createNew();
         w.save(new File("tmpWallet.dat"), "a"); // PasswordString should be disposed by user after use

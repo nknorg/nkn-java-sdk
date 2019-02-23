@@ -24,13 +24,7 @@ public class MulticastEx {
     private static final Logger LOG = LoggerFactory.getLogger(MulticastEx.class);
 
     public static void main(String[] args) throws InterruptedException, NKNClientException {
-        TPLogger.INFO();
-        TPLogger.setLogFunction(
-                new LogFunctionMultiplexer(
-                        LogFunction.DEFAULT_LOG_FUNCTION, // Log to console
-                        new FileLogFunction(new File("logs")) // & Log to file in "logs" directory
-                ));
-        TPLogger.attachUnhandledExceptionLogger();
+        LogUtils.setupLogging(TPLogger.DEBUG);
 
         final Identity identitySender = new Identity("Sender", Wallet.createNew());
         final Identity identityA = new Identity("A", Wallet.createNew());
