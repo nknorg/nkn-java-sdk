@@ -78,7 +78,7 @@ public class ClientApi extends Thread {
                 }
                 return true;
             });
-        } catch (Throwable t) {
+        } catch (Exception t) {
             if (t instanceof NKNClientException) throw (NKNClientException) t;
             throw new NKNClientException("Failed to connect to network", t);
         }
@@ -147,7 +147,7 @@ public class ClientApi extends Thread {
                         return true;
                     });
                     success[0] = true;
-                } catch (Throwable t) {
+                } catch (Exception t) {
                     if (t instanceof NKNClientException) {
                         LOG.error("Failed to reconnect to ws", t);
                     } else {

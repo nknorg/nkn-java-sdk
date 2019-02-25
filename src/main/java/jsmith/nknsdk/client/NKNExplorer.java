@@ -22,7 +22,7 @@ public class NKNExplorer {
     public static BigDecimal queryBalance(Asset asset, String address) throws WalletException {
         try {
             return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getSumUTXO(bootstrapNode, address, asset == null ? Asset.T_NKN : asset));
-        } catch (Throwable t) {
+        } catch (Exception t) {
             if (t instanceof WalletException) throw (WalletException) t;
             throw new WalletException("Failed to query balance", t);
         }

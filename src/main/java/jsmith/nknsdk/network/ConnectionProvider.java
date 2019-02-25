@@ -79,9 +79,9 @@ public class ConnectionProvider {
         }
     }
 
-    public static <T> T attempt(ThrowingLambda<InetSocketAddress, T> action) throws Throwable {
+    public static <T> T attempt(ThrowingLambda<InetSocketAddress, T> action) throws Exception {
         final int retries = maxRetries();
-        Throwable error = null;
+        Exception error = null;
 
         InetSocketAddress[] nodes = null;
         synchronized (lock) {
@@ -93,7 +93,7 @@ public class ConnectionProvider {
         for (int i = 0; i <= retries; i++) {
             try {
                 return action.apply(nodes[nextNodeI]);
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 error = t;
                 LOG.warn("Attempt {} failed", i);
                 LOG.debug("Caused by: {}", t);

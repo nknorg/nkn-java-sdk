@@ -183,7 +183,7 @@ public class Wallet {
         try {
             utxoList = ConnectionProvider.attempt((node) -> {
                 final JSONArray list = HttpApi.getListUTXO(node, getAddressAsString(), asset);
-                if (list == null) throw new NullPointerException("Received 'null' instead of valid UTXO list");
+                if (list == null) throw new WalletException("Received 'null' from network, instead of valid UTXO list");
                 return list;
             });
         } catch (Throwable t) {
@@ -217,7 +217,7 @@ public class Wallet {
                     throw new WalletException("Invalid response to query");
                 }
             });
-        } catch (Throwable t) {
+        } catch (Exception t) {
             if (t instanceof WalletException) throw (WalletException) t;
             throw new WalletException("Submitting a transaction failed", t);
         }
