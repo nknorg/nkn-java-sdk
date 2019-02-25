@@ -24,6 +24,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
+import static javax.websocket.CloseReason.CloseCodes.NORMAL_CLOSURE;
+import static javax.websocket.CloseReason.CloseCodes.NO_STATUS_CODE;
+
 /**
  *
  */
@@ -73,7 +76,9 @@ public class ClientApi extends Thread {
     private void reconnect() throws NKNClientException {
         try {
             ConnectionProvider.attempt((bootstrapNode) -> {
-                if (!(bootstrapNode(bootstrapNode) && establishWsConnection())) {
+                if (!bootstrapNode(bootstrapNode)) {
+                    throw new NKNClientException("Couldn't contact bootstrap node");
+                } else if (!establishWsConnection()) {
                     throw new NKNClientException("Connection to network refused");
                 }
                 return true;
@@ -226,7 +231,7 @@ public class ClientApi extends Thread {
             ws.sendPacket(setClientReq);
         });
         ws.setCLoseListener( (reason) -> {
-            if (!crashClose && !stop && (reason.getCloseCode() == CloseReason.CloseCodes.CLOSED_ABNORMALLY)) {
+            if (!crashClose && !stop && (reason.getCloseCode() != NORMAL_CLOSURE && reason.getCloseCode() != NO_STATUS_CODE)) {
                 LOG.info("Connection closed, reconnecting");
                 messageHold.incrementAndGet();
                 ws.close();
@@ -475,6 +480,8 @@ public class ClientApi extends Thread {
                 .addAllDests(destination.subList(1, destination.size()))
                 .setMaxHoldingSeconds(0)
                 .build();
+
+        if (!running) throw new IllegalStateException("Client is not running, cannot send messages.");
 
         final ArrayList<CompletableFuture<NKNClient.ReceivedMessage>> promises = new ArrayList<>();
         for (String ignored : destination) {

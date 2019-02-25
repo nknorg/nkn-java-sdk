@@ -83,7 +83,7 @@ public class ConnectionProvider {
         final int retries = maxRetries();
         Exception error = null;
 
-        InetSocketAddress[] nodes = null;
+        final InetSocketAddress[] nodes;
         synchronized (lock) {
             nodes = bootstrapNodes;
         }

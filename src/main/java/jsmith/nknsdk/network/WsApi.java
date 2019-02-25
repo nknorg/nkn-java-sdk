@@ -43,9 +43,11 @@ public class WsApi {
                 openListener.run();
             }
         } catch (DeploymentException de) {
-            LOG.error("WS#{} failed to connect: {}", myId, de);
+            LOG.warn("WS#{} failed to connect: {}", myId, de);
+            onClose(new CloseReason(CloseReason.CloseCodes.CLOSED_ABNORMALLY, "Crashed"));
         } catch (IOException ioe) {
             LOG.warn("WS#{}, IOE when connecting", myId, ioe);
+            onClose(new CloseReason(CloseReason.CloseCodes.CLOSED_ABNORMALLY, "Crashed"));
         }
     }
 
@@ -69,7 +71,7 @@ public class WsApi {
     }
 
     @OnClose
-    public void onClose(Session session, CloseReason reason) {
+    public void onClose(CloseReason reason) {
         LOG.debug("WS#{} closed, {}", myId, reason);
         this.session = null;
 
@@ -81,6 +83,7 @@ public class WsApi {
     @OnError
     public void onError(Throwable t) {
         LOG.warn("WS#{} On error: {}", myId, t);
+        onClose(new CloseReason(CloseReason.CloseCodes.CLOSED_ABNORMALLY, "Crashed"));
     }
 
     public void close() {
@@ -88,6 +91,7 @@ public class WsApi {
             if (session != null) session.close();
         } catch (IOException ioe) {
             LOG.warn("WS#{}, IOE when closing", myId);
+            onClose(new CloseReason(CloseReason.CloseCodes.CLOSED_ABNORMALLY, "Crashed"));
         }
     }
 
@@ -114,6 +118,7 @@ public class WsApi {
             session.getBasicRemote().sendBinary(ByteBuffer.wrap(bin.toByteArray()));
         } catch (IOException e) {
             LOG.warn("WS#{}, IOE when sending binary", myId, e);
+            onClose(new CloseReason(CloseReason.CloseCodes.CLOSED_ABNORMALLY, "Crashed"));
         }
     }
 
@@ -124,6 +129,7 @@ public class WsApi {
             session.getBasicRemote().sendText(str);
         } catch (IOException e) {
             LOG.warn("WS#{}, IOE when sending text", myId, e);
+            onClose(new CloseReason(CloseReason.CloseCodes.CLOSED_ABNORMALLY, "Crashed"));
         }
 
     }
