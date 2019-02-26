@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static javax.websocket.CloseReason.CloseCodes.NORMAL_CLOSURE;
@@ -117,7 +118,7 @@ public class ClientTunnel {
     private boolean setupWsConnection() {
         LOG.debug("Client is connecting to node ws:", directNodeWS);
         final boolean[] success = {true};
-        final Object closeLock = new Object();
+        final CountDownLatch closeLatch = new CountDownLatch(1);
         ws = new WsApi(directNodeWS);
 
         ws.setJsonMessageListener(json -> {
@@ -151,9 +152,7 @@ public class ClientTunnel {
                 }
 
                 messageHold.countDown();
-                synchronized (closeLock) {
-                    closeLock.notify();
-                }
+                closeLatch.countDown();
 
             } else {
 
@@ -164,9 +163,7 @@ public class ClientTunnel {
                             ws.close();
                             success[0] = false;
                         }
-                        synchronized (closeLock) {
-                            closeLock.notify();
-                        }
+                        closeLatch.countDown();
                         break;
                     }
                     case "updateSigChainBlockHash": {
@@ -216,7 +213,6 @@ public class ClientTunnel {
             setClientReq.put("Addr", identity.getFullIdentifier());
 
             ws.sendPacket(setClientReq);
-            System.out.println("Packet sent");
         });
         ws.setCLoseListener((reason) -> {
             if (shouldReconnect.get() && !cm.isScheduledStop() && (reason.getCloseCode() != NORMAL_CLOSURE && reason.getCloseCode() != NO_STATUS_CODE)) {
@@ -233,17 +229,15 @@ public class ClientTunnel {
                     cm.close();
                 }
                 messageHold.countDown();
-                synchronized (closeLock) {
-                    closeLock.notify();
-                }
+                closeLatch.countDown();
             }
         });
         ws.connect();
 
-        synchronized (closeLock) {
-            try {
-                closeLock.wait();
-            } catch (InterruptedException ignored) {}
+        try {
+            closeLatch.await();
+        } catch (InterruptedException ignored) {
+            return false;
         }
         return success[0];
     }
