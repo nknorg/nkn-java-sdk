@@ -1,7 +1,8 @@
 package jsmith.nknsdk.client;
 
 import com.google.protobuf.ByteString;
-import jsmith.nknsdk.network.ClientApi;
+import jsmith.nknsdk.network.ClientMessages;
+import jsmith.nknsdk.network.ClientTunnel;
 import jsmith.nknsdk.network.proto.Payloads;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,25 +22,25 @@ public class NKNClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(NKNClient.class);
 
-    private final Identity identity;
-    private final ClientApi clientApi;
+    private final ClientTunnel clientTunnel;
+    private ClientMessages clientMessages;
 
     public NKNClient(Identity identity) {
-        this.identity = identity;
-        this.clientApi = new ClientApi(identity);
+        this.clientTunnel = new ClientTunnel(identity);
+        this.clientMessages = clientTunnel.getAssociatedCM();
     }
 
     public NKNClient start() throws NKNClientException {
-        clientApi.startClient();
+        clientTunnel.startClient();
         return this;
     }
 
     public void close() {
-        clientApi.close();
+        clientMessages.close();
     }
 
     public NKNClient onNewMessage(Consumer<ReceivedMessage> listener) {
-        clientApi.onMessage((msg) -> {
+        clientMessages.onMessage((msg) -> {
             listener.accept(msg);
             return null;
         });
@@ -47,13 +48,13 @@ public class NKNClient {
     }
 
     public NKNClient onNewMessageWithReply(Function<ReceivedMessage, Object> listener) {
-        clientApi.onMessage(listener);
+        clientMessages.onMessage(listener);
         return this;
     }
 
     private boolean noAutomaticACKs = false;
     public void setNoAutomaticACKs(boolean noAutomaticACKs) {
-        clientApi.setNoAutomaticACKs(noAutomaticACKs);
+        clientMessages.setNoAutomaticACKs(noAutomaticACKs);
         this.noAutomaticACKs  = noAutomaticACKs;
     }
     public boolean isNoAutomaticACKs() {
@@ -70,7 +71,7 @@ public class NKNClient {
                 .build();
 
         LOG.debug("Sending text message: {}", message);
-        return clientApi.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, Payloads.PayloadType.TEXT, td.toByteString()).get(0);
+        return clientMessages.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, Payloads.PayloadType.TEXT, td.toByteString()).get(0);
     }
 
     public CompletableFuture<ReceivedMessage> sendBinaryMessageAsync(String destinationFullIdentifier, byte[] message) {
@@ -87,12 +88,12 @@ public class NKNClient {
 
     public CompletableFuture<ReceivedMessage> sendBinaryMessageAsync(String destinationFullIdentifier, ByteString replyTo, ByteString message) {
         LOG.debug("Sending binary message");
-        return clientApi.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, Payloads.PayloadType.BINARY, message).get(0);
+        return clientMessages.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, Payloads.PayloadType.BINARY, message).get(0);
     }
 
     public CompletableFuture<ReceivedMessage> sendMessageAsync(String destinationFullIdentifier, ByteString replyTo, Object message) {
         LOG.debug("Sending multicast message");
-        return clientApi.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, message).get(0);
+        return clientMessages.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, message).get(0);
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendTextMessageMulticastAsync(String[] destinationFullIdentifier, String message) {
@@ -133,7 +134,7 @@ public class NKNClient {
                 .build();
 
         LOG.debug("Sending multicast text message: {}", message);
-        return clientApi.sendMessageAsync(destinationFullIdentifier, replyTo, Payloads.PayloadType.TEXT, td.toByteString());
+        return clientMessages.sendMessageAsync(destinationFullIdentifier, replyTo, Payloads.PayloadType.TEXT, td.toByteString());
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, byte[] message) {
@@ -142,16 +143,16 @@ public class NKNClient {
 
     public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, ByteString message) {
         LOG.debug("Sending multicast binary message");
-        return clientApi.sendMessageAsync(destinationFullIdentifier, replyTo, Payloads.PayloadType.BINARY, message);
+        return clientMessages.sendMessageAsync(destinationFullIdentifier, replyTo, Payloads.PayloadType.BINARY, message);
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendMessageMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, Object message) {
         LOG.debug("Sending multicast message");
-        return clientApi.sendMessageAsync(destinationFullIdentifier, replyTo, message);
+        return clientMessages.sendMessageAsync(destinationFullIdentifier, replyTo, message);
     }
 
     public String getCurrentSigChainBlockHash() {
-        return clientApi.currentSigChainBlockHash();
+        return clientTunnel.currentSigChainBlockHash();
     }
 
     public static class ReceivedMessage {
