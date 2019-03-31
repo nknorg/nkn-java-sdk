@@ -30,7 +30,7 @@ val NknSdk by project {
 
 }
 
-val NknSdkExample by project(path("examples")) {
+val SimpleExample by project(path("examples")) {
 
     projectDependencies add { ProjectDependency(NknSdk, false) }
 
@@ -38,6 +38,33 @@ val NknSdkExample by project(path("examples")) {
     libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.0") } // Logging frontend
 
     mainClass set { "jsmith.nknsdk.examples.SimpleEx" }
+
+    runDirectory set { projectRoot.get() }
+
+}
+
+val MulticastExample by project(path("examples")) {
+
+    projectDependencies add { ProjectDependency(NknSdk, false) }
+
+    repositories add { Jitpack }
+    libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.0") } // Logging frontend
+
+    mainClass set { "jsmith.nknsdk.examples.MulticastEx" }
+
+    runDirectory set { projectRoot.get() }
+
+}
+
+
+val WalletExample by project(path("examples")) {
+
+    projectDependencies add { ProjectDependency(NknSdk, false) }
+
+    repositories add { Jitpack }
+    libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.0") } // Logging frontend
+
+    mainClass set { "jsmith.nknsdk.examples.WalletEx" }
 
     runDirectory set { projectRoot.get() }
 
