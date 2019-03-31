@@ -48,7 +48,7 @@ val MulticastExample by project(path("examples")) {
     projectDependencies add { ProjectDependency(NknSdk, false) }
 
     repositories add { Jitpack }
-    libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.0") } // Logging frontend
+    libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.1") } // Logging frontend
 
     mainClass set { "jsmith.nknsdk.examples.MulticastEx" }
 
@@ -62,7 +62,7 @@ val WalletExample by project(path("examples")) {
     projectDependencies add { ProjectDependency(NknSdk, false) }
 
     repositories add { Jitpack }
-    libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.0") } // Logging frontend
+    libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.1") } // Logging frontend
 
     mainClass set { "jsmith.nknsdk.examples.WalletEx" }
 
