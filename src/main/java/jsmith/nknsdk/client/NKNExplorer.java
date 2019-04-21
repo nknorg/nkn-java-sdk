@@ -5,6 +5,7 @@ import jsmith.nknsdk.network.HttpApi;
 import jsmith.nknsdk.utils.Base58;
 import jsmith.nknsdk.utils.Crypto;
 import jsmith.nknsdk.wallet.Asset;
+import jsmith.nknsdk.wallet.Wallet;
 import jsmith.nknsdk.wallet.WalletException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +34,14 @@ public class NKNExplorer {
 
 
     public static boolean isAddressValid(String address) {
-        if (address.length() != 34) return false;
         try {
 
             final byte[] addressBytes = Base58.decode(address);
-            if (addressBytes[0] != 53) return false;
+            if (addressBytes.length != Wallet.ADDRESS_PREFIX.length + 20 + 4) return false;
+
+            for (int i = 0; i < Wallet.ADDRESS_PREFIX.length; i++) {
+                if (addressBytes[i] != Wallet.ADDRESS_PREFIX[i]) return false;
+            }
 
             final byte[] sh = new byte[addressBytes.length - 4];
             System.arraycopy(addressBytes, 0, sh, 0, sh.length);

@@ -91,7 +91,7 @@ public class Crypto {
 
     public static byte[] sha256andSign(PrivateKey key, byte[] data) {
         try {
-            Signature ecdsaSign = Signature.getInstance("SHA256withECDSA", "BC");
+            Signature ecdsaSign = Signature.getInstance("SHA256withEd25519", "BC");
             ecdsaSign.initSign(key);
             ecdsaSign.update(data);
             final byte[] der = ecdsaSign.sign();
@@ -117,7 +117,7 @@ public class Crypto {
     }
     public static boolean sha256andVerify(PublicKey key, byte[] data, byte[] signature) {
         try {
-            Signature ecdsaVerify = Signature.getInstance("SHA256withECDSA", "BC");
+            Signature ecdsaVerify = Signature.getInstance("SHA256withEd25519", "BC");
             ecdsaVerify.initVerify(key);
             ecdsaVerify.update(data);
 
@@ -147,9 +147,9 @@ public class Crypto {
     }
 
     private static PublicKey getPublicKeyFromBytes(byte[] keyBytes) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
-        final ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec("prime256v1"); // prime256v1 // secp256r1
+        final ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec("secp256r1");
         final KeyFactory kf = KeyFactory.getInstance("ECDSA", "BC");
-        final ECNamedCurveSpec params = new ECNamedCurveSpec("prime256v1", spec.getCurve(), spec.getG(), spec.getN());
+        final ECNamedCurveSpec params = new ECNamedCurveSpec("secp256r1", spec.getCurve(), spec.getG(), spec.getN());
         final ECPoint point =  ECPointUtil.decodePoint(params.getCurve(), keyBytes);
         final ECPublicKeySpec pubKeySpec = new ECPublicKeySpec(point, params);
         return kf.generatePublic(pubKeySpec);

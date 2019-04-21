@@ -1,9 +1,6 @@
 package jsmith.nknsdk.examples;
 
-import com.darkyen.tproll.LogFunction;
 import com.darkyen.tproll.TPLogger;
-import com.darkyen.tproll.logfunctions.FileLogFunction;
-import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
 import jsmith.nknsdk.client.NKNExplorer;
 import jsmith.nknsdk.wallet.Wallet;
 import jsmith.nknsdk.wallet.WalletException;
@@ -33,7 +30,7 @@ public class WalletEx {
         }
 
 
-        final String address = "NTyV6Yq1NbYf2ggwMRvHNkLHnrVFaeeQVD"; // Change/add/remove any char and see if it is still valid
+        final String address = "NKNTknBaGnWXK7UB1KgnhaXrpJJc4qbCvwqs"; // Change/add/remove any char and see if it is still valid
         System.out.println("Address " + address + " is " + (NKNExplorer.isAddressValid(address) ? "" : "not ") + "valid");
 
 

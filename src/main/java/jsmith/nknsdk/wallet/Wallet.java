@@ -81,7 +81,7 @@ public class Wallet {
             final org.bouncycastle.jce.spec.ECParameterSpec ecbcSpec = new org.bouncycastle.jce.spec.ECParameterSpec(ecNamedSpec.getCurve(), ecNamedSpec.getG(), ecNamedSpec.getN());
             final KeyFactory kf = KeyFactory.getInstance("ECDSA", "BC");
 
-            final ECPrivateKeySpec ecPrivKeySpec = new ECPrivateKeySpec(new BigInteger(privateKey), ecSpec);
+            final ECPrivateKeySpec ecPrivKeySpec = new ECPrivateKeySpec(new BigInteger(1, privateKey), ecSpec);
             final BCECPrivateKey privKey = (BCECPrivateKey) kf.generatePrivate(ecPrivKeySpec);
             final ECPublicKeySpec ecPubKeySpec = new ECPublicKeySpec(ecNamedSpec.getG().multiply(privKey.getD()), ecbcSpec);
 
@@ -294,14 +294,15 @@ public class Wallet {
         return ((y[y.length - 1] % 2 == 0) ? "02" : "03") + x;
     }
 
+    public static final byte[] ADDRESS_PREFIX = new byte[]{ 0x02, (byte) 0xb8, 0x25 };
     public String getAddressAsString() {
         final byte[] s = getSignatureData();
 
         final byte[] r160 = r160(sha256(s));
 
-        final byte[] sh = new byte[r160.length + 1];
-        sh[0] = 53;
-        System.arraycopy(r160, 0, sh, 1, r160.length);
+        final byte[] sh = new byte[r160.length + ADDRESS_PREFIX.length];
+        System.arraycopy(ADDRESS_PREFIX, 0, sh, 0, ADDRESS_PREFIX.length);
+        System.arraycopy(r160, 0, sh, ADDRESS_PREFIX.length, r160.length);
 
         final byte[] x = doubleSha256(sh);
 
