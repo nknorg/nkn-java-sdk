@@ -2,14 +2,14 @@ syntax = "proto3";
 
 package jsmith.nknsdk.network.proto;
 
-enum PayloadType {
+enum MessagePayloadType {
   BINARY = 0;
   TEXT = 1;
   ACK = 2;
 }
 
-message Payload {
-  PayloadType type = 1;
+message MessagePayload {
+    MessagePayloadType type = 1;
   bytes pid = 2;
   bytes data = 3;
   bytes reply_to_pid = 4;

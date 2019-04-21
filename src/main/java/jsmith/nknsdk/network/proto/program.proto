@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package jsmith.nknsdk.network.proto;
+
+
+message Program {
+    bytes      code       = 1;
+    bytes      parameter  = 2;
+}
