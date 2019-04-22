@@ -25,7 +25,7 @@ val NknSdk by project {
     libraryDependencies add { dependency("com.github.Darkyenus:DaveWebb:v1.2") } // Rest API
     libraryDependencies add { dependency("com.google.protobuf:protobuf-java:3.6.1") } // Proto-buffer implementation
 
-    libraryDependencies add { dependency("org.bouncycastle:bcprov-jdk15on:1.60") } // Crypto
+    libraryDependencies add { dependency("org.bouncycastle:bcprov-jdk15on:1.61") } // Crypto
 
 
 }
