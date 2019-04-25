@@ -16,20 +16,33 @@ public class ConnectionProvider {
     private static final Object lock = new Object();
 
     private static InetSocketAddress[] bootstrapNodes = {
+
+            // Legacy
 //            new InetSocketAddress("cluster2-oregon.nkn.org", 30003),
 //            new InetSocketAddress("node00002.nkn.org", 30003),
 //            new InetSocketAddress("104.196.227.157", 30003),
 
+
+            // Local
 //            new InetSocketAddress("localhost", 30003),
 
-            new InetSocketAddress("testnet-seed-0001.nkn.org", 30003),
-            new InetSocketAddress("testnet-seed-0002.nkn.org", 30003),
-            new InetSocketAddress("testnet-seed-0003.nkn.org", 30003),
-            new InetSocketAddress("testnet-seed-0004.nkn.org", 30003),
-            new InetSocketAddress("testnet-seed-0005.nkn.org", 30003),
-            new InetSocketAddress("testnet-seed-0006.nkn.org", 30003),
-            new InetSocketAddress("testnet-seed-0007.nkn.org", 30003),
-            new InetSocketAddress("testnet-seed-0008.nkn.org", 30003)
+
+            // Testnet
+//            new InetSocketAddress("testnet-seed-0001.nkn.org", 30003),
+//            new InetSocketAddress("testnet-seed-0002.nkn.org", 30003),
+//            new InetSocketAddress("testnet-seed-0003.nkn.org", 30003),
+//            new InetSocketAddress("testnet-seed-0004.nkn.org", 30003),
+//            new InetSocketAddress("testnet-seed-0005.nkn.org", 30003),
+//            new InetSocketAddress("testnet-seed-0006.nkn.org", 30003),
+//            new InetSocketAddress("testnet-seed-0007.nkn.org", 30003),
+//            new InetSocketAddress("testnet-seed-0008.nkn.org", 30003)
+
+
+            // Devnet
+            new InetSocketAddress("35.205.185.106", 30003),
+            new InetSocketAddress("104.199.98.226", 30003),
+            new InetSocketAddress("35.204.159.254", 30003),
+            new InetSocketAddress("35.224.16.68", 30003)
     };
 
     private static int maxRetries = 3;
@@ -96,7 +109,7 @@ public class ConnectionProvider {
             } catch (Exception t) {
                 error = t;
                 LOG.warn("Attempt {} failed", i);
-                LOG.debug("Caused by: {}", t);
+                LOG.debug("Caused by:", t);
             }
             nextNodeI ++;
             if (nextNodeI >= nodes.length) nextNodeI -= nodes.length;

@@ -4,7 +4,7 @@ import com.darkyen.dave.Response;
 import com.darkyen.dave.ResponseTranslator;
 import com.darkyen.dave.Webb;
 import jsmith.nknsdk.wallet.Asset;
-import org.json.JSONArray;
+import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,28 +48,36 @@ public class HttpApi {
         return new JSONObject(response.getBody());
     }
 
-    public static BigDecimal getSumUTXO(InetSocketAddress server, String nknAddress, Asset asset) {
-        BigDecimal value = new BigDecimal("0");
-
-        final JSONArray arr = getListUTXO(server, nknAddress, asset);
-        if (arr == null) return value;
-        for (Object obj : arr) {
-            value = value.add(((JSONObject)obj).getBigDecimal("Value"));
-        }
-
-        return value;
-    }
-
-    public static JSONArray getListUTXO(InetSocketAddress server, String nknAddress, Asset asset) {
-
+    public static BigDecimal getBalance(InetSocketAddress server, String nknAddress, Asset asset) {
         final JSONObject params = new JSONObject();
         params.put("address", nknAddress);
-        params.put("assetid", asset.ID);
+//        params.put("assetid", asset.ID); // TODO: Is it possible to set assetid in devnet?
 
-        final JSONObject response = rpcCallJson(server, "getunspendoutput", params);
-        if (response.isNull("result")) return null;
+        final JSONObject response = rpcCallJson(server, "getbalancebyaddr", params);
 
-        return response.getJSONArray("result");
+        return response.getJSONObject("result").getBigDecimal("amount");
+    }
+
+    public static long getNonce(InetSocketAddress server, String nknAddress, Asset asset) {
+        final JSONObject params = new JSONObject();
+        params.put("address", nknAddress);
+//        params.put("assetid", asset.ID); // TODO: Is it possible to set assetid in devnet?
+
+        final JSONObject response = rpcCallJson(server, "getnoncebyaddr", params);
+
+        return response.getJSONObject("result").getLong("nonce");
+    }
+
+    public static void sendRawTransaction(InetSocketAddress server, byte[] tx) {
+        sendRawTransaction(server, Hex.toHexString(tx));
+    }
+    public static String sendRawTransaction(InetSocketAddress server, String tx) {
+        final JSONObject params = new JSONObject();
+        params.put("tx", tx);
+
+        final JSONObject response = rpcCallJson(server, "sendrawtransaction", params);
+
+        return response.has("error") ? null : response.getString("result");
     }
 
 }

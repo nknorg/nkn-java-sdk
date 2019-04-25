@@ -1,9 +1,6 @@
 package jsmith.nknsdk.examples;
 
-import com.darkyen.tproll.LogFunction;
 import com.darkyen.tproll.TPLogger;
-import com.darkyen.tproll.logfunctions.FileLogFunction;
-import com.darkyen.tproll.logfunctions.LogFunctionMultiplexer;
 import jsmith.nknsdk.client.Identity;
 import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
@@ -12,7 +9,6 @@ import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 

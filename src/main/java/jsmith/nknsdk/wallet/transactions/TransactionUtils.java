@@ -17,6 +17,12 @@ import java.util.Vector;
 public class TransactionUtils {
 
 
+    public static void generatePld(Asset asset, AssetTransfer transfer) {
+
+        final String amountStr = transfer.amount.multiply(new BigDecimal(asset.mul)).toBigInteger().toString(16);
+
+    }
+
     public static String genTxInputsAndOutputs(Asset asset, JSONArray utxoList, String walletProgramHash, AssetTransfer... targets) throws WalletException {
         BigDecimal targetValue = new BigDecimal(0);
         for (AssetTransfer target : targets) {

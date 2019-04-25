@@ -30,4 +30,11 @@ public class WalletUtils {
         return Hex.toHexString(programHash);
     }
 
+    public static byte[] getProgramHashAsByteArray(String addressStr) {
+        final byte[] address = Base58.decode(addressStr);
+        final byte[] programHash = new byte[address.length - 4 - Wallet.ADDRESS_PREFIX.length];
+        System.arraycopy(address, Wallet.ADDRESS_PREFIX.length, programHash, 0, programHash.length);
+        return programHash;
+    }
+
 }

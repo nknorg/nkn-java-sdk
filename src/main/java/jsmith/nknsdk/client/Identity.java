@@ -1,11 +1,8 @@
 package jsmith.nknsdk.client;
 
 import jsmith.nknsdk.wallet.Wallet;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.security.Security;
 
 /**
  *
@@ -13,10 +10,6 @@ import java.security.Security;
 public class Identity {
 
     private static final Logger LOG = LoggerFactory.getLogger(Identity.class);
-
-    static {
-        Security.addProvider(new BouncyCastleProvider());
-    }
 
 
     public final String name;
@@ -34,7 +27,7 @@ public class Identity {
     }
 
     public String getFullIdentifier() {
-        if (name == null) return wallet.getPublicKeyAsHexString();
+        if (name == null || name.isEmpty()) return wallet.getPublicKeyAsHexString();
         return name + "." + wallet.getPublicKeyAsHexString();
     }
 

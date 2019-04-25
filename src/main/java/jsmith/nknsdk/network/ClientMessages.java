@@ -26,7 +26,7 @@ public class ClientMessages extends Thread {
     private static final Logger LOG = LoggerFactory.getLogger(ClientMessages.class);
 
     private final ClientTunnel ct;
-    private boolean running = true;
+    private boolean running = false;
 
     private final int myId;
     public ClientMessages(ClientTunnel ct, int myId) {
@@ -47,6 +47,8 @@ public class ClientMessages extends Thread {
     }
 
     public void run() {
+        running = true;
+
         while (!scheduledStop.get() || (!jobs.isEmpty() && ct.shouldReconnect())) {
             long nextWake = -1;
             synchronized (jobLock) {

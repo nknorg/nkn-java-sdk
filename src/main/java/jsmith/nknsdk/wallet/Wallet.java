@@ -1,33 +1,32 @@
 package jsmith.nknsdk.wallet;
 
+import com.google.protobuf.ByteString;
 import jsmith.nknsdk.client.NKNExplorer;
 import jsmith.nknsdk.network.ConnectionProvider;
 import jsmith.nknsdk.network.HttpApi;
+import jsmith.nknsdk.network.proto.ProgramOuterClass;
+import jsmith.nknsdk.network.proto.Transaction;
+import jsmith.nknsdk.network.proto.Transactionpayload;
 import jsmith.nknsdk.utils.Base58;
-import jsmith.nknsdk.wallet.transactions.TransactionUtils;
-import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
-import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
-import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
-import org.bouncycastle.jce.spec.ECNamedCurveSpec;
-import org.bouncycastle.jce.spec.ECPublicKeySpec;
+import jsmith.nknsdk.utils.Crypto;
+import jsmith.nknsdk.utils.EncodeUtils;
+import net.i2p.crypto.eddsa.EdDSAPrivateKey;
+import net.i2p.crypto.eddsa.EdDSAPublicKey;
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
+import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
+import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
+import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
 import org.bouncycastle.util.encoders.Hex;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.security.*;
-import java.security.spec.ECGenParameterSpec;
-import java.security.spec.ECParameterSpec;
-import java.security.spec.ECPrivateKeySpec;
-import java.security.spec.InvalidKeySpecException;
+import java.security.KeyPair;
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 import static jsmith.nknsdk.utils.Crypto.*;
@@ -39,64 +38,43 @@ public class Wallet {
 
     private static final Logger LOG = LoggerFactory.getLogger(Wallet.class);
     private Wallet() {}
-    static {
-        Security.addProvider(new BouncyCastleProvider());
-    }
     private static final SecureRandom secureRandom = new SecureRandom();
 
     private KeyPair keyPair = null;
+    private byte[] seed;
     private String contractDataStr = "";
 
+    private final static EdDSAParameterSpec ED25519 = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519);
+
     public static Wallet createNew() {
+        byte[] seed = new byte[ED25519.getCurve().getField().getb() / 8];
+        secureRandom.nextBytes(seed);
+
+        return createFromSeed(seed);
+    }
+
+    public static Wallet createFromSeed(String seed) {
+        return createFromSeed(Hex.decode(seed));
+    }
+
+    public static Wallet createFromSeed(byte[] seed) {
         final Wallet w = new Wallet();
 
-        try {
-            ECGenParameterSpec ecGenSpec = new ECGenParameterSpec("secp256r1");
-            KeyPairGenerator g = KeyPairGenerator.getInstance("ECDSA", "BC");
-            g.initialize(ecGenSpec, secureRandom);
+        final EdDSAPrivateKeySpec privateSpec = new EdDSAPrivateKeySpec(seed, ED25519);
+        final EdDSAPublicKeySpec publicSpec = new EdDSAPublicKeySpec(privateSpec.getA(), ED25519);
 
-            w.keyPair = g.generateKeyPair();
+        w.keyPair = new KeyPair(
+                new EdDSAPublicKey(publicSpec),
+                new EdDSAPrivateKey(privateSpec)
+        );
 
-            w.contractDataStr = Hex.toHexString(w.getSignatureData()) + "00" + w.getProgramHashAsHexString();
+        w.seed = seed;
 
-        } catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchProviderException e) {
-            LOG.error("Couldn't generate wallet", e);
-            throw new WalletException.WalletCryptoError("Could not generate wallet", e);
-        }
+        w.getPublicKeyAsHexString();
+
+        w.contractDataStr = Hex.toHexString(w.getSignatureRedeem()) + "00" + w.getProgramHashAsHexString();
 
         return w;
-    }
-
-    public static Wallet createFromPrivateKey(String hexPrivateKey) {
-        return createFromPrivateKey(Hex.decode(hexPrivateKey));
-    }
-
-    public static Wallet createFromPrivateKey(byte[] privateKey) {
-        try {
-
-            final Wallet w = new Wallet();
-
-            final ECNamedCurveParameterSpec ecNamedSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
-            final ECParameterSpec ecSpec = new ECNamedCurveSpec("secp256r1", ecNamedSpec.getCurve(), ecNamedSpec.getG(), ecNamedSpec.getN());
-            final org.bouncycastle.jce.spec.ECParameterSpec ecbcSpec = new org.bouncycastle.jce.spec.ECParameterSpec(ecNamedSpec.getCurve(), ecNamedSpec.getG(), ecNamedSpec.getN());
-            final KeyFactory kf = KeyFactory.getInstance("ECDSA", "BC");
-
-            final ECPrivateKeySpec ecPrivKeySpec = new ECPrivateKeySpec(new BigInteger(1, privateKey), ecSpec);
-            final BCECPrivateKey privKey = (BCECPrivateKey) kf.generatePrivate(ecPrivKeySpec);
-            final ECPublicKeySpec ecPubKeySpec = new ECPublicKeySpec(ecNamedSpec.getG().multiply(privKey.getD()), ecbcSpec);
-
-            w.keyPair = new KeyPair(
-                    kf.generatePublic(ecPubKeySpec),
-                    privKey
-            );
-
-            w.contractDataStr = Hex.toHexString(w.getSignatureData()) + "00" + w.getProgramHashAsHexString();
-
-            return w;
-
-        } catch (InvalidKeySpecException | NoSuchProviderException | NoSuchAlgorithmException e) {
-            throw new WalletException.WalletCryptoError("Creating wallet from private key failed", e);
-        }
     }
 
     private static final String VERSION = "0.0.1";
@@ -144,9 +122,9 @@ public class Wallet {
             final byte[] masterKeyEnc = Hex.decode(json.getString("MasterKey"));
 
             final byte[] masterKey = aesDecryptAligned(masterKeyEnc, passwd, iv);
-            final byte[] privateKey = aesDecryptAligned(Hex.decode(json.getString("PrivateKeyEncrypted")), masterKey, iv);
+            final byte[] seed = aesDecryptAligned(Hex.decode(json.getString("SeedEncrypted")), masterKey, iv);
 
-            final Wallet w = createFromPrivateKey(privateKey);
+            final Wallet w = createFromSeed(seed);
 
             if (json.has("ContractData")) w.contractDataStr = json.getString("ContractData");
 
@@ -166,61 +144,61 @@ public class Wallet {
     }
 
     public String transferTo(String toAddress, BigDecimal amount) throws WalletException {
-        return transferTo(null, toAddress, amount);
+        return transferTo(toAddress, amount, BigDecimal.ZERO);
     }
-    public String transferTo(String txDescription, String toAddress, BigDecimal amount) throws WalletException {
-        return transferTo(txDescription, new AssetTransfer(toAddress, amount));
-    }
-    public String transferTo(String txDescription, AssetTransfer ... transfers) throws WalletException {
-        return transferTo(txDescription, Asset.T_NKN, transfers);
-    }
-    public String transferTo(Asset asset, AssetTransfer ... transfers) throws WalletException {
-        return transferTo(null, asset, transfers);
-    }
-    public String transferTo(String txDescription, Asset asset, AssetTransfer ... transfers) throws WalletException {
-        JSONArray utxoList;
+
+    public String transferTo(String toAddress, BigDecimal amount, BigDecimal fee) throws WalletException {
+        if (!NKNExplorer.isAddressValid(toAddress)) throw new WalletException("Transaction failed: Target address is not valid");
+        long nonce;
 
         try {
-            utxoList = ConnectionProvider.attempt((node) -> {
-                final JSONArray list = HttpApi.getListUTXO(node, getAddressAsString(), asset);
-                if (list == null) throw new WalletException("Received 'null' from network, instead of valid UTXO list");
-                return list;
-            });
+            nonce = ConnectionProvider.attempt((node) -> HttpApi.getNonce(node, getAddressAsString(), Asset.T_NKN));
         } catch (Throwable t) {
             if (t instanceof WalletException) throw (WalletException) t;
-            throw new WalletException("Submitting a transaction failed", t);
+            throw new WalletException("Transaction failed: Failed to query nonce", t);
         }
 
+        final Transactionpayload.TransferAsset.Builder txAsset = Transactionpayload.TransferAsset.newBuilder();
+        txAsset.setSender(ByteString.copyFrom(getProgramHashAsByteArray()));
+        txAsset.setRecipient(ByteString.copyFrom(WalletUtils.getProgramHashAsByteArray(toAddress)));
+        txAsset.setAmount(amount.multiply(new BigDecimal(Asset.T_NKN.mul)).longValue());
 
-        final String inputsAndOutputsStr = TransactionUtils.genTxInputsAndOutputs(
-                asset,
-                utxoList,
-                getProgramHashAsHexString(),
-                transfers
-        );
+        final Transactionpayload.TransactionPayload.Builder txPayload = Transactionpayload.TransactionPayload.newBuilder();
+        txPayload.setType(Transactionpayload.TransactionPayloadType.TransferAssetType);
+        txPayload.setData(txAsset.build().toByteString());
 
-        final String baseTransfer = TransactionUtils.rawBaseTransfer(txDescription, inputsAndOutputsStr);
-        final String signature = WalletUtils.transferSignature(baseTransfer, keyPair.getPrivate());
+        final Transaction.UnsignedTx.Builder unsignedTx = Transaction.UnsignedTx.newBuilder();
+        unsignedTx.setPayload(txPayload.build());
+        unsignedTx.setNonce(nonce);
+        unsignedTx.setFee(fee.multiply(new BigDecimal(Asset.T_NKN.mul)).longValue());
 
-        final String signatureRedeem = "23" + "21" + getPublicKeyAsHexString() + "ac";
-        final String rawTxString = baseTransfer + signature + signatureRedeem;
+        final Transaction.MsgTx.Builder msgTxBuilder = Transaction.MsgTx.newBuilder();
+        msgTxBuilder.setUnsignedTx(unsignedTx.build());
 
-        final JSONObject params = new JSONObject();
-        params.put("tx", rawTxString);
 
+        ByteString txnBuffer = ByteString.EMPTY;
+
+        txnBuffer = txnBuffer.concat(EncodeUtils.encodeUint32(txPayload.getTypeValue()));
+        txnBuffer = txnBuffer.concat(EncodeUtils.encodeBytes(txPayload.getData()));
+        txnBuffer = txnBuffer.concat(EncodeUtils.encodeUint64(unsignedTx.getNonce()));
+        txnBuffer = txnBuffer.concat(EncodeUtils.encodeUint64(unsignedTx.getFee()));
+        txnBuffer = txnBuffer.concat(EncodeUtils.encodeBytes(unsignedTx.getAttributes()));
+
+        final byte[] sig = Crypto.sha256andSign(keyPair.getPrivate(), txnBuffer.toByteArray());
+        final ProgramOuterClass.Program.Builder programBuilder = ProgramOuterClass.Program.newBuilder();
+        programBuilder.setCode(ByteString.copyFrom(getSignatureRedeem()));
+        programBuilder.setParameter(ByteString.copyFrom(new byte[]{0x40}).concat(ByteString.copyFrom(sig)));
+        msgTxBuilder.addPrograms(programBuilder.build());
+
+
+        final String tx = Hex.toHexString(msgTxBuilder.build().toByteArray());
         try {
-            return ConnectionProvider.attempt((node) -> {
-                final JSONObject result = HttpApi.rpcCallJson(node, "sendrawtransaction", params);
-                if (result.has("result") && result.getString("result") != null) {
-                    return result.getString("result");
-                } else {
-                    throw new WalletException("Invalid response to query");
-                }
-            });
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.sendRawTransaction(bootstrapNode, tx));
         } catch (Exception t) {
             if (t instanceof WalletException) throw (WalletException) t;
-            throw new WalletException("Submitting a transaction failed", t);
+            throw new WalletException("Failed to send transaction", t);
         }
+
     }
 
     public void save(File file, String password) throws WalletException {
@@ -253,15 +231,9 @@ public class Wallet {
         json.put("IV", Hex.toHexString(iv));
         json.put("MasterKey", Hex.toHexString(aesEncryptAligned(masterKey, passwd, iv)));
 
-        final BCECPrivateKey privateKey = (BCECPrivateKey) keyPair.getPrivate();
-        final byte[] dArr = privateKey.getD().toByteArray();
-
-        final byte[] dArrTrimmed = new byte[32];
-        System.arraycopy(dArr, dArr.length == 32 ? 0 : 1, dArrTrimmed, 0, dArrTrimmed.length);
-
-        json.put("PrivateKeyEncrypted",
+        json.put("SeedEncrypted",
                 Hex.toHexString(
-                        aesEncryptAligned(dArrTrimmed, masterKey, iv)
+                        aesEncryptAligned(seed, masterKey, iv)
                 )
         );
 
@@ -286,17 +258,16 @@ public class Wallet {
     public String getPublicKeyAsHexString() {
         assert keyPair != null : "KeyPair is null, this should never happen";
 
-        final BCECPublicKey pub = (BCECPublicKey)keyPair.getPublic();
+        final byte[] encodedWithPrefix = keyPair.getPublic().getEncoded();
+        final byte[] encoded = new byte[32];
+        System.arraycopy(encodedWithPrefix, encodedWithPrefix.length - encoded.length - 1, encoded, 0, encoded.length);
 
-        final String x = Hex.toHexString(pub.getQ().getAffineXCoord().getEncoded());
-        final byte[] y = pub.getQ().getAffineYCoord().getEncoded();
-
-        return ((y[y.length - 1] % 2 == 0) ? "02" : "03") + x;
+        return Hex.toHexString(encoded);
     }
 
     public static final byte[] ADDRESS_PREFIX = new byte[]{ 0x02, (byte) 0xb8, 0x25 };
     public String getAddressAsString() {
-        final byte[] s = getSignatureData();
+        final byte[] s = getSignatureRedeem();
 
         final byte[] r160 = r160(sha256(s));
 
@@ -317,24 +288,29 @@ public class Wallet {
         return WalletUtils.getProgramHashAsHexString(getAddressAsString());
     }
 
+    public byte[] getProgramHashAsByteArray() {
+        return WalletUtils.getProgramHashAsByteArray(getAddressAsString());
+    }
+
     public String getContractDataAsString() {
         return contractDataStr;
     }
 
-    private byte[] getSignatureData() {
+    private byte[] getSignatureRedeem() {
         assert keyPair != null : "KeyPair is null, this should never happen";
 
-        final BCECPublicKey pub = (BCECPublicKey)keyPair.getPublic();
+        final byte[] encodedWithPrefix = keyPair.getPublic().getEncoded();
+        final byte[] encoded = new byte[32];
+        System.arraycopy(encodedWithPrefix, encodedWithPrefix.length - encoded.length, encoded, 0, encoded.length);
 
-        final byte[] xEnc = pub.getQ().getAffineXCoord().getEncoded();
-        final byte[] yEnc = pub.getQ().getAffineYCoord().getEncoded();
-        final byte[] s = new byte[xEnc.length + 3];
-        s[0] = 0x21;
-        s[s.length - 1] = (byte) 0xAC;
-        s[1] = (byte) ((yEnc[yEnc.length - 1] % 2 == 0) ? 0x2 : 0x3);
-        System.arraycopy(xEnc, 0, s, 2, xEnc.length);
+        final byte[] redeem = new byte[2 + encoded.length + 1];
 
-        return s;
+        redeem[0] = 0x21;
+        redeem[1] = 0x04;
+        redeem[redeem.length - 1] = (byte) 0xAC;
+        System.arraycopy(encoded, 0, redeem, 2, encoded.length);
+
+        return redeem;
     }
 
 }
