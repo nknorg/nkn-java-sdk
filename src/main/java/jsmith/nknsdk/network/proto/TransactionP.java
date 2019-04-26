@@ -3,8 +3,8 @@
 
 package jsmith.nknsdk.network.proto;
 
-public final class Transaction {
-  private Transaction() {}
+public final class TransactionP {
+  private TransactionP() {}
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistryLite registry) {
   }
@@ -25,11 +25,11 @@ public final class Transaction {
     /**
      * <code>.jsmith.nknsdk.network.proto.TransactionPayload payload = 1;</code>
      */
-    jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload getPayload();
+    TransactionpayloadP.TransactionPayload getPayload();
     /**
      * <code>.jsmith.nknsdk.network.proto.TransactionPayload payload = 1;</code>
      */
-    jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayloadOrBuilder getPayloadOrBuilder();
+    TransactionpayloadP.TransactionPayloadOrBuilder getPayloadOrBuilder();
 
     /**
      * <code>uint64 nonce = 2;</code>
@@ -89,11 +89,11 @@ public final class Transaction {
               done = true;
               break;
             case 10: {
-              jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload.Builder subBuilder = null;
+              TransactionpayloadP.TransactionPayload.Builder subBuilder = null;
               if (payload_ != null) {
                 subBuilder = payload_.toBuilder();
               }
-              payload_ = input.readMessage(jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload.parser(), extensionRegistry);
+              payload_ = input.readMessage(TransactionpayloadP.TransactionPayload.parser(), extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(payload_);
                 payload_ = subBuilder.buildPartial();
@@ -137,19 +137,19 @@ public final class Transaction {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return jsmith.nknsdk.network.proto.Transaction.internal_static_jsmith_nknsdk_network_proto_UnsignedTx_descriptor;
+      return TransactionP.internal_static_jsmith_nknsdk_network_proto_UnsignedTx_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return jsmith.nknsdk.network.proto.Transaction.internal_static_jsmith_nknsdk_network_proto_UnsignedTx_fieldAccessorTable
+      return TransactionP.internal_static_jsmith_nknsdk_network_proto_UnsignedTx_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              jsmith.nknsdk.network.proto.Transaction.UnsignedTx.class, jsmith.nknsdk.network.proto.Transaction.UnsignedTx.Builder.class);
+              TransactionP.UnsignedTx.class, TransactionP.UnsignedTx.Builder.class);
     }
 
     public static final int PAYLOAD_FIELD_NUMBER = 1;
-    private jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload payload_;
+    private TransactionpayloadP.TransactionPayload payload_;
     /**
      * <code>.jsmith.nknsdk.network.proto.TransactionPayload payload = 1;</code>
      */
@@ -159,13 +159,13 @@ public final class Transaction {
     /**
      * <code>.jsmith.nknsdk.network.proto.TransactionPayload payload = 1;</code>
      */
-    public jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload getPayload() {
-      return payload_ == null ? jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload.getDefaultInstance() : payload_;
+    public TransactionpayloadP.TransactionPayload getPayload() {
+      return payload_ == null ? TransactionpayloadP.TransactionPayload.getDefaultInstance() : payload_;
     }
     /**
      * <code>.jsmith.nknsdk.network.proto.TransactionPayload payload = 1;</code>
      */
-    public jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayloadOrBuilder getPayloadOrBuilder() {
+    public TransactionpayloadP.TransactionPayloadOrBuilder getPayloadOrBuilder() {
       return getPayload();
     }
 
@@ -257,10 +257,10 @@ public final class Transaction {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof jsmith.nknsdk.network.proto.Transaction.UnsignedTx)) {
+      if (!(obj instanceof TransactionP.UnsignedTx)) {
         return super.equals(obj);
       }
-      jsmith.nknsdk.network.proto.Transaction.UnsignedTx other = (jsmith.nknsdk.network.proto.Transaction.UnsignedTx) obj;
+      TransactionP.UnsignedTx other = (TransactionP.UnsignedTx) obj;
 
       boolean result = true;
       result = result && (hasPayload() == other.hasPayload());
@@ -302,69 +302,69 @@ public final class Transaction {
       return hash;
     }
 
-    public static jsmith.nknsdk.network.proto.Transaction.UnsignedTx parseFrom(
+    public static TransactionP.UnsignedTx parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.UnsignedTx parseFrom(
+    public static TransactionP.UnsignedTx parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.UnsignedTx parseFrom(
+    public static TransactionP.UnsignedTx parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.UnsignedTx parseFrom(
+    public static TransactionP.UnsignedTx parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.UnsignedTx parseFrom(byte[] data)
+    public static TransactionP.UnsignedTx parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.UnsignedTx parseFrom(
+    public static TransactionP.UnsignedTx parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.UnsignedTx parseFrom(java.io.InputStream input)
+    public static TransactionP.UnsignedTx parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.UnsignedTx parseFrom(
+    public static TransactionP.UnsignedTx parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.UnsignedTx parseDelimitedFrom(java.io.InputStream input)
+    public static TransactionP.UnsignedTx parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.UnsignedTx parseDelimitedFrom(
+    public static TransactionP.UnsignedTx parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.UnsignedTx parseFrom(
+    public static TransactionP.UnsignedTx parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.UnsignedTx parseFrom(
+    public static TransactionP.UnsignedTx parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -377,7 +377,7 @@ public final class Transaction {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(jsmith.nknsdk.network.proto.Transaction.UnsignedTx prototype) {
+    public static Builder newBuilder(TransactionP.UnsignedTx prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -398,18 +398,18 @@ public final class Transaction {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:jsmith.nknsdk.network.proto.UnsignedTx)
-        jsmith.nknsdk.network.proto.Transaction.UnsignedTxOrBuilder {
+        TransactionP.UnsignedTxOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return jsmith.nknsdk.network.proto.Transaction.internal_static_jsmith_nknsdk_network_proto_UnsignedTx_descriptor;
+        return TransactionP.internal_static_jsmith_nknsdk_network_proto_UnsignedTx_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return jsmith.nknsdk.network.proto.Transaction.internal_static_jsmith_nknsdk_network_proto_UnsignedTx_fieldAccessorTable
+        return TransactionP.internal_static_jsmith_nknsdk_network_proto_UnsignedTx_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                jsmith.nknsdk.network.proto.Transaction.UnsignedTx.class, jsmith.nknsdk.network.proto.Transaction.UnsignedTx.Builder.class);
+                TransactionP.UnsignedTx.class, TransactionP.UnsignedTx.Builder.class);
       }
 
       // Construct using jsmith.nknsdk.network.proto.Transaction.UnsignedTx.newBuilder()
@@ -448,17 +448,17 @@ public final class Transaction {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return jsmith.nknsdk.network.proto.Transaction.internal_static_jsmith_nknsdk_network_proto_UnsignedTx_descriptor;
+        return TransactionP.internal_static_jsmith_nknsdk_network_proto_UnsignedTx_descriptor;
       }
 
       @java.lang.Override
-      public jsmith.nknsdk.network.proto.Transaction.UnsignedTx getDefaultInstanceForType() {
-        return jsmith.nknsdk.network.proto.Transaction.UnsignedTx.getDefaultInstance();
+      public TransactionP.UnsignedTx getDefaultInstanceForType() {
+        return TransactionP.UnsignedTx.getDefaultInstance();
       }
 
       @java.lang.Override
-      public jsmith.nknsdk.network.proto.Transaction.UnsignedTx build() {
-        jsmith.nknsdk.network.proto.Transaction.UnsignedTx result = buildPartial();
+      public TransactionP.UnsignedTx build() {
+        TransactionP.UnsignedTx result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -466,8 +466,8 @@ public final class Transaction {
       }
 
       @java.lang.Override
-      public jsmith.nknsdk.network.proto.Transaction.UnsignedTx buildPartial() {
-        jsmith.nknsdk.network.proto.Transaction.UnsignedTx result = new jsmith.nknsdk.network.proto.Transaction.UnsignedTx(this);
+      public TransactionP.UnsignedTx buildPartial() {
+        TransactionP.UnsignedTx result = new TransactionP.UnsignedTx(this);
         if (payloadBuilder_ == null) {
           result.payload_ = payload_;
         } else {
@@ -514,16 +514,16 @@ public final class Transaction {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof jsmith.nknsdk.network.proto.Transaction.UnsignedTx) {
-          return mergeFrom((jsmith.nknsdk.network.proto.Transaction.UnsignedTx)other);
+        if (other instanceof TransactionP.UnsignedTx) {
+          return mergeFrom((TransactionP.UnsignedTx)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(jsmith.nknsdk.network.proto.Transaction.UnsignedTx other) {
-        if (other == jsmith.nknsdk.network.proto.Transaction.UnsignedTx.getDefaultInstance()) return this;
+      public Builder mergeFrom(TransactionP.UnsignedTx other) {
+        if (other == TransactionP.UnsignedTx.getDefaultInstance()) return this;
         if (other.hasPayload()) {
           mergePayload(other.getPayload());
         }
@@ -551,11 +551,11 @@ public final class Transaction {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        jsmith.nknsdk.network.proto.Transaction.UnsignedTx parsedMessage = null;
+        TransactionP.UnsignedTx parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (jsmith.nknsdk.network.proto.Transaction.UnsignedTx) e.getUnfinishedMessage();
+          parsedMessage = (TransactionP.UnsignedTx) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -565,9 +565,9 @@ public final class Transaction {
         return this;
       }
 
-      private jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload payload_ = null;
+      private TransactionpayloadP.TransactionPayload payload_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload, jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload.Builder, jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayloadOrBuilder> payloadBuilder_;
+          TransactionpayloadP.TransactionPayload, TransactionpayloadP.TransactionPayload.Builder, TransactionpayloadP.TransactionPayloadOrBuilder> payloadBuilder_;
       /**
        * <code>.jsmith.nknsdk.network.proto.TransactionPayload payload = 1;</code>
        */
@@ -577,9 +577,9 @@ public final class Transaction {
       /**
        * <code>.jsmith.nknsdk.network.proto.TransactionPayload payload = 1;</code>
        */
-      public jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload getPayload() {
+      public TransactionpayloadP.TransactionPayload getPayload() {
         if (payloadBuilder_ == null) {
-          return payload_ == null ? jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload.getDefaultInstance() : payload_;
+          return payload_ == null ? TransactionpayloadP.TransactionPayload.getDefaultInstance() : payload_;
         } else {
           return payloadBuilder_.getMessage();
         }
@@ -587,7 +587,7 @@ public final class Transaction {
       /**
        * <code>.jsmith.nknsdk.network.proto.TransactionPayload payload = 1;</code>
        */
-      public Builder setPayload(jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload value) {
+      public Builder setPayload(TransactionpayloadP.TransactionPayload value) {
         if (payloadBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -604,7 +604,7 @@ public final class Transaction {
        * <code>.jsmith.nknsdk.network.proto.TransactionPayload payload = 1;</code>
        */
       public Builder setPayload(
-          jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload.Builder builderForValue) {
+          TransactionpayloadP.TransactionPayload.Builder builderForValue) {
         if (payloadBuilder_ == null) {
           payload_ = builderForValue.build();
           onChanged();
@@ -617,11 +617,11 @@ public final class Transaction {
       /**
        * <code>.jsmith.nknsdk.network.proto.TransactionPayload payload = 1;</code>
        */
-      public Builder mergePayload(jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload value) {
+      public Builder mergePayload(TransactionpayloadP.TransactionPayload value) {
         if (payloadBuilder_ == null) {
           if (payload_ != null) {
             payload_ =
-              jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload.newBuilder(payload_).mergeFrom(value).buildPartial();
+              TransactionpayloadP.TransactionPayload.newBuilder(payload_).mergeFrom(value).buildPartial();
           } else {
             payload_ = value;
           }
@@ -649,7 +649,7 @@ public final class Transaction {
       /**
        * <code>.jsmith.nknsdk.network.proto.TransactionPayload payload = 1;</code>
        */
-      public jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload.Builder getPayloadBuilder() {
+      public TransactionpayloadP.TransactionPayload.Builder getPayloadBuilder() {
         
         onChanged();
         return getPayloadFieldBuilder().getBuilder();
@@ -657,23 +657,23 @@ public final class Transaction {
       /**
        * <code>.jsmith.nknsdk.network.proto.TransactionPayload payload = 1;</code>
        */
-      public jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayloadOrBuilder getPayloadOrBuilder() {
+      public TransactionpayloadP.TransactionPayloadOrBuilder getPayloadOrBuilder() {
         if (payloadBuilder_ != null) {
           return payloadBuilder_.getMessageOrBuilder();
         } else {
           return payload_ == null ?
-              jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload.getDefaultInstance() : payload_;
+              TransactionpayloadP.TransactionPayload.getDefaultInstance() : payload_;
         }
       }
       /**
        * <code>.jsmith.nknsdk.network.proto.TransactionPayload payload = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload, jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload.Builder, jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayloadOrBuilder> 
+          TransactionpayloadP.TransactionPayload, TransactionpayloadP.TransactionPayload.Builder, TransactionpayloadP.TransactionPayloadOrBuilder>
           getPayloadFieldBuilder() {
         if (payloadBuilder_ == null) {
           payloadBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload, jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayload.Builder, jsmith.nknsdk.network.proto.Transactionpayload.TransactionPayloadOrBuilder>(
+              TransactionpayloadP.TransactionPayload, TransactionpayloadP.TransactionPayload.Builder, TransactionpayloadP.TransactionPayloadOrBuilder>(
                   getPayload(),
                   getParentForChildren(),
                   isClean());
@@ -779,12 +779,12 @@ public final class Transaction {
     }
 
     // @@protoc_insertion_point(class_scope:jsmith.nknsdk.network.proto.UnsignedTx)
-    private static final jsmith.nknsdk.network.proto.Transaction.UnsignedTx DEFAULT_INSTANCE;
+    private static final TransactionP.UnsignedTx DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new jsmith.nknsdk.network.proto.Transaction.UnsignedTx();
+      DEFAULT_INSTANCE = new TransactionP.UnsignedTx();
     }
 
-    public static jsmith.nknsdk.network.proto.Transaction.UnsignedTx getDefaultInstance() {
+    public static TransactionP.UnsignedTx getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -809,7 +809,7 @@ public final class Transaction {
     }
 
     @java.lang.Override
-    public jsmith.nknsdk.network.proto.Transaction.UnsignedTx getDefaultInstanceForType() {
+    public TransactionP.UnsignedTx getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -826,21 +826,21 @@ public final class Transaction {
     /**
      * <code>.jsmith.nknsdk.network.proto.UnsignedTx unsigned_tx = 1;</code>
      */
-    jsmith.nknsdk.network.proto.Transaction.UnsignedTx getUnsignedTx();
+    TransactionP.UnsignedTx getUnsignedTx();
     /**
      * <code>.jsmith.nknsdk.network.proto.UnsignedTx unsigned_tx = 1;</code>
      */
-    jsmith.nknsdk.network.proto.Transaction.UnsignedTxOrBuilder getUnsignedTxOrBuilder();
+    TransactionP.UnsignedTxOrBuilder getUnsignedTxOrBuilder();
 
     /**
      * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
      */
-    java.util.List<jsmith.nknsdk.network.proto.ProgramOuterClass.Program> 
+    java.util.List<PorgramP.Program>
         getProgramsList();
     /**
      * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
      */
-    jsmith.nknsdk.network.proto.ProgramOuterClass.Program getPrograms(int index);
+    PorgramP.Program getPrograms(int index);
     /**
      * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
      */
@@ -848,12 +848,12 @@ public final class Transaction {
     /**
      * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
      */
-    java.util.List<? extends jsmith.nknsdk.network.proto.ProgramOuterClass.ProgramOrBuilder> 
+    java.util.List<? extends PorgramP.ProgramOrBuilder>
         getProgramsOrBuilderList();
     /**
      * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
      */
-    jsmith.nknsdk.network.proto.ProgramOuterClass.ProgramOrBuilder getProgramsOrBuilder(
+    PorgramP.ProgramOrBuilder getProgramsOrBuilder(
         int index);
   }
   /**
@@ -897,11 +897,11 @@ public final class Transaction {
               done = true;
               break;
             case 10: {
-              jsmith.nknsdk.network.proto.Transaction.UnsignedTx.Builder subBuilder = null;
+              TransactionP.UnsignedTx.Builder subBuilder = null;
               if (unsignedTx_ != null) {
                 subBuilder = unsignedTx_.toBuilder();
               }
-              unsignedTx_ = input.readMessage(jsmith.nknsdk.network.proto.Transaction.UnsignedTx.parser(), extensionRegistry);
+              unsignedTx_ = input.readMessage(TransactionP.UnsignedTx.parser(), extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(unsignedTx_);
                 unsignedTx_ = subBuilder.buildPartial();
@@ -911,11 +911,11 @@ public final class Transaction {
             }
             case 18: {
               if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-                programs_ = new java.util.ArrayList<jsmith.nknsdk.network.proto.ProgramOuterClass.Program>();
+                programs_ = new java.util.ArrayList<PorgramP.Program>();
                 mutable_bitField0_ |= 0x00000002;
               }
               programs_.add(
-                  input.readMessage(jsmith.nknsdk.network.proto.ProgramOuterClass.Program.parser(), extensionRegistry));
+                  input.readMessage(PorgramP.Program.parser(), extensionRegistry));
               break;
             }
             default: {
@@ -942,20 +942,20 @@ public final class Transaction {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return jsmith.nknsdk.network.proto.Transaction.internal_static_jsmith_nknsdk_network_proto_MsgTx_descriptor;
+      return TransactionP.internal_static_jsmith_nknsdk_network_proto_MsgTx_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return jsmith.nknsdk.network.proto.Transaction.internal_static_jsmith_nknsdk_network_proto_MsgTx_fieldAccessorTable
+      return TransactionP.internal_static_jsmith_nknsdk_network_proto_MsgTx_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              jsmith.nknsdk.network.proto.Transaction.MsgTx.class, jsmith.nknsdk.network.proto.Transaction.MsgTx.Builder.class);
+              TransactionP.MsgTx.class, TransactionP.MsgTx.Builder.class);
     }
 
     private int bitField0_;
     public static final int UNSIGNED_TX_FIELD_NUMBER = 1;
-    private jsmith.nknsdk.network.proto.Transaction.UnsignedTx unsignedTx_;
+    private TransactionP.UnsignedTx unsignedTx_;
     /**
      * <code>.jsmith.nknsdk.network.proto.UnsignedTx unsigned_tx = 1;</code>
      */
@@ -965,28 +965,28 @@ public final class Transaction {
     /**
      * <code>.jsmith.nknsdk.network.proto.UnsignedTx unsigned_tx = 1;</code>
      */
-    public jsmith.nknsdk.network.proto.Transaction.UnsignedTx getUnsignedTx() {
-      return unsignedTx_ == null ? jsmith.nknsdk.network.proto.Transaction.UnsignedTx.getDefaultInstance() : unsignedTx_;
+    public TransactionP.UnsignedTx getUnsignedTx() {
+      return unsignedTx_ == null ? TransactionP.UnsignedTx.getDefaultInstance() : unsignedTx_;
     }
     /**
      * <code>.jsmith.nknsdk.network.proto.UnsignedTx unsigned_tx = 1;</code>
      */
-    public jsmith.nknsdk.network.proto.Transaction.UnsignedTxOrBuilder getUnsignedTxOrBuilder() {
+    public TransactionP.UnsignedTxOrBuilder getUnsignedTxOrBuilder() {
       return getUnsignedTx();
     }
 
     public static final int PROGRAMS_FIELD_NUMBER = 2;
-    private java.util.List<jsmith.nknsdk.network.proto.ProgramOuterClass.Program> programs_;
+    private java.util.List<PorgramP.Program> programs_;
     /**
      * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
      */
-    public java.util.List<jsmith.nknsdk.network.proto.ProgramOuterClass.Program> getProgramsList() {
+    public java.util.List<PorgramP.Program> getProgramsList() {
       return programs_;
     }
     /**
      * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
      */
-    public java.util.List<? extends jsmith.nknsdk.network.proto.ProgramOuterClass.ProgramOrBuilder> 
+    public java.util.List<? extends PorgramP.ProgramOrBuilder>
         getProgramsOrBuilderList() {
       return programs_;
     }
@@ -999,13 +999,13 @@ public final class Transaction {
     /**
      * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
      */
-    public jsmith.nknsdk.network.proto.ProgramOuterClass.Program getPrograms(int index) {
+    public PorgramP.Program getPrograms(int index) {
       return programs_.get(index);
     }
     /**
      * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
      */
-    public jsmith.nknsdk.network.proto.ProgramOuterClass.ProgramOrBuilder getProgramsOrBuilder(
+    public PorgramP.ProgramOrBuilder getProgramsOrBuilder(
         int index) {
       return programs_.get(index);
     }
@@ -1057,10 +1057,10 @@ public final class Transaction {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof jsmith.nknsdk.network.proto.Transaction.MsgTx)) {
+      if (!(obj instanceof TransactionP.MsgTx)) {
         return super.equals(obj);
       }
-      jsmith.nknsdk.network.proto.Transaction.MsgTx other = (jsmith.nknsdk.network.proto.Transaction.MsgTx) obj;
+      TransactionP.MsgTx other = (TransactionP.MsgTx) obj;
 
       boolean result = true;
       result = result && (hasUnsignedTx() == other.hasUnsignedTx());
@@ -1094,69 +1094,69 @@ public final class Transaction {
       return hash;
     }
 
-    public static jsmith.nknsdk.network.proto.Transaction.MsgTx parseFrom(
+    public static TransactionP.MsgTx parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.MsgTx parseFrom(
+    public static TransactionP.MsgTx parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.MsgTx parseFrom(
+    public static TransactionP.MsgTx parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.MsgTx parseFrom(
+    public static TransactionP.MsgTx parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.MsgTx parseFrom(byte[] data)
+    public static TransactionP.MsgTx parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.MsgTx parseFrom(
+    public static TransactionP.MsgTx parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.MsgTx parseFrom(java.io.InputStream input)
+    public static TransactionP.MsgTx parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.MsgTx parseFrom(
+    public static TransactionP.MsgTx parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.MsgTx parseDelimitedFrom(java.io.InputStream input)
+    public static TransactionP.MsgTx parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.MsgTx parseDelimitedFrom(
+    public static TransactionP.MsgTx parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.MsgTx parseFrom(
+    public static TransactionP.MsgTx parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static jsmith.nknsdk.network.proto.Transaction.MsgTx parseFrom(
+    public static TransactionP.MsgTx parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1169,7 +1169,7 @@ public final class Transaction {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(jsmith.nknsdk.network.proto.Transaction.MsgTx prototype) {
+    public static Builder newBuilder(TransactionP.MsgTx prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -1190,18 +1190,18 @@ public final class Transaction {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:jsmith.nknsdk.network.proto.MsgTx)
-        jsmith.nknsdk.network.proto.Transaction.MsgTxOrBuilder {
+        TransactionP.MsgTxOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return jsmith.nknsdk.network.proto.Transaction.internal_static_jsmith_nknsdk_network_proto_MsgTx_descriptor;
+        return TransactionP.internal_static_jsmith_nknsdk_network_proto_MsgTx_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return jsmith.nknsdk.network.proto.Transaction.internal_static_jsmith_nknsdk_network_proto_MsgTx_fieldAccessorTable
+        return TransactionP.internal_static_jsmith_nknsdk_network_proto_MsgTx_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                jsmith.nknsdk.network.proto.Transaction.MsgTx.class, jsmith.nknsdk.network.proto.Transaction.MsgTx.Builder.class);
+                TransactionP.MsgTx.class, TransactionP.MsgTx.Builder.class);
       }
 
       // Construct using jsmith.nknsdk.network.proto.Transaction.MsgTx.newBuilder()
@@ -1241,17 +1241,17 @@ public final class Transaction {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return jsmith.nknsdk.network.proto.Transaction.internal_static_jsmith_nknsdk_network_proto_MsgTx_descriptor;
+        return TransactionP.internal_static_jsmith_nknsdk_network_proto_MsgTx_descriptor;
       }
 
       @java.lang.Override
-      public jsmith.nknsdk.network.proto.Transaction.MsgTx getDefaultInstanceForType() {
-        return jsmith.nknsdk.network.proto.Transaction.MsgTx.getDefaultInstance();
+      public TransactionP.MsgTx getDefaultInstanceForType() {
+        return TransactionP.MsgTx.getDefaultInstance();
       }
 
       @java.lang.Override
-      public jsmith.nknsdk.network.proto.Transaction.MsgTx build() {
-        jsmith.nknsdk.network.proto.Transaction.MsgTx result = buildPartial();
+      public TransactionP.MsgTx build() {
+        TransactionP.MsgTx result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -1259,8 +1259,8 @@ public final class Transaction {
       }
 
       @java.lang.Override
-      public jsmith.nknsdk.network.proto.Transaction.MsgTx buildPartial() {
-        jsmith.nknsdk.network.proto.Transaction.MsgTx result = new jsmith.nknsdk.network.proto.Transaction.MsgTx(this);
+      public TransactionP.MsgTx buildPartial() {
+        TransactionP.MsgTx result = new TransactionP.MsgTx(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (unsignedTxBuilder_ == null) {
@@ -1316,16 +1316,16 @@ public final class Transaction {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof jsmith.nknsdk.network.proto.Transaction.MsgTx) {
-          return mergeFrom((jsmith.nknsdk.network.proto.Transaction.MsgTx)other);
+        if (other instanceof TransactionP.MsgTx) {
+          return mergeFrom((TransactionP.MsgTx)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(jsmith.nknsdk.network.proto.Transaction.MsgTx other) {
-        if (other == jsmith.nknsdk.network.proto.Transaction.MsgTx.getDefaultInstance()) return this;
+      public Builder mergeFrom(TransactionP.MsgTx other) {
+        if (other == TransactionP.MsgTx.getDefaultInstance()) return this;
         if (other.hasUnsignedTx()) {
           mergeUnsignedTx(other.getUnsignedTx());
         }
@@ -1370,11 +1370,11 @@ public final class Transaction {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        jsmith.nknsdk.network.proto.Transaction.MsgTx parsedMessage = null;
+        TransactionP.MsgTx parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (jsmith.nknsdk.network.proto.Transaction.MsgTx) e.getUnfinishedMessage();
+          parsedMessage = (TransactionP.MsgTx) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -1385,9 +1385,9 @@ public final class Transaction {
       }
       private int bitField0_;
 
-      private jsmith.nknsdk.network.proto.Transaction.UnsignedTx unsignedTx_ = null;
+      private TransactionP.UnsignedTx unsignedTx_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          jsmith.nknsdk.network.proto.Transaction.UnsignedTx, jsmith.nknsdk.network.proto.Transaction.UnsignedTx.Builder, jsmith.nknsdk.network.proto.Transaction.UnsignedTxOrBuilder> unsignedTxBuilder_;
+          TransactionP.UnsignedTx, TransactionP.UnsignedTx.Builder, TransactionP.UnsignedTxOrBuilder> unsignedTxBuilder_;
       /**
        * <code>.jsmith.nknsdk.network.proto.UnsignedTx unsigned_tx = 1;</code>
        */
@@ -1397,9 +1397,9 @@ public final class Transaction {
       /**
        * <code>.jsmith.nknsdk.network.proto.UnsignedTx unsigned_tx = 1;</code>
        */
-      public jsmith.nknsdk.network.proto.Transaction.UnsignedTx getUnsignedTx() {
+      public TransactionP.UnsignedTx getUnsignedTx() {
         if (unsignedTxBuilder_ == null) {
-          return unsignedTx_ == null ? jsmith.nknsdk.network.proto.Transaction.UnsignedTx.getDefaultInstance() : unsignedTx_;
+          return unsignedTx_ == null ? TransactionP.UnsignedTx.getDefaultInstance() : unsignedTx_;
         } else {
           return unsignedTxBuilder_.getMessage();
         }
@@ -1407,7 +1407,7 @@ public final class Transaction {
       /**
        * <code>.jsmith.nknsdk.network.proto.UnsignedTx unsigned_tx = 1;</code>
        */
-      public Builder setUnsignedTx(jsmith.nknsdk.network.proto.Transaction.UnsignedTx value) {
+      public Builder setUnsignedTx(TransactionP.UnsignedTx value) {
         if (unsignedTxBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1424,7 +1424,7 @@ public final class Transaction {
        * <code>.jsmith.nknsdk.network.proto.UnsignedTx unsigned_tx = 1;</code>
        */
       public Builder setUnsignedTx(
-          jsmith.nknsdk.network.proto.Transaction.UnsignedTx.Builder builderForValue) {
+          TransactionP.UnsignedTx.Builder builderForValue) {
         if (unsignedTxBuilder_ == null) {
           unsignedTx_ = builderForValue.build();
           onChanged();
@@ -1437,11 +1437,11 @@ public final class Transaction {
       /**
        * <code>.jsmith.nknsdk.network.proto.UnsignedTx unsigned_tx = 1;</code>
        */
-      public Builder mergeUnsignedTx(jsmith.nknsdk.network.proto.Transaction.UnsignedTx value) {
+      public Builder mergeUnsignedTx(TransactionP.UnsignedTx value) {
         if (unsignedTxBuilder_ == null) {
           if (unsignedTx_ != null) {
             unsignedTx_ =
-              jsmith.nknsdk.network.proto.Transaction.UnsignedTx.newBuilder(unsignedTx_).mergeFrom(value).buildPartial();
+              TransactionP.UnsignedTx.newBuilder(unsignedTx_).mergeFrom(value).buildPartial();
           } else {
             unsignedTx_ = value;
           }
@@ -1469,7 +1469,7 @@ public final class Transaction {
       /**
        * <code>.jsmith.nknsdk.network.proto.UnsignedTx unsigned_tx = 1;</code>
        */
-      public jsmith.nknsdk.network.proto.Transaction.UnsignedTx.Builder getUnsignedTxBuilder() {
+      public TransactionP.UnsignedTx.Builder getUnsignedTxBuilder() {
         
         onChanged();
         return getUnsignedTxFieldBuilder().getBuilder();
@@ -1477,23 +1477,23 @@ public final class Transaction {
       /**
        * <code>.jsmith.nknsdk.network.proto.UnsignedTx unsigned_tx = 1;</code>
        */
-      public jsmith.nknsdk.network.proto.Transaction.UnsignedTxOrBuilder getUnsignedTxOrBuilder() {
+      public TransactionP.UnsignedTxOrBuilder getUnsignedTxOrBuilder() {
         if (unsignedTxBuilder_ != null) {
           return unsignedTxBuilder_.getMessageOrBuilder();
         } else {
           return unsignedTx_ == null ?
-              jsmith.nknsdk.network.proto.Transaction.UnsignedTx.getDefaultInstance() : unsignedTx_;
+              TransactionP.UnsignedTx.getDefaultInstance() : unsignedTx_;
         }
       }
       /**
        * <code>.jsmith.nknsdk.network.proto.UnsignedTx unsigned_tx = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          jsmith.nknsdk.network.proto.Transaction.UnsignedTx, jsmith.nknsdk.network.proto.Transaction.UnsignedTx.Builder, jsmith.nknsdk.network.proto.Transaction.UnsignedTxOrBuilder> 
+          TransactionP.UnsignedTx, TransactionP.UnsignedTx.Builder, TransactionP.UnsignedTxOrBuilder>
           getUnsignedTxFieldBuilder() {
         if (unsignedTxBuilder_ == null) {
           unsignedTxBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              jsmith.nknsdk.network.proto.Transaction.UnsignedTx, jsmith.nknsdk.network.proto.Transaction.UnsignedTx.Builder, jsmith.nknsdk.network.proto.Transaction.UnsignedTxOrBuilder>(
+              TransactionP.UnsignedTx, TransactionP.UnsignedTx.Builder, TransactionP.UnsignedTxOrBuilder>(
                   getUnsignedTx(),
                   getParentForChildren(),
                   isClean());
@@ -1502,22 +1502,22 @@ public final class Transaction {
         return unsignedTxBuilder_;
       }
 
-      private java.util.List<jsmith.nknsdk.network.proto.ProgramOuterClass.Program> programs_ =
+      private java.util.List<PorgramP.Program> programs_ =
         java.util.Collections.emptyList();
       private void ensureProgramsIsMutable() {
         if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-          programs_ = new java.util.ArrayList<jsmith.nknsdk.network.proto.ProgramOuterClass.Program>(programs_);
+          programs_ = new java.util.ArrayList<PorgramP.Program>(programs_);
           bitField0_ |= 0x00000002;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          jsmith.nknsdk.network.proto.ProgramOuterClass.Program, jsmith.nknsdk.network.proto.ProgramOuterClass.Program.Builder, jsmith.nknsdk.network.proto.ProgramOuterClass.ProgramOrBuilder> programsBuilder_;
+          PorgramP.Program, PorgramP.Program.Builder, PorgramP.ProgramOrBuilder> programsBuilder_;
 
       /**
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
-      public java.util.List<jsmith.nknsdk.network.proto.ProgramOuterClass.Program> getProgramsList() {
+      public java.util.List<PorgramP.Program> getProgramsList() {
         if (programsBuilder_ == null) {
           return java.util.Collections.unmodifiableList(programs_);
         } else {
@@ -1537,7 +1537,7 @@ public final class Transaction {
       /**
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
-      public jsmith.nknsdk.network.proto.ProgramOuterClass.Program getPrograms(int index) {
+      public PorgramP.Program getPrograms(int index) {
         if (programsBuilder_ == null) {
           return programs_.get(index);
         } else {
@@ -1548,7 +1548,7 @@ public final class Transaction {
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
       public Builder setPrograms(
-          int index, jsmith.nknsdk.network.proto.ProgramOuterClass.Program value) {
+          int index, PorgramP.Program value) {
         if (programsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1565,7 +1565,7 @@ public final class Transaction {
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
       public Builder setPrograms(
-          int index, jsmith.nknsdk.network.proto.ProgramOuterClass.Program.Builder builderForValue) {
+          int index, PorgramP.Program.Builder builderForValue) {
         if (programsBuilder_ == null) {
           ensureProgramsIsMutable();
           programs_.set(index, builderForValue.build());
@@ -1578,7 +1578,7 @@ public final class Transaction {
       /**
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
-      public Builder addPrograms(jsmith.nknsdk.network.proto.ProgramOuterClass.Program value) {
+      public Builder addPrograms(PorgramP.Program value) {
         if (programsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1595,7 +1595,7 @@ public final class Transaction {
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
       public Builder addPrograms(
-          int index, jsmith.nknsdk.network.proto.ProgramOuterClass.Program value) {
+          int index, PorgramP.Program value) {
         if (programsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1612,7 +1612,7 @@ public final class Transaction {
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
       public Builder addPrograms(
-          jsmith.nknsdk.network.proto.ProgramOuterClass.Program.Builder builderForValue) {
+          PorgramP.Program.Builder builderForValue) {
         if (programsBuilder_ == null) {
           ensureProgramsIsMutable();
           programs_.add(builderForValue.build());
@@ -1626,7 +1626,7 @@ public final class Transaction {
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
       public Builder addPrograms(
-          int index, jsmith.nknsdk.network.proto.ProgramOuterClass.Program.Builder builderForValue) {
+          int index, PorgramP.Program.Builder builderForValue) {
         if (programsBuilder_ == null) {
           ensureProgramsIsMutable();
           programs_.add(index, builderForValue.build());
@@ -1640,7 +1640,7 @@ public final class Transaction {
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
       public Builder addAllPrograms(
-          java.lang.Iterable<? extends jsmith.nknsdk.network.proto.ProgramOuterClass.Program> values) {
+          java.lang.Iterable<? extends PorgramP.Program> values) {
         if (programsBuilder_ == null) {
           ensureProgramsIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1680,14 +1680,14 @@ public final class Transaction {
       /**
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
-      public jsmith.nknsdk.network.proto.ProgramOuterClass.Program.Builder getProgramsBuilder(
+      public PorgramP.Program.Builder getProgramsBuilder(
           int index) {
         return getProgramsFieldBuilder().getBuilder(index);
       }
       /**
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
-      public jsmith.nknsdk.network.proto.ProgramOuterClass.ProgramOrBuilder getProgramsOrBuilder(
+      public PorgramP.ProgramOrBuilder getProgramsOrBuilder(
           int index) {
         if (programsBuilder_ == null) {
           return programs_.get(index);  } else {
@@ -1697,7 +1697,7 @@ public final class Transaction {
       /**
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
-      public java.util.List<? extends jsmith.nknsdk.network.proto.ProgramOuterClass.ProgramOrBuilder> 
+      public java.util.List<? extends PorgramP.ProgramOrBuilder>
            getProgramsOrBuilderList() {
         if (programsBuilder_ != null) {
           return programsBuilder_.getMessageOrBuilderList();
@@ -1708,31 +1708,31 @@ public final class Transaction {
       /**
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
-      public jsmith.nknsdk.network.proto.ProgramOuterClass.Program.Builder addProgramsBuilder() {
+      public PorgramP.Program.Builder addProgramsBuilder() {
         return getProgramsFieldBuilder().addBuilder(
-            jsmith.nknsdk.network.proto.ProgramOuterClass.Program.getDefaultInstance());
+            PorgramP.Program.getDefaultInstance());
       }
       /**
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
-      public jsmith.nknsdk.network.proto.ProgramOuterClass.Program.Builder addProgramsBuilder(
+      public PorgramP.Program.Builder addProgramsBuilder(
           int index) {
         return getProgramsFieldBuilder().addBuilder(
-            index, jsmith.nknsdk.network.proto.ProgramOuterClass.Program.getDefaultInstance());
+            index, PorgramP.Program.getDefaultInstance());
       }
       /**
        * <code>repeated .jsmith.nknsdk.network.proto.Program programs = 2;</code>
        */
-      public java.util.List<jsmith.nknsdk.network.proto.ProgramOuterClass.Program.Builder> 
+      public java.util.List<PorgramP.Program.Builder>
            getProgramsBuilderList() {
         return getProgramsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          jsmith.nknsdk.network.proto.ProgramOuterClass.Program, jsmith.nknsdk.network.proto.ProgramOuterClass.Program.Builder, jsmith.nknsdk.network.proto.ProgramOuterClass.ProgramOrBuilder> 
+          PorgramP.Program, PorgramP.Program.Builder, PorgramP.ProgramOrBuilder>
           getProgramsFieldBuilder() {
         if (programsBuilder_ == null) {
           programsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              jsmith.nknsdk.network.proto.ProgramOuterClass.Program, jsmith.nknsdk.network.proto.ProgramOuterClass.Program.Builder, jsmith.nknsdk.network.proto.ProgramOuterClass.ProgramOrBuilder>(
+              PorgramP.Program, PorgramP.Program.Builder, PorgramP.ProgramOrBuilder>(
                   programs_,
                   ((bitField0_ & 0x00000002) == 0x00000002),
                   getParentForChildren(),
@@ -1758,12 +1758,12 @@ public final class Transaction {
     }
 
     // @@protoc_insertion_point(class_scope:jsmith.nknsdk.network.proto.MsgTx)
-    private static final jsmith.nknsdk.network.proto.Transaction.MsgTx DEFAULT_INSTANCE;
+    private static final TransactionP.MsgTx DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new jsmith.nknsdk.network.proto.Transaction.MsgTx();
+      DEFAULT_INSTANCE = new TransactionP.MsgTx();
     }
 
-    public static jsmith.nknsdk.network.proto.Transaction.MsgTx getDefaultInstance() {
+    public static TransactionP.MsgTx getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1788,7 +1788,7 @@ public final class Transaction {
     }
 
     @java.lang.Override
-    public jsmith.nknsdk.network.proto.Transaction.MsgTx getDefaultInstanceForType() {
+    public TransactionP.MsgTx getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1817,7 +1817,7 @@ public final class Transaction {
       "n.proto\022\033jsmith.nknsdk.network.proto\0324js" +
       "mith/nknsdk/network/proto/transactionpay" +
       "load.proto\032)jsmith/nknsdk/network/proto/" +
-      "program.proto\"~\n\nUnsignedTx\022@\n\007payload\030\001" +
+      "programP.proto\"~\n\nUnsignedTx\022@\n\007payload\030\001" +
       " \001(\0132/.jsmith.nknsdk.network.proto.Trans" +
       "actionPayload\022\r\n\005nonce\030\002 \001(\004\022\013\n\003fee\030\003 \001(" +
       "\003\022\022\n\nattributes\030\004 \001(\014\"}\n\005MsgTx\022<\n\013unsign" +
@@ -1836,8 +1836,8 @@ public final class Transaction {
     com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-          jsmith.nknsdk.network.proto.Transactionpayload.getDescriptor(),
-          jsmith.nknsdk.network.proto.ProgramOuterClass.getDescriptor(),
+          TransactionpayloadP.getDescriptor(),
+          PorgramP.getDescriptor(),
         }, assigner);
     internal_static_jsmith_nknsdk_network_proto_UnsignedTx_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -1851,8 +1851,8 @@ public final class Transaction {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_jsmith_nknsdk_network_proto_MsgTx_descriptor,
         new java.lang.String[] { "UnsignedTx", "Programs", });
-    jsmith.nknsdk.network.proto.Transactionpayload.getDescriptor();
-    jsmith.nknsdk.network.proto.ProgramOuterClass.getDescriptor();
+    TransactionpayloadP.getDescriptor();
+    PorgramP.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

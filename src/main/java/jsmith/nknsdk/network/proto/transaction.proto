@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package jsmith.nknsdk.network.proto;
 
-import "jsmith/nknsdk/network/proto/transactionpayload.proto";
-import "jsmith/nknsdk/network/proto/program.proto";
+import "jsmith/nknsdk/network/proto/transactionpayloadP.proto";
+import "jsmith/nknsdk/network/proto/programP.proto";
 
 
 message UnsignedTx {

@@ -4,8 +4,8 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
-import jsmith.nknsdk.network.proto.Messages;
-import jsmith.nknsdk.network.proto.Payloads;
+import jsmith.nknsdk.network.proto.MessagesP;
+import jsmith.nknsdk.network.proto.PayloadsP;
 import jsmith.nknsdk.utils.Crypto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,8 +161,8 @@ public class ClientMessages extends Thread {
     }
 
 
-    public void onInboundMessage(String from, Payloads.Payload message) {
-        final Payloads.PayloadType type = message.getType();
+    public void onInboundMessage(String from, PayloadsP.Payload message) {
+        final PayloadsP.PayloadType type = message.getType();
         final ByteString replyTo = message.getReplyToPid();
         final ByteString messageID = message.getPid();
 
@@ -172,32 +172,32 @@ public class ClientMessages extends Thread {
             for (MessageJob j : waitingForReply) {
                 if (j.messageID.equals(replyTo)) {
                     final int indexOf = j.destination.indexOf(from);
-                    if (type == Payloads.PayloadType.TEXT) {
+                    if (type == PayloadsP.PayloadType.TEXT) {
                         try {
                             j.ack.set(indexOf,
                                     new NKNClient.ReceivedMessage(
                                         from,
                                         messageID,
-                                        Payloads.PayloadType.TEXT,
-                                        Payloads.TextData.parseFrom(message.getData()).getText()
+                                        PayloadsP.PayloadType.TEXT,
+                                        PayloadsP.TextData.parseFrom(message.getData()).getText()
                                 ));
                         } catch (InvalidProtocolBufferException e) {
                             LOG.warn("Received packet is of type TEXT but does not contain valid text data");
                         }
-                    } else if (type == Payloads.PayloadType.BINARY) {
+                    } else if (type == PayloadsP.PayloadType.BINARY) {
                         j.ack.set(indexOf,
                                 new NKNClient.ReceivedMessage(
                                     from,
                                     messageID,
-                                    Payloads.PayloadType.BINARY,
+                                    PayloadsP.PayloadType.BINARY,
                                     message.getData()
                             ));
-                    } else if (type == Payloads.PayloadType.ACK) {
+                    } else if (type == PayloadsP.PayloadType.ACK) {
                         j.ack.set(indexOf,
                                 new NKNClient.ReceivedMessage(
                                         from,
                                         messageID,
-                                        Payloads.PayloadType.ACK,
+                                        PayloadsP.PayloadType.ACK,
                                         null
                                 ));
                     }
@@ -212,22 +212,22 @@ public class ClientMessages extends Thread {
         Object ackMessage = null;
         if (!isReplyTo) {
 
-            if (type == Payloads.PayloadType.TEXT) {
+            if (type == PayloadsP.PayloadType.TEXT) {
                 try {
                     if (onMessageL != null) {
-                        ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, type, Payloads.TextData.parseFrom(message.getData()).getText()));
+                        ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, type, PayloadsP.TextData.parseFrom(message.getData()).getText()));
                     }
                 } catch (InvalidProtocolBufferException e) {
                     LOG.warn("Received packet is of type TEXT but does not contain valid text data");
                 }
-            } else if (type == Payloads.PayloadType.BINARY) {
+            } else if (type == PayloadsP.PayloadType.BINARY) {
                 if (onMessageL != null) {
                     ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, type, message.getData()));
                 }
             }
         }
 
-        if (type != Payloads.PayloadType.ACK) {
+        if (type != PayloadsP.PayloadType.ACK) {
             if (ackMessage == null) {
                 if (!message.getNoAck()) {
                     sendAckMessage(from, messageID);
@@ -241,23 +241,23 @@ public class ClientMessages extends Thread {
 
     public List<CompletableFuture<NKNClient.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, Object message) throws NKNClientException.UnknownObjectType {
         if (message instanceof String) {
-            return sendMessageAsync(destination, replyTo, Payloads.PayloadType.TEXT, Payloads.TextData.newBuilder().setText((String) message).build().toByteString());
+            return sendMessageAsync(destination, replyTo, PayloadsP.PayloadType.TEXT, PayloadsP.TextData.newBuilder().setText((String) message).build().toByteString());
         } else if (message instanceof ByteString) {
-            return sendMessageAsync(destination, replyTo, Payloads.PayloadType.BINARY, (ByteString) message);
+            return sendMessageAsync(destination, replyTo, PayloadsP.PayloadType.BINARY, (ByteString) message);
         } else if (message instanceof byte[]) {
-            return sendMessageAsync(destination, replyTo, Payloads.PayloadType.BINARY, ByteString.copyFrom((byte[]) message));
+            return sendMessageAsync(destination, replyTo, PayloadsP.PayloadType.BINARY, ByteString.copyFrom((byte[]) message));
         } else {
             LOG.error("Cannot serialize '{}' to NKN protobuf message", message.getClass());
             throw new NKNClientException.UnknownObjectType("Cannot serialize '" + message.getClass() + "' to NKN message");
         }
     }
 
-    public List<CompletableFuture<NKNClient.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, Payloads.PayloadType type, ByteString message) {
+    public List<CompletableFuture<NKNClient.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, PayloadsP.PayloadType type, ByteString message) {
         final ByteString messageID = ByteString.copyFrom(Crypto.nextRandom4B());
         final ByteString replyToMessageID = replyTo == null ? ByteString.copyFrom(new byte[0]) : replyTo;
 
 
-        final Payloads.Payload payload = Payloads.Payload.newBuilder()
+        final PayloadsP.Payload payload = PayloadsP.Payload.newBuilder()
                 .setType(type)
                 .setPid(messageID)
                 .setReplyToPid(replyToMessageID)
@@ -272,7 +272,7 @@ public class ClientMessages extends Thread {
     private List<CompletableFuture<NKNClient.ReceivedMessage>> sendOutboundMessage(List<String> destination, ByteString messageID, ByteString payload) {
         if (destination.size() == 0) throw new IllegalArgumentException("At least one address is required for multicast");
 
-        final Messages.ClientToNodeMessage binMsg = Messages.ClientToNodeMessage.newBuilder()
+        final MessagesP.ClientToNodeMessage binMsg = MessagesP.ClientToNodeMessage.newBuilder()
                 .setDest(destination.get(0))
                 .setPayload(payload)
                 .addAllDests(destination.subList(1, destination.size()))
@@ -298,14 +298,14 @@ public class ClientMessages extends Thread {
     }
 
     public void sendAckMessage(String destination, ByteString replyTo) {
-        final Payloads.Payload payload = Payloads.Payload.newBuilder()
-                .setType(Payloads.PayloadType.ACK)
+        final PayloadsP.Payload payload = PayloadsP.Payload.newBuilder()
+                .setType(PayloadsP.PayloadType.ACK)
                 .setPid(ByteString.copyFrom(Crypto.nextRandom4B()))
                 .setReplyToPid(replyTo)
                 .setNoAck(true)
                 .build();
 
-        final Messages.ClientToNodeMessage binMsg = Messages.ClientToNodeMessage.newBuilder()
+        final MessagesP.ClientToNodeMessage binMsg = MessagesP.ClientToNodeMessage.newBuilder()
                 .setDest(destination)
                 .setPayload(payload.toByteString())
                 .setMaxHoldingSeconds(0)

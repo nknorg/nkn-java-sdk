@@ -1,6 +1,7 @@
 package jsmith.nknsdk.utils;
 
 import net.i2p.crypto.eddsa.EdDSAEngine;
+import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
@@ -90,7 +91,7 @@ public class Crypto {
         }
     }
 
-    public static byte[] sha256andSign(PrivateKey key, byte[] data) {
+    public static byte[] sha256andSign(EdDSAPrivateKey key, byte[] data) {
         try {
             final Signature signatureEngine = new EdDSAEngine();
             signatureEngine.initSign(key);
@@ -102,9 +103,10 @@ public class Crypto {
         }
     }
     public static boolean sha256andVerify(byte[] key, byte[] data, byte[] signature) {
-        return sha256andVerify(getPublicKeyFromBytes(key), data, signature);
+        final EdDSAPublicKeySpec pubSpec = new EdDSAPublicKeySpec(key, ED25519);
+        return sha256andVerify(new EdDSAPublicKey(pubSpec), data, signature);
     }
-    public static boolean sha256andVerify(PublicKey key, byte[] data, byte[] signature) {
+    public static boolean sha256andVerify(EdDSAPublicKey key, byte[] data, byte[] signature) {
         try {
             final Signature signatureEngine = new EdDSAEngine();
             signatureEngine.initVerify(key);
@@ -135,11 +137,6 @@ public class Crypto {
         } catch (SignatureException | InvalidKeyException e) {
             throw new CryptoError("Could not verify block", e);
         }
-    }
-
-    private static PublicKey getPublicKeyFromBytes(byte[] keyBytes) {
-        final EdDSAPublicKeySpec pubSpec = new EdDSAPublicKeySpec(keyBytes, ED25519);
-        return new EdDSAPublicKey(pubSpec);
     }
 
     private static final SecureRandom randomId_sr = new SecureRandom();

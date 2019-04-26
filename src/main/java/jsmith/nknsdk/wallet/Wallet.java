@@ -4,12 +4,7 @@ import com.google.protobuf.ByteString;
 import jsmith.nknsdk.client.NKNExplorer;
 import jsmith.nknsdk.network.ConnectionProvider;
 import jsmith.nknsdk.network.HttpApi;
-import jsmith.nknsdk.network.proto.ProgramOuterClass;
-import jsmith.nknsdk.network.proto.Transaction;
-import jsmith.nknsdk.network.proto.Transactionpayload;
-import jsmith.nknsdk.utils.Base58;
-import jsmith.nknsdk.utils.Crypto;
-import jsmith.nknsdk.utils.EncodeUtils;
+import jsmith.nknsdk.wallet.transactions.TransactionT;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
@@ -72,7 +67,7 @@ public class Wallet {
 
         w.getPublicKeyAsHexString();
 
-        w.contractDataStr = Hex.toHexString(w.getSignatureRedeem()) + "00" + w.getProgramHashAsHexString();
+        w.contractDataStr = Hex.toHexString(w.getSignatureRedeem()) + "00" + Hex.toHexString(w.getProgramHash().toByteArray());
 
         return w;
     }
@@ -128,11 +123,11 @@ public class Wallet {
 
             if (json.has("ContractData")) w.contractDataStr = json.getString("ContractData");
 
-            if (!json.has("ProgramHash") || !json.getString("ProgramHash").equals(w.getProgramHashAsHexString())) {
+            if (!json.has("ProgramHash") || !json.getString("ProgramHash").equalsIgnoreCase(Hex.toHexString(w.getProgramHash().toByteArray()))) {
                 throw new WalletException("Key mismatch in wallet file. Generated ProgramHash does not match the loaded ProgramHash");
             }
 
-            if (!json.has("Address") || !json.getString("Address").equals(w.getAddressAsString())) {
+            if (!json.has("Address") || !json.getString("Address").equalsIgnoreCase(w.getAddress())) {
                 throw new WalletException("Key mismatch in wallet file. Generated Address does not match the loaded Address");
             }
 
@@ -143,62 +138,14 @@ public class Wallet {
         }
     }
 
-    public String transferTo(String toAddress, BigDecimal amount) throws WalletException {
-        return transferTo(toAddress, amount, BigDecimal.ZERO);
-    }
-
-    public String transferTo(String toAddress, BigDecimal amount, BigDecimal fee) throws WalletException {
-        if (!NKNExplorer.isAddressValid(toAddress)) throw new WalletException("Transaction failed: Target address is not valid");
-        long nonce;
-
+    public String submitTransaction(TransactionT tx) throws WalletException {
+        final String txRaw = Hex.toHexString(tx.build((EdDSAPrivateKey) keyPair.getPrivate(), ByteString.copyFrom(getSignatureRedeem())).toByteArray());
         try {
-            nonce = ConnectionProvider.attempt((node) -> HttpApi.getNonce(node, getAddressAsString(), Asset.T_NKN));
-        } catch (Throwable t) {
-            if (t instanceof WalletException) throw (WalletException) t;
-            throw new WalletException("Transaction failed: Failed to query nonce", t);
-        }
-
-        final Transactionpayload.TransferAsset.Builder txAsset = Transactionpayload.TransferAsset.newBuilder();
-        txAsset.setSender(ByteString.copyFrom(getProgramHashAsByteArray()));
-        txAsset.setRecipient(ByteString.copyFrom(WalletUtils.getProgramHashAsByteArray(toAddress)));
-        txAsset.setAmount(amount.multiply(new BigDecimal(Asset.T_NKN.mul)).longValue());
-
-        final Transactionpayload.TransactionPayload.Builder txPayload = Transactionpayload.TransactionPayload.newBuilder();
-        txPayload.setType(Transactionpayload.TransactionPayloadType.TransferAssetType);
-        txPayload.setData(txAsset.build().toByteString());
-
-        final Transaction.UnsignedTx.Builder unsignedTx = Transaction.UnsignedTx.newBuilder();
-        unsignedTx.setPayload(txPayload.build());
-        unsignedTx.setNonce(nonce);
-        unsignedTx.setFee(fee.multiply(new BigDecimal(Asset.T_NKN.mul)).longValue());
-
-        final Transaction.MsgTx.Builder msgTxBuilder = Transaction.MsgTx.newBuilder();
-        msgTxBuilder.setUnsignedTx(unsignedTx.build());
-
-
-        ByteString txnBuffer = ByteString.EMPTY;
-
-        txnBuffer = txnBuffer.concat(EncodeUtils.encodeUint32(txPayload.getTypeValue()));
-        txnBuffer = txnBuffer.concat(EncodeUtils.encodeBytes(txPayload.getData()));
-        txnBuffer = txnBuffer.concat(EncodeUtils.encodeUint64(unsignedTx.getNonce()));
-        txnBuffer = txnBuffer.concat(EncodeUtils.encodeUint64(unsignedTx.getFee()));
-        txnBuffer = txnBuffer.concat(EncodeUtils.encodeBytes(unsignedTx.getAttributes()));
-
-        final byte[] sig = Crypto.sha256andSign(keyPair.getPrivate(), txnBuffer.toByteArray());
-        final ProgramOuterClass.Program.Builder programBuilder = ProgramOuterClass.Program.newBuilder();
-        programBuilder.setCode(ByteString.copyFrom(getSignatureRedeem()));
-        programBuilder.setParameter(ByteString.copyFrom(new byte[]{0x40}).concat(ByteString.copyFrom(sig)));
-        msgTxBuilder.addPrograms(programBuilder.build());
-
-
-        final String tx = Hex.toHexString(msgTxBuilder.build().toByteArray());
-        try {
-            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.sendRawTransaction(bootstrapNode, tx));
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.sendRawTransaction(bootstrapNode, txRaw));
         } catch (Exception t) {
             if (t instanceof WalletException) throw (WalletException) t;
             throw new WalletException("Failed to send transaction", t);
         }
-
     }
 
     public void save(File file, String password) throws WalletException {
@@ -218,8 +165,8 @@ public class Wallet {
         final JSONObject json = new JSONObject();
 
         json.put("Version", VERSION);
-        json.put("Address", getAddressAsString());
-        json.put("ProgramHash", getProgramHashAsHexString());
+        json.put("Address", getAddress());
+        json.put("ProgramHash", Hex.toHexString(getProgramHash().toByteArray()));
         json.put("PasswordHash", Hex.toHexString(sha256(passwd)));
 
 
@@ -249,10 +196,10 @@ public class Wallet {
     }
 
     public BigDecimal queryBalance() throws WalletException {
-        return NKNExplorer.queryBalance(getAddressAsString());
+        return NKNExplorer.queryBalance(getAddress());
     }
     public BigDecimal queryBalance(Asset asset) throws WalletException {
-        return NKNExplorer.queryBalance(asset, getAddressAsString());
+        return NKNExplorer.queryBalance(asset, getAddress());
     }
 
     public String getPublicKeyAsHexString() {
@@ -264,39 +211,19 @@ public class Wallet {
 
         return Hex.toHexString(encoded);
     }
-
-    public static final byte[] ADDRESS_PREFIX = new byte[]{ 0x02, (byte) 0xb8, 0x25 };
-    public String getAddressAsString() {
-        final byte[] s = getSignatureRedeem();
-
-        final byte[] r160 = r160(sha256(s));
-
-        final byte[] sh = new byte[r160.length + ADDRESS_PREFIX.length];
-        System.arraycopy(ADDRESS_PREFIX, 0, sh, 0, ADDRESS_PREFIX.length);
-        System.arraycopy(r160, 0, sh, ADDRESS_PREFIX.length, r160.length);
-
-        final byte[] x = doubleSha256(sh);
-
-        final byte[] enc = new byte[sh.length + 4];
-        System.arraycopy(sh, 0, enc, 0, sh.length);
-        System.arraycopy(x, 0, enc, sh.length, 4);
-
-        return Base58.encode(enc);
+    public String getAddress() {
+        return WalletUtils.getAddressFromProgramHash(getProgramHash());
     }
 
-    public String getProgramHashAsHexString() {
-        return WalletUtils.getProgramHashAsHexString(getAddressAsString());
-    }
-
-    public byte[] getProgramHashAsByteArray() {
-        return WalletUtils.getProgramHashAsByteArray(getAddressAsString());
+    public ByteString getProgramHash() {
+        return ByteString.copyFrom(r160(sha256(getSignatureRedeem())));
     }
 
     public String getContractDataAsString() {
         return contractDataStr;
     }
 
-    private byte[] getSignatureRedeem() {
+    public byte[] getSignatureRedeem() {
         assert keyPair != null : "KeyPair is null, this should never happen";
 
         final byte[] encodedWithPrefix = keyPair.getPublic().getEncoded();

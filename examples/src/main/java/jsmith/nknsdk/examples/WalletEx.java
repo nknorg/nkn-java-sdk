@@ -5,6 +5,7 @@ import jsmith.nknsdk.client.Identity;
 import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
 import jsmith.nknsdk.client.NKNExplorer;
+import jsmith.nknsdk.wallet.NKNTransactions;
 import jsmith.nknsdk.wallet.Wallet;
 import jsmith.nknsdk.wallet.WalletException;
 import org.bouncycastle.util.encoders.Hex;
@@ -24,12 +25,12 @@ public class WalletEx {
         setupLogging(TPLogger.DEBUG);
 
 //        final Wallet w = Wallet.createNew();
-//        w.save(new File("devnet-tmpWallet.dat"), "a"); // PasswordString should be disposed by user after use
-//        System.out.println("Generated: " + w.getAddressAsString());
+//        w.save(new File("devnet-tmpWallet.dat"), "a");
+//        System.out.println("Generated: " + w.getAddress());
 
-        final Wallet w2 = Wallet.load(new File("devnet-tmpWallet.dat"), "pwd"); // PasswordString should be disposed by user after use
+        final Wallet w2 = Wallet.load(new File("devnet-tmpWallet.dat"), "pwd");
         if (w2 != null) {
-            System.out.println("Loaded: " + w2.getAddressAsString());
+            System.out.println("Loaded: " + w2.getAddress());
         } else {
             System.out.println("Failed to decrypt saved wallet");
         }
@@ -44,64 +45,25 @@ public class WalletEx {
         final File fromFile = new File("devnet-from.dat");
         final File toFile = new File("devnet-to.dat");
 
-        if (!fromFile.exists()) Wallet.createNew().save(fromFile, "pwd");  // PasswordString should be disposed by user after use
+        if (!fromFile.exists()) Wallet.createNew().save(fromFile, "pwd");
         if (!toFile.exists()) Wallet.createNew().save(toFile, "pwd");
 
         final Wallet from = Wallet.load(fromFile, "pwd");
         final Wallet to = Wallet.load(toFile, "pwd");
 
-        if (false) { // Request devNKN from faucet
-            try {
-                final NKNClient client = new NKNClient(new Identity("", from));
-                client.onNewMessage(msg -> {
-                    if (msg.isText) {
-                        System.out.println("Received text from " + msg.from + "\n  ==> " + msg.textData);
-                    } else if (msg.isBinary) {
-                        System.out.println("Received binary from " + msg.from + "\n  ==> 0x" + Hex.toHexString(msg.binaryData.toByteArray()).toUpperCase());
-                    } else if (msg.isAck) {
-                        System.out.println("Received ack from " + msg.from);
-                    } else {
-                        System.out.println("Received unknown message from " + msg.from);
-                    }
-                });
-                client.start();
+        final String amount = "0.01";
+        System.out.println("Transferring " + amount + " tNKN from " + from.getAddress() + " (" + from.queryBalance() + " tNKN) to " + to.getAddress() + " (" + to.queryBalance() + " tNKN)");
 
-                final CompletableFuture<NKNClient.ReceivedMessage> promise = client.sendTextMessageAsync("0149c42944eea91f094c16538eff0449d4d1e236f31c8c706b2e40e98402984c", "{" +
-                        "\"address\": \"" + from.getAddressAsString() + "\"," +
-                        "\"amount\": 10" +
-                        "}");
-                promise.whenComplete((msg, err) -> {
-                    if (err == null) {
-                        if (msg.isText) {
-                            System.out.println("Reply text from " + msg.from + "\n  ==> " + msg.textData);
-                        } else if (msg.isBinary) {
-                            System.out.println("Reply binary from " + msg.from + "\n  ==> 0x" + Hex.toHexString(msg.binaryData.toByteArray()).toUpperCase());
-                        } else if (msg.isAck) {
-                            System.out.println("Reply ack from " + msg.from);
-                        } else {
-                            System.out.println("Reply unknown message from " + msg.from);
-                        }
-                    } else {
-                        err.printStackTrace();
-                    }
-                });
+        if (false) {
+            final String txID = NKNTransactions.transferTo(from, to.getAddress(), new BigDecimal(amount)); // Simple single transaction
 
-                Thread.sleep(5000);
-                client.close();
-
-            } catch (NKNClientException e) {
-                e.printStackTrace();
-            } catch (InterruptedException ignored) {}
-        }
-
-        System.out.println("Transferring 0.01 tNKN from " + from.getAddressAsString() + " (" + from.queryBalance() + " tNKN) to " + to.getAddressAsString() + " (" + to.queryBalance() + " tNKN)");
-
-        final String txID = from.transferTo(to.getAddressAsString(), new BigDecimal(0.01)); // Simple single transaction
-
-        if (txID == null) {
-            System.out.println("Transaction failed");
+            if (txID == null) {
+                System.out.println("Transaction failed");
+            } else {
+                System.out.println("Transaction successful: " + txID);
+            }
         } else {
-            System.out.println("Transaction successful: " + txID);
+            System.out.println("Transaction canceled");
         }
 
 
