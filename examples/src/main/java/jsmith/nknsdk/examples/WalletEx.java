@@ -8,6 +8,7 @@ import jsmith.nknsdk.wallet.WalletException;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.sql.SQLOutput;
 
 import static jsmith.nknsdk.examples.LogUtils.setupLogging;
 
@@ -46,33 +47,33 @@ public class WalletEx {
         final Wallet from = Wallet.load(fromFile, "pwd");
         final Wallet to = Wallet.load(toFile, "pwd");
 
-        final String amount = "0.01";
-        System.out.println("Transferring " + amount + " tNKN from " + from.getAddress() + " (" + from.queryBalance() + " tNKN) to " + to.getAddress() + " (" + to.queryBalance() + " tNKN)");
-
-
-
-        if (false) {
-            final String nameTxID = new NKNTransaction(from).registerName("NameOfThisWallet"); // Simple registerName transaction
-
-            if (nameTxID == null) {
-                System.out.println("RegisterName Transaction failed");
-            } else {
-                System.out.println("RegisterName Transaction successful: " + nameTxID);
-            }
-        } else {
-            System.out.println("RegisterName Transaction canceled");
-        }
+        System.out.println("Balance at " + from.getAddress() + " is " + from.queryBalance() + " tNKN");
 
         if (true) {
+            final String name = "somename";
+            System.out.println("Registering '" + name + "' to " + from.getAddress());
+
+            final String nameTxID = new NKNTransaction(from).registerName(name); // Simple registerName transaction
+
+            if (nameTxID == null) {
+                System.out.println("  Transaction failed");
+            } else {
+                System.out.println("  Transaction successful: " + nameTxID);
+            }
+        }
+
+        if (false) {
+            final String amount = "0.01";
+            System.out.println("Transferring " + amount + " tNKN from " + from.getAddress() + " (" + from.queryBalance() + " tNKN) to " + to.getAddress() + " (" + to.queryBalance() + " tNKN)");
+
+
             final String txID = new NKNTransaction(from).transferTo(to.getAddress(), new BigDecimal(amount)); // Simple single transaction
 
             if (txID == null) {
-                System.out.println("TransferTo Transaction failed");
+                System.out.println("  Transaction failed");
             } else {
-                System.out.println("TransferToTransaction successful: " + txID);
+                System.out.println("  Transaction successful: " + txID);
             }
-        } else {
-            System.out.println("TransferToTransaction canceled");
         }
 
 
