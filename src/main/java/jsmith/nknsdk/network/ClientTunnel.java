@@ -2,7 +2,6 @@ package jsmith.nknsdk.network;
 
 import com.darkyen.dave.WebbException;
 import com.google.protobuf.InvalidProtocolBufferException;
-import jsmith.nknsdk.client.ErrorCodes;
 import jsmith.nknsdk.client.Identity;
 import jsmith.nknsdk.client.NKNClientException;
 import jsmith.nknsdk.network.proto.MessagesP;
@@ -77,7 +76,7 @@ public class ClientTunnel {
             final JSONObject parameters = new JSONObject();
             parameters.put("address", identity.getFullIdentifier());
 
-            LOG.debug("Client is connecting to bootstrapNode node:", bootstrapNode);
+            LOG.debug("Client is connecting to bootstrapNode node: {}", bootstrapNode);
 
             final String wsAddr = HttpApi.rpcCall(bootstrapNode, "getwsaddr", parameters);
 
@@ -116,7 +115,7 @@ public class ClientTunnel {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean setupWsConnection() {
-        LOG.debug("Client is connecting to node ws:", directNodeWS);
+        LOG.debug("Client is connecting to node ws: {}", directNodeWS);
         final boolean[] success = {true};
         final CountDownLatch closeLatch = new CountDownLatch(1);
         ws = new WsApi(directNodeWS);

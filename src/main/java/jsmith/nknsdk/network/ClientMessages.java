@@ -272,6 +272,12 @@ public class ClientMessages extends Thread {
     private List<CompletableFuture<NKNClient.ReceivedMessage>> sendOutboundMessage(List<String> destination, ByteString messageID, ByteString payload) {
         if (destination.size() == 0) throw new IllegalArgumentException("At least one address is required for multicast");
 
+        final ArrayList<CompletableFuture<NKNClient.ReceivedMessage>> promises = new ArrayList<>();
+        for (String identity : destination) {
+            if (identity == null || identity.isEmpty()) throw new IllegalArgumentException("Destination identity is null or empty");
+            promises.add(new CompletableFuture<>());
+        }
+
         final MessagesP.ClientToNodeMessage binMsg = MessagesP.ClientToNodeMessage.newBuilder()
                 .setDest(destination.get(0))
                 .setPayload(payload)
@@ -280,11 +286,6 @@ public class ClientMessages extends Thread {
                 .build();
 
         if (!running) throw new IllegalStateException("Client is not running, cannot send messages.");
-
-        final ArrayList<CompletableFuture<NKNClient.ReceivedMessage>> promises = new ArrayList<>();
-        for (String ignored : destination) {
-            promises.add(new CompletableFuture<>());
-        }
 
         final MessageJob j = new MessageJob(new ArrayList<>(destination), messageID, binMsg.toByteString(), new ArrayList<>(promises), ConnectionProvider.messageAckTimeoutMS());
 

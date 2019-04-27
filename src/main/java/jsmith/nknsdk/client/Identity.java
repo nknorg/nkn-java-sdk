@@ -1,6 +1,7 @@
 package jsmith.nknsdk.client;
 
 import jsmith.nknsdk.wallet.Wallet;
+import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +28,8 @@ public class Identity {
     }
 
     public String getFullIdentifier() {
-        if (name == null || name.isEmpty()) return wallet.getPublicKeyAsHexString();
-        return name + "." + wallet.getPublicKeyAsHexString();
+        if (name == null || name.isEmpty()) return Hex.toHexString(wallet.getPublicKey());
+        return name + "." + Hex.toHexString(wallet.getPublicKey());
     }
 
 }

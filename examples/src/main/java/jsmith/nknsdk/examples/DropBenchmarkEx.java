@@ -25,10 +25,12 @@ public class DropBenchmarkEx {
 
         for (int test = 0; test < tries; test++) {
 
+            LOG.info("Starting test {} out of {}", test + 1, tries);
+
             final Identity identityA = new Identity("Test." + test + ".A", Wallet.createNew());
             final Identity identityB = new Identity("Test." + test + ".B", Wallet.createNew());
 
-            boolean received[] = {false};
+            boolean[] received = {false};
 
             final NKNClient clientA = new NKNClient(identityA)
                     .start();

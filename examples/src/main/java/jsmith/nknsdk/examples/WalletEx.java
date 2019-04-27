@@ -1,18 +1,13 @@
 package jsmith.nknsdk.examples;
 
 import com.darkyen.tproll.TPLogger;
-import jsmith.nknsdk.client.Identity;
-import jsmith.nknsdk.client.NKNClient;
-import jsmith.nknsdk.client.NKNClientException;
 import jsmith.nknsdk.client.NKNExplorer;
 import jsmith.nknsdk.wallet.NKNTransactions;
 import jsmith.nknsdk.wallet.Wallet;
 import jsmith.nknsdk.wallet.WalletException;
-import org.bouncycastle.util.encoders.Hex;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.concurrent.CompletableFuture;
 
 import static jsmith.nknsdk.examples.LogUtils.setupLogging;
 

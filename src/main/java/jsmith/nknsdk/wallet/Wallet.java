@@ -65,8 +65,6 @@ public class Wallet {
 
         w.seed = seed;
 
-        w.getPublicKeyAsHexString();
-
         w.contractDataStr = Hex.toHexString(w.getSignatureRedeem()) + "00" + Hex.toHexString(w.getProgramHash().toByteArray());
 
         return w;
@@ -202,14 +200,14 @@ public class Wallet {
         return NKNExplorer.queryBalance(asset, getAddress());
     }
 
-    public String getPublicKeyAsHexString() {
+    public byte[] getPublicKey() {
         assert keyPair != null : "KeyPair is null, this should never happen";
 
         final byte[] encodedWithPrefix = keyPair.getPublic().getEncoded();
         final byte[] encoded = new byte[32];
         System.arraycopy(encodedWithPrefix, encodedWithPrefix.length - encoded.length - 1, encoded, 0, encoded.length);
 
-        return Hex.toHexString(encoded);
+        return encoded;
     }
     public String getAddress() {
         return WalletUtils.getAddressFromProgramHash(getProgramHash());
@@ -226,10 +224,7 @@ public class Wallet {
     public byte[] getSignatureRedeem() {
         assert keyPair != null : "KeyPair is null, this should never happen";
 
-        final byte[] encodedWithPrefix = keyPair.getPublic().getEncoded();
-        final byte[] encoded = new byte[32];
-        System.arraycopy(encodedWithPrefix, encodedWithPrefix.length - encoded.length, encoded, 0, encoded.length);
-
+        final byte[] encoded = getPublicKey();
         final byte[] redeem = new byte[2 + encoded.length + 1];
 
         redeem[0] = 0x21;

@@ -1,4 +1,4 @@
-package jsmith.nknsdk.client;
+package jsmith.nknsdk.network;
 
 /**
  *
