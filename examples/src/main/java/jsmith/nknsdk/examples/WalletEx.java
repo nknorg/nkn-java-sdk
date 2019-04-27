@@ -2,7 +2,7 @@ package jsmith.nknsdk.examples;
 
 import com.darkyen.tproll.TPLogger;
 import jsmith.nknsdk.client.NKNExplorer;
-import jsmith.nknsdk.wallet.NKNTransactions;
+import jsmith.nknsdk.wallet.NKNTransaction;
 import jsmith.nknsdk.wallet.Wallet;
 import jsmith.nknsdk.wallet.WalletException;
 
@@ -49,16 +49,30 @@ public class WalletEx {
         final String amount = "0.01";
         System.out.println("Transferring " + amount + " tNKN from " + from.getAddress() + " (" + from.queryBalance() + " tNKN) to " + to.getAddress() + " (" + to.queryBalance() + " tNKN)");
 
-        if (false) {
-            final String txID = NKNTransactions.transferTo(from, to.getAddress(), new BigDecimal(amount)); // Simple single transaction
 
-            if (txID == null) {
-                System.out.println("Transaction failed");
+
+        if (false) {
+            final String nameTxID = new NKNTransaction(from).registerName("NameOfThisWallet"); // Simple registerName transaction
+
+            if (nameTxID == null) {
+                System.out.println("RegisterName Transaction failed");
             } else {
-                System.out.println("Transaction successful: " + txID);
+                System.out.println("RegisterName Transaction successful: " + nameTxID);
             }
         } else {
-            System.out.println("Transaction canceled");
+            System.out.println("RegisterName Transaction canceled");
+        }
+
+        if (true) {
+            final String txID = new NKNTransaction(from).transferTo(to.getAddress(), new BigDecimal(amount)); // Simple single transaction
+
+            if (txID == null) {
+                System.out.println("TransferTo Transaction failed");
+            } else {
+                System.out.println("TransferToTransaction successful: " + txID);
+            }
+        } else {
+            System.out.println("TransferToTransaction canceled");
         }
 
 

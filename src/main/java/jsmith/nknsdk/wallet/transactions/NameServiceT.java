@@ -7,7 +7,7 @@ import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 /**
  *
  */
-public class NameServiceT extends TransferToT {
+public class NameServiceT extends TransactionT {
 
     private String name;
     private ByteString publicKey;

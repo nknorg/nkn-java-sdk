@@ -13,10 +13,10 @@ import java.math.BigDecimal;
 /**
  *
  */
-public class NKNTransactions {
+public class NKNTransaction {
 
     private final Wallet w;
-    public NKNTransactions(Wallet wallet) {
+    public NKNTransaction(Wallet wallet) {
         this.w = wallet;
     }
 

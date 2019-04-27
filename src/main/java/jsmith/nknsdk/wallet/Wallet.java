@@ -205,7 +205,7 @@ public class Wallet {
 
         final byte[] encodedWithPrefix = keyPair.getPublic().getEncoded();
         final byte[] encoded = new byte[32];
-        System.arraycopy(encodedWithPrefix, encodedWithPrefix.length - encoded.length - 1, encoded, 0, encoded.length);
+        System.arraycopy(encodedWithPrefix, encodedWithPrefix.length - encoded.length, encoded, 0, encoded.length);
 
         return encoded;
     }
