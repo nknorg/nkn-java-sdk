@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 public class NKNTransaction {
 
     private final Wallet w;
-    public NKNTransaction(Wallet wallet) {
+    NKNTransaction(Wallet wallet) {
         this.w = wallet;
     }
 

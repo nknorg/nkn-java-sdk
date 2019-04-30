@@ -54,7 +54,7 @@ public class WalletEx {
             final String name = "somename";
             System.out.println("Registering '" + name + "' to " + from.getAddress());
 
-            final String nameTxID = new NKNTransaction(from).registerName(name); // Simple registerName transaction
+            final String nameTxID = from.tx().registerName(name); // Simple registerName transaction
 
             if (nameTxID == null) {
                 System.out.println("  Transaction failed");
@@ -68,7 +68,7 @@ public class WalletEx {
             System.out.println("Transferring " + amount + " tNKN from " + from.getAddress() + " (" + from.queryBalance() + " tNKN) to " + to.getAddress() + " (" + to.queryBalance() + " tNKN)");
 
 
-            final String txID = new NKNTransaction(from).transferTo(to.getAddress(), new BigDecimal(amount)); // Simple single transaction
+            final String txID = from.tx().transferTo(to.getAddress(), new BigDecimal(amount)); // Simple single transaction
 
             if (txID == null) {
                 System.out.println("  Transaction failed");

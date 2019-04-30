@@ -221,4 +221,8 @@ public class Wallet {
         return contractDataStr;
     }
 
+    public NKNTransaction tx() {
+        return new NKNTransaction(this);
+    }
+
 }
