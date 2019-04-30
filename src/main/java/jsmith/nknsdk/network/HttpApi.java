@@ -80,4 +80,13 @@ public class HttpApi {
         return response.has("error") ? null : response.getString("result");
     }
 
+    public static String resolveName(InetSocketAddress server, String name) {
+        final JSONObject params = new JSONObject();
+        params.put("name", name);
+
+        final JSONObject response = rpcCallJson(server, "getaddressbyname", params);
+
+        return response.has("error") ? null : response.getString("result");
+    }
+
 }

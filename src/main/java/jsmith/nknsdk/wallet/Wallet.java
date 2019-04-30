@@ -65,7 +65,7 @@ public class Wallet {
 
         w.seed = seed;
 
-        w.contractDataStr = Hex.toHexString(w.getSignatureRedeem()) + "00" + Hex.toHexString(w.getProgramHash().toByteArray());
+        w.contractDataStr = Hex.toHexString(WalletUtils.getSignatureRedeemFromPublicKey(w.getPublicKey())) + "00" + Hex.toHexString(w.getProgramHash().toByteArray());
 
         return w;
     }
@@ -137,7 +137,7 @@ public class Wallet {
     }
 
     public String submitTransaction(TransactionT tx) throws WalletException {
-        final String txRaw = Hex.toHexString(tx.build((EdDSAPrivateKey) keyPair.getPrivate(), ByteString.copyFrom(getSignatureRedeem())).toByteArray());
+        final String txRaw = Hex.toHexString(tx.build((EdDSAPrivateKey) keyPair.getPrivate(), ByteString.copyFrom(WalletUtils.getSignatureRedeemFromPublicKey(getPublicKey()))).toByteArray());
         try {
             return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.sendRawTransaction(bootstrapNode, txRaw));
         } catch (Exception t) {
@@ -214,25 +214,11 @@ public class Wallet {
     }
 
     public ByteString getProgramHash() {
-        return ByteString.copyFrom(r160(sha256(getSignatureRedeem())));
+        return ByteString.copyFrom(WalletUtils.getProgramHashFromPublicKey(getPublicKey()));
     }
 
     public String getContractDataAsString() {
         return contractDataStr;
-    }
-
-    public byte[] getSignatureRedeem() {
-        assert keyPair != null : "KeyPair is null, this should never happen";
-
-        final byte[] encoded = getPublicKey();
-        final byte[] redeem = new byte[2 + encoded.length + 1];
-
-        redeem[0] = 0x21;
-        redeem[1] = 0x04;
-        redeem[redeem.length - 1] = (byte) 0xAC;
-        System.arraycopy(encoded, 0, redeem, 2, encoded.length);
-
-        return redeem;
     }
 
 }

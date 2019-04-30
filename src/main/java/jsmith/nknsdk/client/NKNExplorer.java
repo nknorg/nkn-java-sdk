@@ -1,5 +1,6 @@
 package jsmith.nknsdk.client;
 
+import com.google.protobuf.ByteString;
 import jsmith.nknsdk.network.ConnectionProvider;
 import jsmith.nknsdk.network.HttpApi;
 import jsmith.nknsdk.utils.Base58;
@@ -55,6 +56,16 @@ public class NKNExplorer {
 
         } catch (IllegalArgumentException e) { // Not Base58 input
             return false;
+        }
+    }
+
+    public static String resolveNamedAddress(String name) throws WalletException {
+        // https://github.com/nknorg/nkn/blob/master/api/common/interfaces.go#L1070
+        try {
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.resolveName(bootstrapNode, name));
+        } catch (Exception t) {
+            if (t instanceof WalletException) throw (WalletException) t;
+            throw new WalletException("Failed to query balance", t);
         }
     }
 

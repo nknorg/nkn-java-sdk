@@ -4,7 +4,7 @@ import com.google.protobuf.ByteString;
 import jsmith.nknsdk.utils.Base58;
 import org.bouncycastle.util.encoders.Hex;
 
-import static jsmith.nknsdk.utils.Crypto.doubleSha256;
+import static jsmith.nknsdk.utils.Crypto.*;
 
 /**
  *
@@ -47,6 +47,24 @@ public class WalletUtils {
 
     public static String getAddressFromProgramHash(byte[] programHash) {
         return getAddressFromProgramHash(ByteString.copyFrom(programHash));
+    }
+
+    public static byte[] getProgramHashFromPublicKey(byte[] publicKey) {
+        return r160(sha256(getSignatureRedeemFromPublicKey(publicKey)));
+    }
+
+
+    public static byte[] getSignatureRedeemFromPublicKey(byte[] publicKey) {
+        if (publicKey == null || publicKey.length != 32) throw new IllegalArgumentException("Not a valid public key was provided");
+
+        final byte[] redeem = new byte[2 + publicKey.length + 1];
+
+        redeem[0] = 0x21;
+        redeem[1] = 0x04;
+        redeem[redeem.length - 1] = (byte) 0xAC;
+        System.arraycopy(publicKey, 0, redeem, 2, publicKey.length);
+
+        return redeem;
     }
 
 }

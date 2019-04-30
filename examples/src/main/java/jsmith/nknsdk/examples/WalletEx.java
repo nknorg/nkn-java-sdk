@@ -8,7 +8,6 @@ import jsmith.nknsdk.wallet.WalletException;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.sql.SQLOutput;
 
 import static jsmith.nknsdk.examples.LogUtils.setupLogging;
 
@@ -48,8 +47,10 @@ public class WalletEx {
         final Wallet to = Wallet.load(toFile, "pwd");
 
         System.out.println("Balance at " + from.getAddress() + " is " + from.queryBalance() + " tNKN");
+        final String nsQueryName = "somename";
+        System.out.println("Name '" + nsQueryName + "' is registered to: " + NKNExplorer.resolveNamedAddress(nsQueryName));
 
-        if (true) {
+        if (false) {
             final String name = "somename";
             System.out.println("Registering '" + name + "' to " + from.getAddress());
 
