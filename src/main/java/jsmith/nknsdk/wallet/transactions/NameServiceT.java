@@ -4,6 +4,8 @@ import com.google.protobuf.ByteString;
 import jsmith.nknsdk.network.proto.TransactionpayloadP;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 
+import java.nio.ByteBuffer;
+
 /**
  *
  */
@@ -48,7 +50,7 @@ public class NameServiceT extends TransactionT {
 
         final TransactionpayloadP.RegisterName.Builder txName = TransactionpayloadP.RegisterName.newBuilder();
         txName.setName(name);
-        txName.setRegistrant(publicKey);
+        txName.setRegistrant(ByteString.copyFrom(new byte[] { 0x04 }).concat(publicKey));
 
         final TransactionpayloadP.TransactionPayload.Builder txPayload = TransactionpayloadP.TransactionPayload.newBuilder();
         txPayload.setType(type.protoTxType);
