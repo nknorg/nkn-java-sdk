@@ -22,15 +22,6 @@ public class HttpApi {
 
     private static final Webb webb = new Webb(null);
 
-    public static String rpcCall(InetSocketAddress to, String method, JSONObject parameters) {
-        final JSONObject result = rpcCallJson(to, method, parameters);
-        if (result.has("result")) return result.getString("result");
-
-        LOG.warn("Invalid response format, does not contain field result: {}", result);
-
-        return null;
-    }
-
     public static JSONObject rpcCallJson(InetSocketAddress to, String method, JSONObject parameters) {
 
         final JSONObject requestBody = new JSONObject();

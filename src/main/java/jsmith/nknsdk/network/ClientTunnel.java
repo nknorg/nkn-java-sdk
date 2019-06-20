@@ -77,7 +77,10 @@ public class ClientTunnel {
 
             LOG.debug("Client is connecting to bootstrapNode node: {}", bootstrapNode);
 
-            final String wsAddr = HttpApi.rpcCall(bootstrapNode, "getwsaddr", parameters);
+            final JSONObject result = HttpApi.rpcCallJson(bootstrapNode, "getwsaddr", parameters);
+            final String wsAddr = result.has("result") ? result.getJSONObject("result").getString("addr") : null;
+
+            LOG.warn("Invalid response format, does not contain field result: {}", result);
 
             if (wsAddr != null) {
                 try {
