@@ -3,6 +3,7 @@ package jsmith.nknsdk.network;
 import com.darkyen.dave.Response;
 import com.darkyen.dave.ResponseTranslator;
 import com.darkyen.dave.Webb;
+import jsmith.nknsdk.client.NKNExplorer;
 import jsmith.nknsdk.wallet.Asset;
 import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONObject;
@@ -46,6 +47,24 @@ public class HttpApi {
                 .execute(ResponseTranslator.STRING_TRANSLATOR);
 
         return new JSONObject(response.getBody());
+    }
+
+    public static NKNExplorer.Subscriber[] getSubscribers(InetSocketAddress server, String topic, int bucket) {
+        final JSONObject params = new JSONObject();
+        params.put("topic", topic);
+        params.put("bucket", bucket);
+
+        final JSONObject response = rpcCallJson(server, "getsubscribers", params);
+        final JSONObject result = response.getJSONObject("result");
+
+        final NKNExplorer.Subscriber[] subscribers = new NKNExplorer.Subscriber[result.length()];
+
+        int i = 0;
+        for (String id : result.keySet()) {
+            subscribers[i++] = new NKNExplorer.Subscriber(id, result.getString(id));
+        }
+
+        return subscribers;
     }
 
     public static BigDecimal getBalance(InetSocketAddress server, String nknAddress, Asset asset) {

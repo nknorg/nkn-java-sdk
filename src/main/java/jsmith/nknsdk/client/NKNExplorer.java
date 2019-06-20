@@ -1,6 +1,5 @@
 package jsmith.nknsdk.client;
 
-import com.google.protobuf.ByteString;
 import jsmith.nknsdk.network.ConnectionProvider;
 import jsmith.nknsdk.network.HttpApi;
 import jsmith.nknsdk.utils.Base58;
@@ -68,5 +67,25 @@ public class NKNExplorer {
             throw new WalletException("Failed to query balance", t);
         }
     }
+
+    public static Subscriber[] getSubscribers(String topic, int bucket) throws WalletException {
+        try {
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getSubscribers(bootstrapNode, topic, bucket));
+        } catch (Exception t) {
+            if (t instanceof WalletException) throw (WalletException) t;
+            throw new WalletException("Failed to query subscribers", t);
+        }
+    }
+
+    public static final class Subscriber {
+        public final String fullClientIdentifier;
+        public final String meta;
+
+        public Subscriber(String fullClientIdentifier, String meta) {
+            this.fullClientIdentifier = fullClientIdentifier;
+            this.meta = meta;
+        }
+    }
+
 
 }

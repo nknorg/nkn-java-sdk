@@ -4,8 +4,6 @@ import com.google.protobuf.ByteString;
 import jsmith.nknsdk.network.proto.TransactionpayloadP;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 
-import java.nio.ByteBuffer;
-
 /**
  *
  */
@@ -13,7 +11,7 @@ public class NameServiceT extends TransactionT {
 
     private String name;
     private ByteString publicKey;
-    private NameServiceType type;
+    private NameServiceType type = NameServiceType.REGISTER;
 
     public String getName() {
         if (dirty) throw new IllegalStateException("Transaction is in dirty state");
@@ -50,7 +48,7 @@ public class NameServiceT extends TransactionT {
 
         final TransactionpayloadP.RegisterName.Builder txName = TransactionpayloadP.RegisterName.newBuilder();
         txName.setName(name);
-        txName.setRegistrant(ByteString.copyFrom(new byte[] { 0x04 }).concat(publicKey));
+        txName.setRegistrant(publicKey);
 
         final TransactionpayloadP.TransactionPayload.Builder txPayload = TransactionpayloadP.TransactionPayload.newBuilder();
         txPayload.setType(type.protoTxType);

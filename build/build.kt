@@ -83,3 +83,16 @@ val WalletExample by project(path("examples")) {
     runDirectory set { projectRoot.get() }
 
 }
+
+val PubSubExample by project(path("examples")) {
+
+    projectDependencies add { ProjectDependency(NknSdk, false) }
+
+    repositories add { Jitpack }
+    libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.1") } // Logging frontend
+
+    mainClass set { "jsmith.nknsdk.examples.PubSubEx" }
+
+    runDirectory set { projectRoot.get() }
+
+}

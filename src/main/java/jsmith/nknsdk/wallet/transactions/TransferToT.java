@@ -12,7 +12,7 @@ public class TransferToT extends TransactionT {
 
     private ByteString recipientProgramHash;
     private ByteString senderProgramHash;
-    private long amountLongValue;
+    private long amountLongValue = 0;
 
 
     public long getAmountInLongValue() {
