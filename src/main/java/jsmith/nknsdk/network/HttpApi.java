@@ -80,11 +80,14 @@ public class HttpApi {
     public static long getNonce(InetSocketAddress server, String nknAddress, Asset asset) {
         final JSONObject params = new JSONObject();
         params.put("address", nknAddress);
-//        params.put("assetid", asset.ID); // TODO: Is it possible to set assetid in devnet?
 
         final JSONObject response = rpcCallJson(server, "getnoncebyaddr", params);
 
-        return response.getJSONObject("result").getLong("nonce");
+        long nonce = response.getJSONObject("result").getLong("nonce");
+        if (response.getJSONObject("result").has("nonceInTxPool")) {
+            nonce = Math.max(nonce, response.getJSONObject("result").getLong("nonceInTxPool"));
+        }
+        return nonce;
     }
 
     public static void sendRawTransaction(InetSocketAddress server, byte[] tx) {
