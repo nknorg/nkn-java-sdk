@@ -1,7 +1,7 @@
  package jsmith.nknsdk.wallet.transactions;
 
 import com.google.protobuf.ByteString;
-import jsmith.nknsdk.network.proto.TransactionpayloadP;
+import jsmith.nknsdk.network.proto.TransactionP;
 import jsmith.nknsdk.wallet.WalletUtils;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 
@@ -66,13 +66,13 @@ public class TransferToT extends TransactionT {
     @Override
     public ByteString build(EdDSAPrivateKey privateKey, ByteString signatureRedeem) {
 
-        final TransactionpayloadP.TransferAsset.Builder txAsset = TransactionpayloadP.TransferAsset.newBuilder();
+        final TransactionP.TransferAsset.Builder txAsset = TransactionP.TransferAsset.newBuilder();
         txAsset.setSender(senderProgramHash);
         txAsset.setRecipient(recipientProgramHash);
         txAsset.setAmount(amountLongValue);
 
-        final TransactionpayloadP.TransactionPayload.Builder txPayload = TransactionpayloadP.TransactionPayload.newBuilder();
-        txPayload.setType(TransactionpayloadP.TransactionPayloadType.TransferAssetType);
+        final TransactionP.TransactionPayload.Builder txPayload = TransactionP.TransactionPayload.newBuilder();
+        txPayload.setType(TransactionP.TransactionPayloadType.TRANSFER_ASSET_TYPE);
         txPayload.setData(txAsset.build().toByteString());
 
         payload = txPayload.build();

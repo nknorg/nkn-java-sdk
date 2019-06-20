@@ -14,6 +14,2112 @@ public final class MessagesP {
     registerAllExtensions(
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
+  /**
+   * Protobuf enum {@code jsmith.nknsdk.network.proto.PayloadType}
+   */
+  public enum PayloadType
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>BINARY = 0;</code>
+     */
+    BINARY(0),
+    /**
+     * <code>TEXT = 1;</code>
+     */
+    TEXT(1),
+    /**
+     * <code>ACK = 2;</code>
+     */
+    ACK(2),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>BINARY = 0;</code>
+     */
+    public static final int BINARY_VALUE = 0;
+    /**
+     * <code>TEXT = 1;</code>
+     */
+    public static final int TEXT_VALUE = 1;
+    /**
+     * <code>ACK = 2;</code>
+     */
+    public static final int ACK_VALUE = 2;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static PayloadType valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static PayloadType forNumber(int value) {
+      switch (value) {
+        case 0: return BINARY;
+        case 1: return TEXT;
+        case 2: return ACK;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<PayloadType>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        PayloadType> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<PayloadType>() {
+            public PayloadType findValueByNumber(int number) {
+              return PayloadType.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return jsmith.nknsdk.network.proto.MessagesP.getDescriptor().getEnumTypes().get(0);
+    }
+
+    private static final PayloadType[] VALUES = values();
+
+    public static PayloadType valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private PayloadType(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:jsmith.nknsdk.network.proto.PayloadType)
+  }
+
+  /**
+   * Protobuf enum {@code jsmith.nknsdk.network.proto.MessageType}
+   */
+  public enum MessageType
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>CLIENT_TO_NODE_MESSAGE = 0;</code>
+     */
+    CLIENT_TO_NODE_MESSAGE(0),
+    /**
+     * <code>NODE_TO_CLIENT_MESSAGE = 1;</code>
+     */
+    NODE_TO_CLIENT_MESSAGE(1),
+    /**
+     * <code>RECEIPT = 2;</code>
+     */
+    RECEIPT(2),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>CLIENT_TO_NODE_MESSAGE = 0;</code>
+     */
+    public static final int CLIENT_TO_NODE_MESSAGE_VALUE = 0;
+    /**
+     * <code>NODE_TO_CLIENT_MESSAGE = 1;</code>
+     */
+    public static final int NODE_TO_CLIENT_MESSAGE_VALUE = 1;
+    /**
+     * <code>RECEIPT = 2;</code>
+     */
+    public static final int RECEIPT_VALUE = 2;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static MessageType valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static MessageType forNumber(int value) {
+      switch (value) {
+        case 0: return CLIENT_TO_NODE_MESSAGE;
+        case 1: return NODE_TO_CLIENT_MESSAGE;
+        case 2: return RECEIPT;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<MessageType>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        MessageType> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<MessageType>() {
+            public MessageType findValueByNumber(int number) {
+              return MessageType.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return jsmith.nknsdk.network.proto.MessagesP.getDescriptor().getEnumTypes().get(1);
+    }
+
+    private static final MessageType[] VALUES = values();
+
+    public static MessageType valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private MessageType(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:jsmith.nknsdk.network.proto.MessageType)
+  }
+
+  public interface PayloadOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:jsmith.nknsdk.network.proto.Payload)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.jsmith.nknsdk.network.proto.PayloadType type = 1;</code>
+     */
+    int getTypeValue();
+    /**
+     * <code>.jsmith.nknsdk.network.proto.PayloadType type = 1;</code>
+     */
+    jsmith.nknsdk.network.proto.MessagesP.PayloadType getType();
+
+    /**
+     * <code>bytes pid = 2;</code>
+     */
+    com.google.protobuf.ByteString getPid();
+
+    /**
+     * <code>bytes data = 3;</code>
+     */
+    com.google.protobuf.ByteString getData();
+
+    /**
+     * <code>bytes reply_to_pid = 4;</code>
+     */
+    com.google.protobuf.ByteString getReplyToPid();
+
+    /**
+     * <code>bool no_ack = 5;</code>
+     */
+    boolean getNoAck();
+  }
+  /**
+   * Protobuf type {@code jsmith.nknsdk.network.proto.Payload}
+   */
+  public  static final class Payload extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:jsmith.nknsdk.network.proto.Payload)
+      PayloadOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Payload.newBuilder() to construct.
+    private Payload(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Payload() {
+      type_ = 0;
+      pid_ = com.google.protobuf.ByteString.EMPTY;
+      data_ = com.google.protobuf.ByteString.EMPTY;
+      replyToPid_ = com.google.protobuf.ByteString.EMPTY;
+      noAck_ = false;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Payload(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+              int rawValue = input.readEnum();
+
+              type_ = rawValue;
+              break;
+            }
+            case 18: {
+
+              pid_ = input.readBytes();
+              break;
+            }
+            case 26: {
+
+              data_ = input.readBytes();
+              break;
+            }
+            case 34: {
+
+              replyToPid_ = input.readBytes();
+              break;
+            }
+            case 40: {
+
+              noAck_ = input.readBool();
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Payload_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Payload_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              jsmith.nknsdk.network.proto.MessagesP.Payload.class, jsmith.nknsdk.network.proto.MessagesP.Payload.Builder.class);
+    }
+
+    public static final int TYPE_FIELD_NUMBER = 1;
+    private int type_;
+    /**
+     * <code>.jsmith.nknsdk.network.proto.PayloadType type = 1;</code>
+     */
+    public int getTypeValue() {
+      return type_;
+    }
+    /**
+     * <code>.jsmith.nknsdk.network.proto.PayloadType type = 1;</code>
+     */
+    public jsmith.nknsdk.network.proto.MessagesP.PayloadType getType() {
+      @SuppressWarnings("deprecation")
+      jsmith.nknsdk.network.proto.MessagesP.PayloadType result = jsmith.nknsdk.network.proto.MessagesP.PayloadType.valueOf(type_);
+      return result == null ? jsmith.nknsdk.network.proto.MessagesP.PayloadType.UNRECOGNIZED : result;
+    }
+
+    public static final int PID_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString pid_;
+    /**
+     * <code>bytes pid = 2;</code>
+     */
+    public com.google.protobuf.ByteString getPid() {
+      return pid_;
+    }
+
+    public static final int DATA_FIELD_NUMBER = 3;
+    private com.google.protobuf.ByteString data_;
+    /**
+     * <code>bytes data = 3;</code>
+     */
+    public com.google.protobuf.ByteString getData() {
+      return data_;
+    }
+
+    public static final int REPLY_TO_PID_FIELD_NUMBER = 4;
+    private com.google.protobuf.ByteString replyToPid_;
+    /**
+     * <code>bytes reply_to_pid = 4;</code>
+     */
+    public com.google.protobuf.ByteString getReplyToPid() {
+      return replyToPid_;
+    }
+
+    public static final int NO_ACK_FIELD_NUMBER = 5;
+    private boolean noAck_;
+    /**
+     * <code>bool no_ack = 5;</code>
+     */
+    public boolean getNoAck() {
+      return noAck_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (type_ != jsmith.nknsdk.network.proto.MessagesP.PayloadType.BINARY.getNumber()) {
+        output.writeEnum(1, type_);
+      }
+      if (!pid_.isEmpty()) {
+        output.writeBytes(2, pid_);
+      }
+      if (!data_.isEmpty()) {
+        output.writeBytes(3, data_);
+      }
+      if (!replyToPid_.isEmpty()) {
+        output.writeBytes(4, replyToPid_);
+      }
+      if (noAck_ != false) {
+        output.writeBool(5, noAck_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (type_ != jsmith.nknsdk.network.proto.MessagesP.PayloadType.BINARY.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, type_);
+      }
+      if (!pid_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, pid_);
+      }
+      if (!data_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, data_);
+      }
+      if (!replyToPid_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, replyToPid_);
+      }
+      if (noAck_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(5, noAck_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof jsmith.nknsdk.network.proto.MessagesP.Payload)) {
+        return super.equals(obj);
+      }
+      jsmith.nknsdk.network.proto.MessagesP.Payload other = (jsmith.nknsdk.network.proto.MessagesP.Payload) obj;
+
+      boolean result = true;
+      result = result && type_ == other.type_;
+      result = result && getPid()
+          .equals(other.getPid());
+      result = result && getData()
+          .equals(other.getData());
+      result = result && getReplyToPid()
+          .equals(other.getReplyToPid());
+      result = result && (getNoAck()
+          == other.getNoAck());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + type_;
+      hash = (37 * hash) + PID_FIELD_NUMBER;
+      hash = (53 * hash) + getPid().hashCode();
+      hash = (37 * hash) + DATA_FIELD_NUMBER;
+      hash = (53 * hash) + getData().hashCode();
+      hash = (37 * hash) + REPLY_TO_PID_FIELD_NUMBER;
+      hash = (53 * hash) + getReplyToPid().hashCode();
+      hash = (37 * hash) + NO_ACK_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getNoAck());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static jsmith.nknsdk.network.proto.MessagesP.Payload parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Payload parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Payload parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Payload parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Payload parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Payload parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Payload parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Payload parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Payload parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Payload parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Payload parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Payload parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(jsmith.nknsdk.network.proto.MessagesP.Payload prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code jsmith.nknsdk.network.proto.Payload}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:jsmith.nknsdk.network.proto.Payload)
+        jsmith.nknsdk.network.proto.MessagesP.PayloadOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Payload_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Payload_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                jsmith.nknsdk.network.proto.MessagesP.Payload.class, jsmith.nknsdk.network.proto.MessagesP.Payload.Builder.class);
+      }
+
+      // Construct using jsmith.nknsdk.network.proto.MessagesP.Payload.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        type_ = 0;
+
+        pid_ = com.google.protobuf.ByteString.EMPTY;
+
+        data_ = com.google.protobuf.ByteString.EMPTY;
+
+        replyToPid_ = com.google.protobuf.ByteString.EMPTY;
+
+        noAck_ = false;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Payload_descriptor;
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.Payload getDefaultInstanceForType() {
+        return jsmith.nknsdk.network.proto.MessagesP.Payload.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.Payload build() {
+        jsmith.nknsdk.network.proto.MessagesP.Payload result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.Payload buildPartial() {
+        jsmith.nknsdk.network.proto.MessagesP.Payload result = new jsmith.nknsdk.network.proto.MessagesP.Payload(this);
+        result.type_ = type_;
+        result.pid_ = pid_;
+        result.data_ = data_;
+        result.replyToPid_ = replyToPid_;
+        result.noAck_ = noAck_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof jsmith.nknsdk.network.proto.MessagesP.Payload) {
+          return mergeFrom((jsmith.nknsdk.network.proto.MessagesP.Payload)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(jsmith.nknsdk.network.proto.MessagesP.Payload other) {
+        if (other == jsmith.nknsdk.network.proto.MessagesP.Payload.getDefaultInstance()) return this;
+        if (other.type_ != 0) {
+          setTypeValue(other.getTypeValue());
+        }
+        if (other.getPid() != com.google.protobuf.ByteString.EMPTY) {
+          setPid(other.getPid());
+        }
+        if (other.getData() != com.google.protobuf.ByteString.EMPTY) {
+          setData(other.getData());
+        }
+        if (other.getReplyToPid() != com.google.protobuf.ByteString.EMPTY) {
+          setReplyToPid(other.getReplyToPid());
+        }
+        if (other.getNoAck() != false) {
+          setNoAck(other.getNoAck());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        jsmith.nknsdk.network.proto.MessagesP.Payload parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (jsmith.nknsdk.network.proto.MessagesP.Payload) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int type_ = 0;
+      /**
+       * <code>.jsmith.nknsdk.network.proto.PayloadType type = 1;</code>
+       */
+      public int getTypeValue() {
+        return type_;
+      }
+      /**
+       * <code>.jsmith.nknsdk.network.proto.PayloadType type = 1;</code>
+       */
+      public Builder setTypeValue(int value) {
+        type_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.jsmith.nknsdk.network.proto.PayloadType type = 1;</code>
+       */
+      public jsmith.nknsdk.network.proto.MessagesP.PayloadType getType() {
+        @SuppressWarnings("deprecation")
+        jsmith.nknsdk.network.proto.MessagesP.PayloadType result = jsmith.nknsdk.network.proto.MessagesP.PayloadType.valueOf(type_);
+        return result == null ? jsmith.nknsdk.network.proto.MessagesP.PayloadType.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.jsmith.nknsdk.network.proto.PayloadType type = 1;</code>
+       */
+      public Builder setType(jsmith.nknsdk.network.proto.MessagesP.PayloadType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        type_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.jsmith.nknsdk.network.proto.PayloadType type = 1;</code>
+       */
+      public Builder clearType() {
+        
+        type_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString pid_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes pid = 2;</code>
+       */
+      public com.google.protobuf.ByteString getPid() {
+        return pid_;
+      }
+      /**
+       * <code>bytes pid = 2;</code>
+       */
+      public Builder setPid(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        pid_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes pid = 2;</code>
+       */
+      public Builder clearPid() {
+        
+        pid_ = getDefaultInstance().getPid();
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes data = 3;</code>
+       */
+      public com.google.protobuf.ByteString getData() {
+        return data_;
+      }
+      /**
+       * <code>bytes data = 3;</code>
+       */
+      public Builder setData(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        data_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes data = 3;</code>
+       */
+      public Builder clearData() {
+        
+        data_ = getDefaultInstance().getData();
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString replyToPid_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes reply_to_pid = 4;</code>
+       */
+      public com.google.protobuf.ByteString getReplyToPid() {
+        return replyToPid_;
+      }
+      /**
+       * <code>bytes reply_to_pid = 4;</code>
+       */
+      public Builder setReplyToPid(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        replyToPid_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes reply_to_pid = 4;</code>
+       */
+      public Builder clearReplyToPid() {
+        
+        replyToPid_ = getDefaultInstance().getReplyToPid();
+        onChanged();
+        return this;
+      }
+
+      private boolean noAck_ ;
+      /**
+       * <code>bool no_ack = 5;</code>
+       */
+      public boolean getNoAck() {
+        return noAck_;
+      }
+      /**
+       * <code>bool no_ack = 5;</code>
+       */
+      public Builder setNoAck(boolean value) {
+        
+        noAck_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool no_ack = 5;</code>
+       */
+      public Builder clearNoAck() {
+        
+        noAck_ = false;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:jsmith.nknsdk.network.proto.Payload)
+    }
+
+    // @@protoc_insertion_point(class_scope:jsmith.nknsdk.network.proto.Payload)
+    private static final jsmith.nknsdk.network.proto.MessagesP.Payload DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new jsmith.nknsdk.network.proto.MessagesP.Payload();
+    }
+
+    public static jsmith.nknsdk.network.proto.MessagesP.Payload getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Payload>
+        PARSER = new com.google.protobuf.AbstractParser<Payload>() {
+      @java.lang.Override
+      public Payload parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Payload(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Payload> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Payload> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public jsmith.nknsdk.network.proto.MessagesP.Payload getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface TextDataOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:jsmith.nknsdk.network.proto.TextData)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string text = 1;</code>
+     */
+    java.lang.String getText();
+    /**
+     * <code>string text = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getTextBytes();
+  }
+  /**
+   * Protobuf type {@code jsmith.nknsdk.network.proto.TextData}
+   */
+  public  static final class TextData extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:jsmith.nknsdk.network.proto.TextData)
+      TextDataOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use TextData.newBuilder() to construct.
+    private TextData(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private TextData() {
+      text_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private TextData(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              text_ = s;
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_TextData_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_TextData_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              jsmith.nknsdk.network.proto.MessagesP.TextData.class, jsmith.nknsdk.network.proto.MessagesP.TextData.Builder.class);
+    }
+
+    public static final int TEXT_FIELD_NUMBER = 1;
+    private volatile java.lang.Object text_;
+    /**
+     * <code>string text = 1;</code>
+     */
+    public java.lang.String getText() {
+      java.lang.Object ref = text_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        text_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string text = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTextBytes() {
+      java.lang.Object ref = text_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        text_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!getTextBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, text_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!getTextBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, text_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof jsmith.nknsdk.network.proto.MessagesP.TextData)) {
+        return super.equals(obj);
+      }
+      jsmith.nknsdk.network.proto.MessagesP.TextData other = (jsmith.nknsdk.network.proto.MessagesP.TextData) obj;
+
+      boolean result = true;
+      result = result && getText()
+          .equals(other.getText());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TEXT_FIELD_NUMBER;
+      hash = (53 * hash) + getText().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static jsmith.nknsdk.network.proto.MessagesP.TextData parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.TextData parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.TextData parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.TextData parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.TextData parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.TextData parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.TextData parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.TextData parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.TextData parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.TextData parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.TextData parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.TextData parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(jsmith.nknsdk.network.proto.MessagesP.TextData prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code jsmith.nknsdk.network.proto.TextData}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:jsmith.nknsdk.network.proto.TextData)
+        jsmith.nknsdk.network.proto.MessagesP.TextDataOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_TextData_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_TextData_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                jsmith.nknsdk.network.proto.MessagesP.TextData.class, jsmith.nknsdk.network.proto.MessagesP.TextData.Builder.class);
+      }
+
+      // Construct using jsmith.nknsdk.network.proto.MessagesP.TextData.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        text_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_TextData_descriptor;
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.TextData getDefaultInstanceForType() {
+        return jsmith.nknsdk.network.proto.MessagesP.TextData.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.TextData build() {
+        jsmith.nknsdk.network.proto.MessagesP.TextData result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.TextData buildPartial() {
+        jsmith.nknsdk.network.proto.MessagesP.TextData result = new jsmith.nknsdk.network.proto.MessagesP.TextData(this);
+        result.text_ = text_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof jsmith.nknsdk.network.proto.MessagesP.TextData) {
+          return mergeFrom((jsmith.nknsdk.network.proto.MessagesP.TextData)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(jsmith.nknsdk.network.proto.MessagesP.TextData other) {
+        if (other == jsmith.nknsdk.network.proto.MessagesP.TextData.getDefaultInstance()) return this;
+        if (!other.getText().isEmpty()) {
+          text_ = other.text_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        jsmith.nknsdk.network.proto.MessagesP.TextData parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (jsmith.nknsdk.network.proto.MessagesP.TextData) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object text_ = "";
+      /**
+       * <code>string text = 1;</code>
+       */
+      public java.lang.String getText() {
+        java.lang.Object ref = text_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          text_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string text = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTextBytes() {
+        java.lang.Object ref = text_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          text_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string text = 1;</code>
+       */
+      public Builder setText(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        text_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string text = 1;</code>
+       */
+      public Builder clearText() {
+        
+        text_ = getDefaultInstance().getText();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string text = 1;</code>
+       */
+      public Builder setTextBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        text_ = value;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:jsmith.nknsdk.network.proto.TextData)
+    }
+
+    // @@protoc_insertion_point(class_scope:jsmith.nknsdk.network.proto.TextData)
+    private static final jsmith.nknsdk.network.proto.MessagesP.TextData DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new jsmith.nknsdk.network.proto.MessagesP.TextData();
+    }
+
+    public static jsmith.nknsdk.network.proto.MessagesP.TextData getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<TextData>
+        PARSER = new com.google.protobuf.AbstractParser<TextData>() {
+      @java.lang.Override
+      public TextData parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new TextData(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<TextData> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<TextData> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public jsmith.nknsdk.network.proto.MessagesP.TextData getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface MessageOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:jsmith.nknsdk.network.proto.Message)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.jsmith.nknsdk.network.proto.MessageType message_type = 1;</code>
+     */
+    int getMessageTypeValue();
+    /**
+     * <code>.jsmith.nknsdk.network.proto.MessageType message_type = 1;</code>
+     */
+    jsmith.nknsdk.network.proto.MessagesP.MessageType getMessageType();
+
+    /**
+     * <code>bytes message = 2;</code>
+     */
+    com.google.protobuf.ByteString getMessage();
+  }
+  /**
+   * Protobuf type {@code jsmith.nknsdk.network.proto.Message}
+   */
+  public  static final class Message extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:jsmith.nknsdk.network.proto.Message)
+      MessageOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Message.newBuilder() to construct.
+    private Message(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Message() {
+      messageType_ = 0;
+      message_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Message(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+              int rawValue = input.readEnum();
+
+              messageType_ = rawValue;
+              break;
+            }
+            case 18: {
+
+              message_ = input.readBytes();
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Message_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Message_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              jsmith.nknsdk.network.proto.MessagesP.Message.class, jsmith.nknsdk.network.proto.MessagesP.Message.Builder.class);
+    }
+
+    public static final int MESSAGE_TYPE_FIELD_NUMBER = 1;
+    private int messageType_;
+    /**
+     * <code>.jsmith.nknsdk.network.proto.MessageType message_type = 1;</code>
+     */
+    public int getMessageTypeValue() {
+      return messageType_;
+    }
+    /**
+     * <code>.jsmith.nknsdk.network.proto.MessageType message_type = 1;</code>
+     */
+    public jsmith.nknsdk.network.proto.MessagesP.MessageType getMessageType() {
+      @SuppressWarnings("deprecation")
+      jsmith.nknsdk.network.proto.MessagesP.MessageType result = jsmith.nknsdk.network.proto.MessagesP.MessageType.valueOf(messageType_);
+      return result == null ? jsmith.nknsdk.network.proto.MessagesP.MessageType.UNRECOGNIZED : result;
+    }
+
+    public static final int MESSAGE_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString message_;
+    /**
+     * <code>bytes message = 2;</code>
+     */
+    public com.google.protobuf.ByteString getMessage() {
+      return message_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (messageType_ != jsmith.nknsdk.network.proto.MessagesP.MessageType.CLIENT_TO_NODE_MESSAGE.getNumber()) {
+        output.writeEnum(1, messageType_);
+      }
+      if (!message_.isEmpty()) {
+        output.writeBytes(2, message_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (messageType_ != jsmith.nknsdk.network.proto.MessagesP.MessageType.CLIENT_TO_NODE_MESSAGE.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, messageType_);
+      }
+      if (!message_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, message_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof jsmith.nknsdk.network.proto.MessagesP.Message)) {
+        return super.equals(obj);
+      }
+      jsmith.nknsdk.network.proto.MessagesP.Message other = (jsmith.nknsdk.network.proto.MessagesP.Message) obj;
+
+      boolean result = true;
+      result = result && messageType_ == other.messageType_;
+      result = result && getMessage()
+          .equals(other.getMessage());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + MESSAGE_TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + messageType_;
+      hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
+      hash = (53 * hash) + getMessage().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static jsmith.nknsdk.network.proto.MessagesP.Message parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Message parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Message parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Message parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Message parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Message parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Message parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Message parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Message parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Message parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Message parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Message parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(jsmith.nknsdk.network.proto.MessagesP.Message prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code jsmith.nknsdk.network.proto.Message}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:jsmith.nknsdk.network.proto.Message)
+        jsmith.nknsdk.network.proto.MessagesP.MessageOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Message_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Message_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                jsmith.nknsdk.network.proto.MessagesP.Message.class, jsmith.nknsdk.network.proto.MessagesP.Message.Builder.class);
+      }
+
+      // Construct using jsmith.nknsdk.network.proto.MessagesP.Message.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        messageType_ = 0;
+
+        message_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Message_descriptor;
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.Message getDefaultInstanceForType() {
+        return jsmith.nknsdk.network.proto.MessagesP.Message.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.Message build() {
+        jsmith.nknsdk.network.proto.MessagesP.Message result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.Message buildPartial() {
+        jsmith.nknsdk.network.proto.MessagesP.Message result = new jsmith.nknsdk.network.proto.MessagesP.Message(this);
+        result.messageType_ = messageType_;
+        result.message_ = message_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof jsmith.nknsdk.network.proto.MessagesP.Message) {
+          return mergeFrom((jsmith.nknsdk.network.proto.MessagesP.Message)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(jsmith.nknsdk.network.proto.MessagesP.Message other) {
+        if (other == jsmith.nknsdk.network.proto.MessagesP.Message.getDefaultInstance()) return this;
+        if (other.messageType_ != 0) {
+          setMessageTypeValue(other.getMessageTypeValue());
+        }
+        if (other.getMessage() != com.google.protobuf.ByteString.EMPTY) {
+          setMessage(other.getMessage());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        jsmith.nknsdk.network.proto.MessagesP.Message parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (jsmith.nknsdk.network.proto.MessagesP.Message) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int messageType_ = 0;
+      /**
+       * <code>.jsmith.nknsdk.network.proto.MessageType message_type = 1;</code>
+       */
+      public int getMessageTypeValue() {
+        return messageType_;
+      }
+      /**
+       * <code>.jsmith.nknsdk.network.proto.MessageType message_type = 1;</code>
+       */
+      public Builder setMessageTypeValue(int value) {
+        messageType_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.jsmith.nknsdk.network.proto.MessageType message_type = 1;</code>
+       */
+      public jsmith.nknsdk.network.proto.MessagesP.MessageType getMessageType() {
+        @SuppressWarnings("deprecation")
+        jsmith.nknsdk.network.proto.MessagesP.MessageType result = jsmith.nknsdk.network.proto.MessagesP.MessageType.valueOf(messageType_);
+        return result == null ? jsmith.nknsdk.network.proto.MessagesP.MessageType.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.jsmith.nknsdk.network.proto.MessageType message_type = 1;</code>
+       */
+      public Builder setMessageType(jsmith.nknsdk.network.proto.MessagesP.MessageType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        messageType_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.jsmith.nknsdk.network.proto.MessageType message_type = 1;</code>
+       */
+      public Builder clearMessageType() {
+        
+        messageType_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString message_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes message = 2;</code>
+       */
+      public com.google.protobuf.ByteString getMessage() {
+        return message_;
+      }
+      /**
+       * <code>bytes message = 2;</code>
+       */
+      public Builder setMessage(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes message = 2;</code>
+       */
+      public Builder clearMessage() {
+        
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:jsmith.nknsdk.network.proto.Message)
+    }
+
+    // @@protoc_insertion_point(class_scope:jsmith.nknsdk.network.proto.Message)
+    private static final jsmith.nknsdk.network.proto.MessagesP.Message DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new jsmith.nknsdk.network.proto.MessagesP.Message();
+    }
+
+    public static jsmith.nknsdk.network.proto.MessagesP.Message getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Message>
+        PARSER = new com.google.protobuf.AbstractParser<Message>() {
+      @java.lang.Override
+      public Message parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Message(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Message> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Message> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public jsmith.nknsdk.network.proto.MessagesP.Message getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface ClientToNodeMessageOrBuilder extends
       // @@protoc_insertion_point(interface_extends:jsmith.nknsdk.network.proto.ClientToNodeMessage)
       com.google.protobuf.MessageOrBuilder {
@@ -56,6 +2162,29 @@ public final class MessagesP {
      * <code>uint32 max_holding_seconds = 4;</code>
      */
     int getMaxHoldingSeconds();
+
+    /**
+     * <code>uint32 nonce = 5;</code>
+     */
+    int getNonce();
+
+    /**
+     * <code>bytes block_hash = 6;</code>
+     */
+    com.google.protobuf.ByteString getBlockHash();
+
+    /**
+     * <code>repeated bytes signatures = 7;</code>
+     */
+    java.util.List<com.google.protobuf.ByteString> getSignaturesList();
+    /**
+     * <code>repeated bytes signatures = 7;</code>
+     */
+    int getSignaturesCount();
+    /**
+     * <code>repeated bytes signatures = 7;</code>
+     */
+    com.google.protobuf.ByteString getSignatures(int index);
   }
   /**
    * Protobuf type {@code jsmith.nknsdk.network.proto.ClientToNodeMessage}
@@ -74,6 +2203,9 @@ public final class MessagesP {
       payload_ = com.google.protobuf.ByteString.EMPTY;
       dests_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       maxHoldingSeconds_ = 0;
+      nonce_ = 0;
+      blockHash_ = com.google.protobuf.ByteString.EMPTY;
+      signatures_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -125,6 +2257,24 @@ public final class MessagesP {
               maxHoldingSeconds_ = input.readUInt32();
               break;
             }
+            case 40: {
+
+              nonce_ = input.readUInt32();
+              break;
+            }
+            case 50: {
+
+              blockHash_ = input.readBytes();
+              break;
+            }
+            case 58: {
+              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+                signatures_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
+                mutable_bitField0_ |= 0x00000040;
+              }
+              signatures_.add(input.readBytes());
+              break;
+            }
             default: {
               if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
@@ -143,21 +2293,24 @@ public final class MessagesP {
         if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
           dests_ = dests_.getUnmodifiableView();
         }
+        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+          signatures_ = java.util.Collections.unmodifiableList(signatures_);
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return MessagesP.internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_descriptor;
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return MessagesP.internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_fieldAccessorTable
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              MessagesP.ClientToNodeMessage.class, MessagesP.ClientToNodeMessage.Builder.class);
+              jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage.class, jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage.Builder.class);
     }
 
     private int bitField0_;
@@ -242,6 +2395,46 @@ public final class MessagesP {
       return maxHoldingSeconds_;
     }
 
+    public static final int NONCE_FIELD_NUMBER = 5;
+    private int nonce_;
+    /**
+     * <code>uint32 nonce = 5;</code>
+     */
+    public int getNonce() {
+      return nonce_;
+    }
+
+    public static final int BLOCK_HASH_FIELD_NUMBER = 6;
+    private com.google.protobuf.ByteString blockHash_;
+    /**
+     * <code>bytes block_hash = 6;</code>
+     */
+    public com.google.protobuf.ByteString getBlockHash() {
+      return blockHash_;
+    }
+
+    public static final int SIGNATURES_FIELD_NUMBER = 7;
+    private java.util.List<com.google.protobuf.ByteString> signatures_;
+    /**
+     * <code>repeated bytes signatures = 7;</code>
+     */
+    public java.util.List<com.google.protobuf.ByteString>
+        getSignaturesList() {
+      return signatures_;
+    }
+    /**
+     * <code>repeated bytes signatures = 7;</code>
+     */
+    public int getSignaturesCount() {
+      return signatures_.size();
+    }
+    /**
+     * <code>repeated bytes signatures = 7;</code>
+     */
+    public com.google.protobuf.ByteString getSignatures(int index) {
+      return signatures_.get(index);
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -267,6 +2460,15 @@ public final class MessagesP {
       }
       if (maxHoldingSeconds_ != 0) {
         output.writeUInt32(4, maxHoldingSeconds_);
+      }
+      if (nonce_ != 0) {
+        output.writeUInt32(5, nonce_);
+      }
+      if (!blockHash_.isEmpty()) {
+        output.writeBytes(6, blockHash_);
+      }
+      for (int i = 0; i < signatures_.size(); i++) {
+        output.writeBytes(7, signatures_.get(i));
       }
       unknownFields.writeTo(output);
     }
@@ -296,6 +2498,23 @@ public final class MessagesP {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(4, maxHoldingSeconds_);
       }
+      if (nonce_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, nonce_);
+      }
+      if (!blockHash_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, blockHash_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < signatures_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(signatures_.get(i));
+        }
+        size += dataSize;
+        size += 1 * getSignaturesList().size();
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -306,10 +2525,10 @@ public final class MessagesP {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof MessagesP.ClientToNodeMessage)) {
+      if (!(obj instanceof jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage)) {
         return super.equals(obj);
       }
-      MessagesP.ClientToNodeMessage other = (MessagesP.ClientToNodeMessage) obj;
+      jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage other = (jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage) obj;
 
       boolean result = true;
       result = result && getDest()
@@ -320,6 +2539,12 @@ public final class MessagesP {
           .equals(other.getDestsList());
       result = result && (getMaxHoldingSeconds()
           == other.getMaxHoldingSeconds());
+      result = result && (getNonce()
+          == other.getNonce());
+      result = result && getBlockHash()
+          .equals(other.getBlockHash());
+      result = result && getSignaturesList()
+          .equals(other.getSignaturesList());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -341,74 +2566,82 @@ public final class MessagesP {
       }
       hash = (37 * hash) + MAX_HOLDING_SECONDS_FIELD_NUMBER;
       hash = (53 * hash) + getMaxHoldingSeconds();
+      hash = (37 * hash) + NONCE_FIELD_NUMBER;
+      hash = (53 * hash) + getNonce();
+      hash = (37 * hash) + BLOCK_HASH_FIELD_NUMBER;
+      hash = (53 * hash) + getBlockHash().hashCode();
+      if (getSignaturesCount() > 0) {
+        hash = (37 * hash) + SIGNATURES_FIELD_NUMBER;
+        hash = (53 * hash) + getSignaturesList().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static MessagesP.ClientToNodeMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static MessagesP.ClientToNodeMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static MessagesP.ClientToNodeMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static MessagesP.ClientToNodeMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static MessagesP.ClientToNodeMessage parseFrom(byte[] data)
+    public static jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static MessagesP.ClientToNodeMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static MessagesP.ClientToNodeMessage parseFrom(java.io.InputStream input)
+    public static jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static MessagesP.ClientToNodeMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static MessagesP.ClientToNodeMessage parseDelimitedFrom(java.io.InputStream input)
+    public static jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static MessagesP.ClientToNodeMessage parseDelimitedFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static MessagesP.ClientToNodeMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static MessagesP.ClientToNodeMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -421,7 +2654,7 @@ public final class MessagesP {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(MessagesP.ClientToNodeMessage prototype) {
+    public static Builder newBuilder(jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -442,21 +2675,21 @@ public final class MessagesP {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:jsmith.nknsdk.network.proto.ClientToNodeMessage)
-        MessagesP.ClientToNodeMessageOrBuilder {
+        jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessageOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return MessagesP.internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_descriptor;
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return MessagesP.internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_fieldAccessorTable
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                MessagesP.ClientToNodeMessage.class, MessagesP.ClientToNodeMessage.Builder.class);
+                jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage.class, jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage.Builder.class);
       }
 
-      // Construct using jsmith.nknsdk.network.proto.Messages.ClientToNodeMessage.newBuilder()
+      // Construct using jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -482,23 +2715,29 @@ public final class MessagesP {
         bitField0_ = (bitField0_ & ~0x00000004);
         maxHoldingSeconds_ = 0;
 
+        nonce_ = 0;
+
+        blockHash_ = com.google.protobuf.ByteString.EMPTY;
+
+        signatures_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return MessagesP.internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_descriptor;
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_descriptor;
       }
 
       @java.lang.Override
-      public MessagesP.ClientToNodeMessage getDefaultInstanceForType() {
-        return MessagesP.ClientToNodeMessage.getDefaultInstance();
+      public jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage getDefaultInstanceForType() {
+        return jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage.getDefaultInstance();
       }
 
       @java.lang.Override
-      public MessagesP.ClientToNodeMessage build() {
-        MessagesP.ClientToNodeMessage result = buildPartial();
+      public jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage build() {
+        jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -506,8 +2745,8 @@ public final class MessagesP {
       }
 
       @java.lang.Override
-      public MessagesP.ClientToNodeMessage buildPartial() {
-        MessagesP.ClientToNodeMessage result = new MessagesP.ClientToNodeMessage(this);
+      public jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage buildPartial() {
+        jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage result = new jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         result.dest_ = dest_;
@@ -518,6 +2757,13 @@ public final class MessagesP {
         }
         result.dests_ = dests_;
         result.maxHoldingSeconds_ = maxHoldingSeconds_;
+        result.nonce_ = nonce_;
+        result.blockHash_ = blockHash_;
+        if (((bitField0_ & 0x00000040) == 0x00000040)) {
+          signatures_ = java.util.Collections.unmodifiableList(signatures_);
+          bitField0_ = (bitField0_ & ~0x00000040);
+        }
+        result.signatures_ = signatures_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -557,16 +2803,16 @@ public final class MessagesP {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof MessagesP.ClientToNodeMessage) {
-          return mergeFrom((MessagesP.ClientToNodeMessage)other);
+        if (other instanceof jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage) {
+          return mergeFrom((jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(MessagesP.ClientToNodeMessage other) {
-        if (other == MessagesP.ClientToNodeMessage.getDefaultInstance()) return this;
+      public Builder mergeFrom(jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage other) {
+        if (other == jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage.getDefaultInstance()) return this;
         if (!other.getDest().isEmpty()) {
           dest_ = other.dest_;
           onChanged();
@@ -587,6 +2833,22 @@ public final class MessagesP {
         if (other.getMaxHoldingSeconds() != 0) {
           setMaxHoldingSeconds(other.getMaxHoldingSeconds());
         }
+        if (other.getNonce() != 0) {
+          setNonce(other.getNonce());
+        }
+        if (other.getBlockHash() != com.google.protobuf.ByteString.EMPTY) {
+          setBlockHash(other.getBlockHash());
+        }
+        if (!other.signatures_.isEmpty()) {
+          if (signatures_.isEmpty()) {
+            signatures_ = other.signatures_;
+            bitField0_ = (bitField0_ & ~0x00000040);
+          } else {
+            ensureSignaturesIsMutable();
+            signatures_.addAll(other.signatures_);
+          }
+          onChanged();
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -602,11 +2864,11 @@ public final class MessagesP {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        MessagesP.ClientToNodeMessage parsedMessage = null;
+        jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (MessagesP.ClientToNodeMessage) e.getUnfinishedMessage();
+          parsedMessage = (jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -834,6 +3096,133 @@ public final class MessagesP {
         onChanged();
         return this;
       }
+
+      private int nonce_ ;
+      /**
+       * <code>uint32 nonce = 5;</code>
+       */
+      public int getNonce() {
+        return nonce_;
+      }
+      /**
+       * <code>uint32 nonce = 5;</code>
+       */
+      public Builder setNonce(int value) {
+        
+        nonce_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint32 nonce = 5;</code>
+       */
+      public Builder clearNonce() {
+        
+        nonce_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString blockHash_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes block_hash = 6;</code>
+       */
+      public com.google.protobuf.ByteString getBlockHash() {
+        return blockHash_;
+      }
+      /**
+       * <code>bytes block_hash = 6;</code>
+       */
+      public Builder setBlockHash(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        blockHash_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes block_hash = 6;</code>
+       */
+      public Builder clearBlockHash() {
+        
+        blockHash_ = getDefaultInstance().getBlockHash();
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<com.google.protobuf.ByteString> signatures_ = java.util.Collections.emptyList();
+      private void ensureSignaturesIsMutable() {
+        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+          signatures_ = new java.util.ArrayList<com.google.protobuf.ByteString>(signatures_);
+          bitField0_ |= 0x00000040;
+         }
+      }
+      /**
+       * <code>repeated bytes signatures = 7;</code>
+       */
+      public java.util.List<com.google.protobuf.ByteString>
+          getSignaturesList() {
+        return java.util.Collections.unmodifiableList(signatures_);
+      }
+      /**
+       * <code>repeated bytes signatures = 7;</code>
+       */
+      public int getSignaturesCount() {
+        return signatures_.size();
+      }
+      /**
+       * <code>repeated bytes signatures = 7;</code>
+       */
+      public com.google.protobuf.ByteString getSignatures(int index) {
+        return signatures_.get(index);
+      }
+      /**
+       * <code>repeated bytes signatures = 7;</code>
+       */
+      public Builder setSignatures(
+          int index, com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureSignaturesIsMutable();
+        signatures_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bytes signatures = 7;</code>
+       */
+      public Builder addSignatures(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureSignaturesIsMutable();
+        signatures_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bytes signatures = 7;</code>
+       */
+      public Builder addAllSignatures(
+          java.lang.Iterable<? extends com.google.protobuf.ByteString> values) {
+        ensureSignaturesIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, signatures_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bytes signatures = 7;</code>
+       */
+      public Builder clearSignatures() {
+        signatures_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000040);
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -851,12 +3240,12 @@ public final class MessagesP {
     }
 
     // @@protoc_insertion_point(class_scope:jsmith.nknsdk.network.proto.ClientToNodeMessage)
-    private static final MessagesP.ClientToNodeMessage DEFAULT_INSTANCE;
+    private static final jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new MessagesP.ClientToNodeMessage();
+      DEFAULT_INSTANCE = new jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage();
     }
 
-    public static MessagesP.ClientToNodeMessage getDefaultInstance() {
+    public static jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -881,7 +3270,7 @@ public final class MessagesP {
     }
 
     @java.lang.Override
-    public MessagesP.ClientToNodeMessage getDefaultInstanceForType() {
+    public jsmith.nknsdk.network.proto.MessagesP.ClientToNodeMessage getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -905,6 +3294,11 @@ public final class MessagesP {
      * <code>bytes payload = 2;</code>
      */
     com.google.protobuf.ByteString getPayload();
+
+    /**
+     * <code>bytes prev_signature = 3;</code>
+     */
+    com.google.protobuf.ByteString getPrevSignature();
   }
   /**
    * Protobuf type {@code jsmith.nknsdk.network.proto.NodeToClientMessage}
@@ -921,6 +3315,7 @@ public final class MessagesP {
     private NodeToClientMessage() {
       src_ = "";
       payload_ = com.google.protobuf.ByteString.EMPTY;
+      prevSignature_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     @java.lang.Override
@@ -958,6 +3353,11 @@ public final class MessagesP {
               payload_ = input.readBytes();
               break;
             }
+            case 26: {
+
+              prevSignature_ = input.readBytes();
+              break;
+            }
             default: {
               if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
@@ -979,15 +3379,15 @@ public final class MessagesP {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return MessagesP.internal_static_jsmith_nknsdk_network_proto_NodeToClientMessage_descriptor;
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_NodeToClientMessage_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return MessagesP.internal_static_jsmith_nknsdk_network_proto_NodeToClientMessage_fieldAccessorTable
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_NodeToClientMessage_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              MessagesP.NodeToClientMessage.class, MessagesP.NodeToClientMessage.Builder.class);
+              jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage.class, jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage.Builder.class);
     }
 
     public static final int SRC_FIELD_NUMBER = 1;
@@ -1033,6 +3433,15 @@ public final class MessagesP {
       return payload_;
     }
 
+    public static final int PREV_SIGNATURE_FIELD_NUMBER = 3;
+    private com.google.protobuf.ByteString prevSignature_;
+    /**
+     * <code>bytes prev_signature = 3;</code>
+     */
+    public com.google.protobuf.ByteString getPrevSignature() {
+      return prevSignature_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -1053,6 +3462,9 @@ public final class MessagesP {
       if (!payload_.isEmpty()) {
         output.writeBytes(2, payload_);
       }
+      if (!prevSignature_.isEmpty()) {
+        output.writeBytes(3, prevSignature_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -1069,6 +3481,10 @@ public final class MessagesP {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, payload_);
       }
+      if (!prevSignature_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, prevSignature_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -1079,16 +3495,18 @@ public final class MessagesP {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof MessagesP.NodeToClientMessage)) {
+      if (!(obj instanceof jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage)) {
         return super.equals(obj);
       }
-      MessagesP.NodeToClientMessage other = (MessagesP.NodeToClientMessage) obj;
+      jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage other = (jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage) obj;
 
       boolean result = true;
       result = result && getSrc()
           .equals(other.getSrc());
       result = result && getPayload()
           .equals(other.getPayload());
+      result = result && getPrevSignature()
+          .equals(other.getPrevSignature());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -1104,74 +3522,76 @@ public final class MessagesP {
       hash = (53 * hash) + getSrc().hashCode();
       hash = (37 * hash) + PAYLOAD_FIELD_NUMBER;
       hash = (53 * hash) + getPayload().hashCode();
+      hash = (37 * hash) + PREV_SIGNATURE_FIELD_NUMBER;
+      hash = (53 * hash) + getPrevSignature().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static MessagesP.NodeToClientMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static MessagesP.NodeToClientMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static MessagesP.NodeToClientMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static MessagesP.NodeToClientMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static MessagesP.NodeToClientMessage parseFrom(byte[] data)
+    public static jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static MessagesP.NodeToClientMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static MessagesP.NodeToClientMessage parseFrom(java.io.InputStream input)
+    public static jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static MessagesP.NodeToClientMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static MessagesP.NodeToClientMessage parseDelimitedFrom(java.io.InputStream input)
+    public static jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static MessagesP.NodeToClientMessage parseDelimitedFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static MessagesP.NodeToClientMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static MessagesP.NodeToClientMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1184,7 +3604,7 @@ public final class MessagesP {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(MessagesP.NodeToClientMessage prototype) {
+    public static Builder newBuilder(jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -1205,21 +3625,21 @@ public final class MessagesP {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:jsmith.nknsdk.network.proto.NodeToClientMessage)
-        MessagesP.NodeToClientMessageOrBuilder {
+        jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessageOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return MessagesP.internal_static_jsmith_nknsdk_network_proto_NodeToClientMessage_descriptor;
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_NodeToClientMessage_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return MessagesP.internal_static_jsmith_nknsdk_network_proto_NodeToClientMessage_fieldAccessorTable
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_NodeToClientMessage_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                MessagesP.NodeToClientMessage.class, MessagesP.NodeToClientMessage.Builder.class);
+                jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage.class, jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage.Builder.class);
       }
 
-      // Construct using jsmith.nknsdk.network.proto.Messages.NodeToClientMessage.newBuilder()
+      // Construct using jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1241,23 +3661,25 @@ public final class MessagesP {
 
         payload_ = com.google.protobuf.ByteString.EMPTY;
 
+        prevSignature_ = com.google.protobuf.ByteString.EMPTY;
+
         return this;
       }
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return MessagesP.internal_static_jsmith_nknsdk_network_proto_NodeToClientMessage_descriptor;
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_NodeToClientMessage_descriptor;
       }
 
       @java.lang.Override
-      public MessagesP.NodeToClientMessage getDefaultInstanceForType() {
-        return MessagesP.NodeToClientMessage.getDefaultInstance();
+      public jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage getDefaultInstanceForType() {
+        return jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage.getDefaultInstance();
       }
 
       @java.lang.Override
-      public MessagesP.NodeToClientMessage build() {
-        MessagesP.NodeToClientMessage result = buildPartial();
+      public jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage build() {
+        jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -1265,10 +3687,11 @@ public final class MessagesP {
       }
 
       @java.lang.Override
-      public MessagesP.NodeToClientMessage buildPartial() {
-        MessagesP.NodeToClientMessage result = new MessagesP.NodeToClientMessage(this);
+      public jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage buildPartial() {
+        jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage result = new jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage(this);
         result.src_ = src_;
         result.payload_ = payload_;
+        result.prevSignature_ = prevSignature_;
         onBuilt();
         return result;
       }
@@ -1307,22 +3730,25 @@ public final class MessagesP {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof MessagesP.NodeToClientMessage) {
-          return mergeFrom((MessagesP.NodeToClientMessage)other);
+        if (other instanceof jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage) {
+          return mergeFrom((jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(MessagesP.NodeToClientMessage other) {
-        if (other == MessagesP.NodeToClientMessage.getDefaultInstance()) return this;
+      public Builder mergeFrom(jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage other) {
+        if (other == jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage.getDefaultInstance()) return this;
         if (!other.getSrc().isEmpty()) {
           src_ = other.src_;
           onChanged();
         }
         if (other.getPayload() != com.google.protobuf.ByteString.EMPTY) {
           setPayload(other.getPayload());
+        }
+        if (other.getPrevSignature() != com.google.protobuf.ByteString.EMPTY) {
+          setPrevSignature(other.getPrevSignature());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -1339,11 +3765,11 @@ public final class MessagesP {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        MessagesP.NodeToClientMessage parsedMessage = null;
+        jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (MessagesP.NodeToClientMessage) e.getUnfinishedMessage();
+          parsedMessage = (jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -1450,6 +3876,35 @@ public final class MessagesP {
         onChanged();
         return this;
       }
+
+      private com.google.protobuf.ByteString prevSignature_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes prev_signature = 3;</code>
+       */
+      public com.google.protobuf.ByteString getPrevSignature() {
+        return prevSignature_;
+      }
+      /**
+       * <code>bytes prev_signature = 3;</code>
+       */
+      public Builder setPrevSignature(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        prevSignature_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes prev_signature = 3;</code>
+       */
+      public Builder clearPrevSignature() {
+        
+        prevSignature_ = getDefaultInstance().getPrevSignature();
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -1467,12 +3922,12 @@ public final class MessagesP {
     }
 
     // @@protoc_insertion_point(class_scope:jsmith.nknsdk.network.proto.NodeToClientMessage)
-    private static final MessagesP.NodeToClientMessage DEFAULT_INSTANCE;
+    private static final jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new MessagesP.NodeToClientMessage();
+      DEFAULT_INSTANCE = new jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage();
     }
 
-    public static MessagesP.NodeToClientMessage getDefaultInstance() {
+    public static jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1497,12 +3952,572 @@ public final class MessagesP {
     }
 
     @java.lang.Override
-    public MessagesP.NodeToClientMessage getDefaultInstanceForType() {
+    public jsmith.nknsdk.network.proto.MessagesP.NodeToClientMessage getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
+  public interface ReceiptOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:jsmith.nknsdk.network.proto.Receipt)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bytes prev_signature = 1;</code>
+     */
+    com.google.protobuf.ByteString getPrevSignature();
+
+    /**
+     * <code>bytes signature = 2;</code>
+     */
+    com.google.protobuf.ByteString getSignature();
+  }
+  /**
+   * Protobuf type {@code jsmith.nknsdk.network.proto.Receipt}
+   */
+  public  static final class Receipt extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:jsmith.nknsdk.network.proto.Receipt)
+      ReceiptOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Receipt.newBuilder() to construct.
+    private Receipt(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Receipt() {
+      prevSignature_ = com.google.protobuf.ByteString.EMPTY;
+      signature_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Receipt(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+
+              prevSignature_ = input.readBytes();
+              break;
+            }
+            case 18: {
+
+              signature_ = input.readBytes();
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Receipt_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Receipt_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              jsmith.nknsdk.network.proto.MessagesP.Receipt.class, jsmith.nknsdk.network.proto.MessagesP.Receipt.Builder.class);
+    }
+
+    public static final int PREV_SIGNATURE_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString prevSignature_;
+    /**
+     * <code>bytes prev_signature = 1;</code>
+     */
+    public com.google.protobuf.ByteString getPrevSignature() {
+      return prevSignature_;
+    }
+
+    public static final int SIGNATURE_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString signature_;
+    /**
+     * <code>bytes signature = 2;</code>
+     */
+    public com.google.protobuf.ByteString getSignature() {
+      return signature_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!prevSignature_.isEmpty()) {
+        output.writeBytes(1, prevSignature_);
+      }
+      if (!signature_.isEmpty()) {
+        output.writeBytes(2, signature_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!prevSignature_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, prevSignature_);
+      }
+      if (!signature_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, signature_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof jsmith.nknsdk.network.proto.MessagesP.Receipt)) {
+        return super.equals(obj);
+      }
+      jsmith.nknsdk.network.proto.MessagesP.Receipt other = (jsmith.nknsdk.network.proto.MessagesP.Receipt) obj;
+
+      boolean result = true;
+      result = result && getPrevSignature()
+          .equals(other.getPrevSignature());
+      result = result && getSignature()
+          .equals(other.getSignature());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + PREV_SIGNATURE_FIELD_NUMBER;
+      hash = (53 * hash) + getPrevSignature().hashCode();
+      hash = (37 * hash) + SIGNATURE_FIELD_NUMBER;
+      hash = (53 * hash) + getSignature().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static jsmith.nknsdk.network.proto.MessagesP.Receipt parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Receipt parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Receipt parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Receipt parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Receipt parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Receipt parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Receipt parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Receipt parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Receipt parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Receipt parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Receipt parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.Receipt parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(jsmith.nknsdk.network.proto.MessagesP.Receipt prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code jsmith.nknsdk.network.proto.Receipt}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:jsmith.nknsdk.network.proto.Receipt)
+        jsmith.nknsdk.network.proto.MessagesP.ReceiptOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Receipt_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Receipt_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                jsmith.nknsdk.network.proto.MessagesP.Receipt.class, jsmith.nknsdk.network.proto.MessagesP.Receipt.Builder.class);
+      }
+
+      // Construct using jsmith.nknsdk.network.proto.MessagesP.Receipt.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        prevSignature_ = com.google.protobuf.ByteString.EMPTY;
+
+        signature_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_Receipt_descriptor;
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.Receipt getDefaultInstanceForType() {
+        return jsmith.nknsdk.network.proto.MessagesP.Receipt.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.Receipt build() {
+        jsmith.nknsdk.network.proto.MessagesP.Receipt result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.Receipt buildPartial() {
+        jsmith.nknsdk.network.proto.MessagesP.Receipt result = new jsmith.nknsdk.network.proto.MessagesP.Receipt(this);
+        result.prevSignature_ = prevSignature_;
+        result.signature_ = signature_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof jsmith.nknsdk.network.proto.MessagesP.Receipt) {
+          return mergeFrom((jsmith.nknsdk.network.proto.MessagesP.Receipt)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(jsmith.nknsdk.network.proto.MessagesP.Receipt other) {
+        if (other == jsmith.nknsdk.network.proto.MessagesP.Receipt.getDefaultInstance()) return this;
+        if (other.getPrevSignature() != com.google.protobuf.ByteString.EMPTY) {
+          setPrevSignature(other.getPrevSignature());
+        }
+        if (other.getSignature() != com.google.protobuf.ByteString.EMPTY) {
+          setSignature(other.getSignature());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        jsmith.nknsdk.network.proto.MessagesP.Receipt parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (jsmith.nknsdk.network.proto.MessagesP.Receipt) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private com.google.protobuf.ByteString prevSignature_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes prev_signature = 1;</code>
+       */
+      public com.google.protobuf.ByteString getPrevSignature() {
+        return prevSignature_;
+      }
+      /**
+       * <code>bytes prev_signature = 1;</code>
+       */
+      public Builder setPrevSignature(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        prevSignature_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes prev_signature = 1;</code>
+       */
+      public Builder clearPrevSignature() {
+        
+        prevSignature_ = getDefaultInstance().getPrevSignature();
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString signature_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes signature = 2;</code>
+       */
+      public com.google.protobuf.ByteString getSignature() {
+        return signature_;
+      }
+      /**
+       * <code>bytes signature = 2;</code>
+       */
+      public Builder setSignature(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        signature_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes signature = 2;</code>
+       */
+      public Builder clearSignature() {
+        
+        signature_ = getDefaultInstance().getSignature();
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:jsmith.nknsdk.network.proto.Receipt)
+    }
+
+    // @@protoc_insertion_point(class_scope:jsmith.nknsdk.network.proto.Receipt)
+    private static final jsmith.nknsdk.network.proto.MessagesP.Receipt DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new jsmith.nknsdk.network.proto.MessagesP.Receipt();
+    }
+
+    public static jsmith.nknsdk.network.proto.MessagesP.Receipt getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Receipt>
+        PARSER = new com.google.protobuf.AbstractParser<Receipt>() {
+      @java.lang.Override
+      public Receipt parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Receipt(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Receipt> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Receipt> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public jsmith.nknsdk.network.proto.MessagesP.Receipt getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_jsmith_nknsdk_network_proto_Payload_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_jsmith_nknsdk_network_proto_Payload_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_jsmith_nknsdk_network_proto_TextData_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_jsmith_nknsdk_network_proto_TextData_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_jsmith_nknsdk_network_proto_Message_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_jsmith_nknsdk_network_proto_Message_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_descriptor;
   private static final 
@@ -1513,6 +4528,11 @@ public final class MessagesP {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_jsmith_nknsdk_network_proto_NodeToClientMessage_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_jsmith_nknsdk_network_proto_Receipt_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_jsmith_nknsdk_network_proto_Receipt_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -1522,12 +4542,25 @@ public final class MessagesP {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n*jsmith/nknsdk/network/proto/messages.p" +
-      "roto\022\033jsmith.nknsdk.network.proto\"`\n\023Cli" +
-      "entToNodeMessage\022\014\n\004dest\030\001 \001(\t\022\017\n\007payloa" +
-      "d\030\002 \001(\014\022\r\n\005dests\030\003 \003(\t\022\033\n\023max_holding_se" +
-      "conds\030\004 \001(\r\"3\n\023NodeToClientMessage\022\013\n\003sr" +
-      "c\030\001 \001(\t\022\017\n\007payload\030\002 \001(\014b\006proto3"
+      "\n+jsmith/nknsdk/network/proto/messagesP." +
+      "proto\022\033jsmith.nknsdk.network.proto\"\202\001\n\007P" +
+      "ayload\0226\n\004type\030\001 \001(\0162(.jsmith.nknsdk.net" +
+      "work.proto.PayloadType\022\013\n\003pid\030\002 \001(\014\022\014\n\004d" +
+      "ata\030\003 \001(\014\022\024\n\014reply_to_pid\030\004 \001(\014\022\016\n\006no_ac" +
+      "k\030\005 \001(\010\"\030\n\010TextData\022\014\n\004text\030\001 \001(\t\"Z\n\007Mes" +
+      "sage\022>\n\014message_type\030\001 \001(\0162(.jsmith.nkns" +
+      "dk.network.proto.MessageType\022\017\n\007message\030" +
+      "\002 \001(\014\"\227\001\n\023ClientToNodeMessage\022\014\n\004dest\030\001 " +
+      "\001(\t\022\017\n\007payload\030\002 \001(\014\022\r\n\005dests\030\003 \003(\t\022\033\n\023m" +
+      "ax_holding_seconds\030\004 \001(\r\022\r\n\005nonce\030\005 \001(\r\022" +
+      "\022\n\nblock_hash\030\006 \001(\014\022\022\n\nsignatures\030\007 \003(\014\"" +
+      "K\n\023NodeToClientMessage\022\013\n\003src\030\001 \001(\t\022\017\n\007p" +
+      "ayload\030\002 \001(\014\022\026\n\016prev_signature\030\003 \001(\014\"4\n\007" +
+      "Receipt\022\026\n\016prev_signature\030\001 \001(\014\022\021\n\tsigna" +
+      "ture\030\002 \001(\014*,\n\013PayloadType\022\n\n\006BINARY\020\000\022\010\n" +
+      "\004TEXT\020\001\022\007\n\003ACK\020\002*R\n\013MessageType\022\032\n\026CLIEN" +
+      "T_TO_NODE_MESSAGE\020\000\022\032\n\026NODE_TO_CLIENT_ME" +
+      "SSAGE\020\001\022\013\n\007RECEIPT\020\002b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1541,18 +4574,42 @@ public final class MessagesP {
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
-    internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_descriptor =
+    internal_static_jsmith_nknsdk_network_proto_Payload_descriptor =
       getDescriptor().getMessageTypes().get(0);
+    internal_static_jsmith_nknsdk_network_proto_Payload_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_jsmith_nknsdk_network_proto_Payload_descriptor,
+        new java.lang.String[] { "Type", "Pid", "Data", "ReplyToPid", "NoAck", });
+    internal_static_jsmith_nknsdk_network_proto_TextData_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_jsmith_nknsdk_network_proto_TextData_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_jsmith_nknsdk_network_proto_TextData_descriptor,
+        new java.lang.String[] { "Text", });
+    internal_static_jsmith_nknsdk_network_proto_Message_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_jsmith_nknsdk_network_proto_Message_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_jsmith_nknsdk_network_proto_Message_descriptor,
+        new java.lang.String[] { "MessageType", "Message", });
+    internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_descriptor =
+      getDescriptor().getMessageTypes().get(3);
     internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_jsmith_nknsdk_network_proto_ClientToNodeMessage_descriptor,
-        new java.lang.String[] { "Dest", "Payload", "Dests", "MaxHoldingSeconds", });
+        new java.lang.String[] { "Dest", "Payload", "Dests", "MaxHoldingSeconds", "Nonce", "BlockHash", "Signatures", });
     internal_static_jsmith_nknsdk_network_proto_NodeToClientMessage_descriptor =
-      getDescriptor().getMessageTypes().get(1);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_jsmith_nknsdk_network_proto_NodeToClientMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_jsmith_nknsdk_network_proto_NodeToClientMessage_descriptor,
-        new java.lang.String[] { "Src", "Payload", });
+        new java.lang.String[] { "Src", "Payload", "PrevSignature", });
+    internal_static_jsmith_nknsdk_network_proto_Receipt_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+    internal_static_jsmith_nknsdk_network_proto_Receipt_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_jsmith_nknsdk_network_proto_Receipt_descriptor,
+        new java.lang.String[] { "PrevSignature", "Signature", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

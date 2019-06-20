@@ -40,7 +40,7 @@ public class PubSubEx {
         if (true) {
 
             System.out.println("Subscribing to '" + topic + "' using " + pubsubWallet.getAddress());
-            final String txID = pubsubWallet.tx().subscribe(topic, 0, 100, "other2", "meta");
+            final String txID = pubsubWallet.tx().subscribe(topic, 0, 100, "somename", "meta");
 
             if (txID == null) {
                 System.out.println("  Transaction failed");

@@ -1,7 +1,7 @@
 package jsmith.nknsdk.wallet.transactions;
 
 import com.google.protobuf.ByteString;
-import jsmith.nknsdk.network.proto.TransactionpayloadP;
+import jsmith.nknsdk.network.proto.TransactionP;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 
 /**
@@ -79,7 +79,7 @@ public class SubscribeT extends TransactionT {
     @Override
     public ByteString build(EdDSAPrivateKey privateKey, ByteString signatureRedeem) {
 
-        final TransactionpayloadP.Subscribe.Builder txSub = TransactionpayloadP.Subscribe.newBuilder();
+        final TransactionP.Subscribe.Builder txSub = TransactionP.Subscribe.newBuilder();
         txSub.setSubscriber(publicKey);
         txSub.setIdentifier(identifier);
         txSub.setTopic(topic);
@@ -87,8 +87,8 @@ public class SubscribeT extends TransactionT {
         txSub.setDuration(duration);
         txSub.setMeta(meta);
 
-        final TransactionpayloadP.TransactionPayload.Builder txPayload = TransactionpayloadP.TransactionPayload.newBuilder();
-        txPayload.setType(TransactionpayloadP.TransactionPayloadType.SubscribeType);
+        final TransactionP.TransactionPayload.Builder txPayload = TransactionP.TransactionPayload.newBuilder();
+        txPayload.setType(TransactionP.TransactionPayloadType.SUBSCRIBE_TYPE);
         txPayload.setData(txSub.build().toByteString());
 
         payload = txPayload.build();

@@ -2,7 +2,6 @@ package jsmith.nknsdk.examples;
 
 import com.darkyen.tproll.TPLogger;
 import jsmith.nknsdk.client.NKNExplorer;
-import jsmith.nknsdk.wallet.NKNTransaction;
 import jsmith.nknsdk.wallet.Wallet;
 import jsmith.nknsdk.wallet.WalletException;
 
@@ -63,8 +62,8 @@ public class WalletEx {
             }
         }
 
-        if (false) {
-            final String amount = "0.01";
+        if (true) {
+            final String amount = "1";
             System.out.println("Transferring " + amount + " tNKN from " + from.getAddress() + " (" + from.queryBalance() + " tNKN) to " + to.getAddress() + " (" + to.queryBalance() + " tNKN)");
 
 

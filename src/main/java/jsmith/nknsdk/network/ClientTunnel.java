@@ -5,7 +5,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import jsmith.nknsdk.client.Identity;
 import jsmith.nknsdk.client.NKNClientException;
 import jsmith.nknsdk.network.proto.MessagesP;
-import jsmith.nknsdk.network.proto.PayloadsP;
 import jsmith.nknsdk.utils.CountLatch;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -186,7 +185,7 @@ public class ClientTunnel {
                 final MessagesP.NodeToClientMessage msg = MessagesP.NodeToClientMessage.parseFrom(bytes);
 
                 final String from = msg.getSrc();
-                final PayloadsP.Payload payload = PayloadsP.Payload.parseFrom(msg.getPayload());
+                final MessagesP.Payload payload = MessagesP.Payload.parseFrom(msg.getPayload());
 
                 switch (payload.getType()) {
                     case ACK:

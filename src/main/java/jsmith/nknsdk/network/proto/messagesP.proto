@@ -3,14 +3,57 @@ syntax = "proto3";
 package jsmith.nknsdk.network.proto;
 
 
+// --- BEGIN PAYLOADS ---
+
+enum PayloadType {
+    BINARY = 0;
+    TEXT = 1;
+    ACK = 2;
+}
+
+message Payload {
+    PayloadType type = 1;
+    bytes pid = 2;
+    bytes data = 3;
+    bytes reply_to_pid = 4;
+    bool no_ack = 5;
+}
+
+message TextData {
+    string text = 1;
+}
+
+// --- END PAYLOADS ---
+
+
+enum MessageType {
+    CLIENT_TO_NODE_MESSAGE = 0;
+    NODE_TO_CLIENT_MESSAGE = 1;
+    RECEIPT = 2;
+}
+
+message Message {
+    MessageType message_type = 1;
+    bytes message = 2;
+}
+
 message ClientToNodeMessage {
     string dest = 1;
     bytes payload = 2;
     repeated string dests = 3;
     uint32 max_holding_seconds = 4;
+    uint32 nonce = 5;
+    bytes block_hash = 6;
+    repeated bytes signatures = 7;
 }
 
 message NodeToClientMessage {
     string src = 1;
     bytes payload = 2;
+    bytes prev_signature = 3;
+}
+
+message Receipt {
+    bytes prev_signature = 1;
+    bytes signature = 2;
 }

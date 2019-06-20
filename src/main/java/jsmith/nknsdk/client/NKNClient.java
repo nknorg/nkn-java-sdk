@@ -3,7 +3,7 @@ package jsmith.nknsdk.client;
 import com.google.protobuf.ByteString;
 import jsmith.nknsdk.network.ClientMessages;
 import jsmith.nknsdk.network.ClientTunnel;
-import jsmith.nknsdk.network.proto.PayloadsP;
+import jsmith.nknsdk.network.proto.MessagesP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,12 +66,12 @@ public class NKNClient {
     }
 
     public CompletableFuture<ReceivedMessage> sendTextMessageAsync(String destinationFullIdentifier, ByteString replyTo, String message) {
-        final PayloadsP.TextData td = PayloadsP.TextData.newBuilder()
+        final MessagesP.TextData td = MessagesP.TextData.newBuilder()
                 .setText(message)
                 .build();
 
         LOG.debug("Sending text message: {}", message);
-        return clientMessages.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, PayloadsP.PayloadType.TEXT, td.toByteString()).get(0);
+        return clientMessages.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, MessagesP.PayloadType.TEXT, td.toByteString()).get(0);
     }
 
     public CompletableFuture<ReceivedMessage> sendBinaryMessageAsync(String destinationFullIdentifier, byte[] message) {
@@ -88,7 +88,7 @@ public class NKNClient {
 
     public CompletableFuture<ReceivedMessage> sendBinaryMessageAsync(String destinationFullIdentifier, ByteString replyTo, ByteString message) {
         LOG.debug("Sending binary message");
-        return clientMessages.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, PayloadsP.PayloadType.BINARY, message).get(0);
+        return clientMessages.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, MessagesP.PayloadType.BINARY, message).get(0);
     }
 
     public CompletableFuture<ReceivedMessage> sendMessageAsync(String destinationFullIdentifier, ByteString replyTo, Object message) {
@@ -129,12 +129,12 @@ public class NKNClient {
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendTextMessageMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, String message) {
-        final PayloadsP.TextData td = PayloadsP.TextData.newBuilder()
+        final MessagesP.TextData td = MessagesP.TextData.newBuilder()
                 .setText(message)
                 .build();
 
         LOG.debug("Sending multicast text message: {}", message);
-        return clientMessages.sendMessageAsync(destinationFullIdentifier, replyTo, PayloadsP.PayloadType.TEXT, td.toByteString());
+        return clientMessages.sendMessageAsync(destinationFullIdentifier, replyTo, MessagesP.PayloadType.TEXT, td.toByteString());
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, byte[] message) {
@@ -143,7 +143,7 @@ public class NKNClient {
 
     public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, ByteString message) {
         LOG.debug("Sending multicast binary message");
-        return clientMessages.sendMessageAsync(destinationFullIdentifier, replyTo, PayloadsP.PayloadType.BINARY, message);
+        return clientMessages.sendMessageAsync(destinationFullIdentifier, replyTo, MessagesP.PayloadType.BINARY, message);
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendMessageMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, Object message) {
@@ -166,24 +166,24 @@ public class NKNClient {
         public final boolean isText;
         public final boolean isAck;
 
-        public ReceivedMessage(String from, ByteString msgId, PayloadsP.PayloadType type, Object data) {
+        public ReceivedMessage(String from, ByteString msgId, MessagesP.PayloadType type, Object data) {
             this.from = from;
             this.msgId = msgId;
-            if (type == PayloadsP.PayloadType.TEXT) {
+            if (type == MessagesP.PayloadType.TEXT) {
                 isText = true;
                 textData = (String) data;
 
                 isAck = false;
                 isBinary = false;
                 binaryData = null;
-            } else if (type == PayloadsP.PayloadType.BINARY) {
+            } else if (type == MessagesP.PayloadType.BINARY) {
                 isBinary = true;
                 binaryData = (ByteString) data;
 
                 isAck = false;
                 isText = false;
                 textData = null;
-            } else if (type == PayloadsP.PayloadType.ACK) {
+            } else if (type == MessagesP.PayloadType.ACK) {
                 isAck = true;
 
                 isText = false;

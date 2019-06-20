@@ -1,9 +1,7 @@
 package jsmith.nknsdk.wallet.transactions;
 
 import com.google.protobuf.ByteString;
-import jsmith.nknsdk.network.proto.PorgramP;
 import jsmith.nknsdk.network.proto.TransactionP;
-import jsmith.nknsdk.network.proto.TransactionpayloadP;
 import jsmith.nknsdk.utils.Crypto;
 import jsmith.nknsdk.utils.EncodeUtils;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
@@ -49,7 +47,7 @@ public abstract class TransactionT {
     }
 
 
-    protected TransactionpayloadP.TransactionPayload payload;
+    protected TransactionP.TransactionPayload payload;
 
 
     public ByteString build(EdDSAPrivateKey privateKey, ByteString signatureRedeem) {
@@ -68,7 +66,7 @@ public abstract class TransactionT {
         return data;
     }
 
-    private PorgramP.Program sign(EdDSAPrivateKey privateKey, ByteString signatureRedeem) {
+    private TransactionP.Program sign(EdDSAPrivateKey privateKey, ByteString signatureRedeem) {
         final ByteString dataToSign = ByteString.EMPTY
                 .concat(EncodeUtils.encodeUint32(payload.getTypeValue()))
                 .concat(EncodeUtils.encodeBytes(payload.getData()))
@@ -77,7 +75,7 @@ public abstract class TransactionT {
                 .concat(EncodeUtils.encodeBytes(ByteString.EMPTY)); // unsignedTx.attributes
 
         final byte[] sig = Crypto.sha256andSign(privateKey, dataToSign.toByteArray());
-        final PorgramP.Program.Builder programBuilder = PorgramP.Program.newBuilder();
+        final TransactionP.Program.Builder programBuilder = TransactionP.Program.newBuilder();
         programBuilder.setCode(signatureRedeem);
         programBuilder.setParameter(EncodeUtils.encodeUint(sig.length).concat(ByteString.copyFrom(sig)));
 

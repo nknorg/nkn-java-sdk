@@ -1,7 +1,7 @@
 package jsmith.nknsdk.wallet.transactions;
 
 import com.google.protobuf.ByteString;
-import jsmith.nknsdk.network.proto.TransactionpayloadP;
+import jsmith.nknsdk.network.proto.TransactionP;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 
 /**
@@ -46,11 +46,11 @@ public class NameServiceT extends TransactionT {
     @Override
     public ByteString build(EdDSAPrivateKey privateKey, ByteString signatureRedeem) {
 
-        final TransactionpayloadP.RegisterName.Builder txName = TransactionpayloadP.RegisterName.newBuilder();
+        final TransactionP.RegisterName.Builder txName = TransactionP.RegisterName.newBuilder();
         txName.setName(name);
         txName.setRegistrant(publicKey);
 
-        final TransactionpayloadP.TransactionPayload.Builder txPayload = TransactionpayloadP.TransactionPayload.newBuilder();
+        final TransactionP.TransactionPayload.Builder txPayload = TransactionP.TransactionPayload.newBuilder();
         txPayload.setType(type.protoTxType);
         txPayload.setData(txName.build().toByteString());
 
@@ -60,14 +60,13 @@ public class NameServiceT extends TransactionT {
     }
 
     public enum NameServiceType {
-        REGISTER (TransactionpayloadP.TransactionPayloadType.RegisterNameType),
-        DELETE (TransactionpayloadP.TransactionPayloadType.DeleteNameType);
+        REGISTER (TransactionP.TransactionPayloadType.REGISTER_NAME_TYPE),
+        DELETE (TransactionP.TransactionPayloadType.DELETE_NAME_TYPE);
 
 
+        private final TransactionP.TransactionPayloadType protoTxType;
 
-        private final TransactionpayloadP.TransactionPayloadType protoTxType;
-
-        NameServiceType(TransactionpayloadP.TransactionPayloadType protoTxType) {
+        NameServiceType(TransactionP.TransactionPayloadType protoTxType) {
             this.protoTxType = protoTxType;
         }
     }
