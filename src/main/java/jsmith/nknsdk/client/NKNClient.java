@@ -4,9 +4,11 @@ import com.google.protobuf.ByteString;
 import jsmith.nknsdk.network.ClientMessages;
 import jsmith.nknsdk.network.ClientTunnel;
 import jsmith.nknsdk.network.proto.MessagesP;
+import jsmith.nknsdk.wallet.WalletException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -149,6 +151,33 @@ public class NKNClient {
     public List<CompletableFuture<ReceivedMessage>> sendMessageMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, Object message) {
         LOG.debug("Sending multicast message");
         return clientMessages.sendMessageAsync(destinationFullIdentifier, replyTo, message);
+    }
+
+    public List<CompletableFuture<ReceivedMessage>> publishTextMessageAsync(String topic, int bucket, String message) throws WalletException {
+        final MessagesP.TextData td = MessagesP.TextData.newBuilder()
+                .setText(message)
+                .build();
+
+        return publishMessageAsync(topic, bucket, td.toByteString(), MessagesP.PayloadType.TEXT);
+    }
+
+    public List<CompletableFuture<ReceivedMessage>> publishBinaryMessageAsync(String topic, int bucket, byte[] message) throws WalletException {
+        return publishBinaryMessageAsync(topic, bucket, ByteString.copyFrom(message));
+    }
+
+    public List<CompletableFuture<ReceivedMessage>> publishBinaryMessageAsync(String topic, int bucket, ByteString message) throws WalletException {
+        return publishMessageAsync(topic, bucket, message, MessagesP.PayloadType.BINARY);
+    }
+
+    private List<CompletableFuture<ReceivedMessage>> publishMessageAsync(String topic, int bucket, ByteString data, MessagesP.PayloadType type) throws WalletException {
+        final NKNExplorer.Subscriber[] subscribers = NKNExplorer.getSubscribers(topic, bucket);
+        if (subscribers.length == 0) return new ArrayList<>();
+
+        final ArrayList<String> dest = new ArrayList<>(subscribers.length);
+        for (NKNExplorer.Subscriber sub : subscribers) dest.add(sub.fullClientIdentifier);
+
+        LOG.debug("Publishing binary message");
+        return clientMessages.sendMessageAsync(dest, null, type, data);
     }
 
     public String getCurrentSigChainBlockHash() {

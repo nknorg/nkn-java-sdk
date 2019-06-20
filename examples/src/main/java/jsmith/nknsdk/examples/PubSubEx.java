@@ -1,10 +1,14 @@
 package jsmith.nknsdk.examples;
 
 import com.darkyen.tproll.TPLogger;
+import jsmith.nknsdk.client.Identity;
+import jsmith.nknsdk.client.NKNClient;
+import jsmith.nknsdk.client.NKNClientException;
 import jsmith.nknsdk.client.NKNExplorer;
 import jsmith.nknsdk.network.HttpApi;
 import jsmith.nknsdk.wallet.Wallet;
 import jsmith.nknsdk.wallet.WalletException;
+import org.bouncycastle.util.encoders.Hex;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -16,7 +20,7 @@ import static jsmith.nknsdk.examples.LogUtils.setupLogging;
  */
 public class PubSubEx {
 
-    public static void main(String[] args) throws WalletException {
+    public static void main(String[] args) throws WalletException, InterruptedException, NKNClientException {
         setupLogging(TPLogger.DEBUG);
 
         final File walletFile = new File("pubsub.dat");
@@ -28,7 +32,7 @@ public class PubSubEx {
         System.out.println("Balance at " + pubsubWallet.getAddress() + " is " + pubsubWallet.queryBalance() + " tNKN");
 
 
-        final String topic = "testtopic5";
+        final String topic = "testtopic";
 
         final NKNExplorer.Subscriber[] subscribers = NKNExplorer.getSubscribers(topic, 0);
         System.out.println("Subscribers of '" + topic + "':");
@@ -37,16 +41,29 @@ public class PubSubEx {
         }
         System.out.println("Total: " + subscribers.length + " subs");
 
+        new NKNClient(new Identity(null, Wallet.createNew())).start().publishTextMessageAsync(topic, 0, "Hello all my subscribers!");
+
         if (true) {
 
-            System.out.println("Subscribing to '" + topic + "' using " + pubsubWallet.getAddress());
-            final String txID = pubsubWallet.tx().subscribe(topic, 0, 100, "somename", "meta");
+            final String identifier = "clientA";
+
+            System.out.println("Subscribing to '" + topic + "' using " + identifier + (identifier == null || identifier.isEmpty() ? "" : ".") + pubsubWallet.getAddress());
+            final String txID = pubsubWallet.tx().subscribe(topic, 0, 100, identifier, "meta");
 
             if (txID == null) {
                 System.out.println("  Transaction failed");
             } else {
                 System.out.println("  Transaction successful: " + txID);
             }
+
+            new NKNClient(new Identity(identifier, pubsubWallet)).onNewMessage(msg -> {
+                if (msg.isText) {
+                    System.out.println("New text from " + msg.from + "\n  ==> " + msg.textData);
+                } else if (msg.isBinary) {
+                    System.out.println("New binary from " + msg.from + "\n  ==> 0x" + Hex.toHexString(msg.binaryData.toByteArray()).toUpperCase());
+                }
+            }).start();
+            Thread.sleep(10000);
         }
 
     }
