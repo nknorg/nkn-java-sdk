@@ -1,6 +1,7 @@
 package jsmith.nknsdk.wallet;
 
 import com.google.protobuf.ByteString;
+import com.iwebpp.crypto.TweetNaclFast;
 import jsmith.nknsdk.client.NKNExplorer;
 import jsmith.nknsdk.network.ConnectionProvider;
 import jsmith.nknsdk.network.HttpApi;
@@ -228,6 +229,17 @@ public class Wallet {
 
     public final byte[] sha256andSign(byte[] data) {
         return Crypto.sha256andSign((EdDSAPrivateKey) keyPair.getPrivate(), data);
+    }
+
+    public byte[] getSharedKey(String otherFullIdentifier) {
+        // TODO name service lookup
+        // TODO cache
+        byte[] pk = Hex.decode(otherFullIdentifier.substring(otherFullIdentifier.lastIndexOf('.') + 1));
+
+
+        // TODO
+
+        return Hex.decode("57431ee1a206904bc0a02f5e58ae7ae888fb3f6dcb07afc79d5eb827e5ced180");
     }
 
 }

@@ -228,8 +228,8 @@ public final class MessagesP {
     // @@protoc_insertion_point(enum_scope:jsmith.nknsdk.network.proto.MessageType)
   }
 
-  public interface EncMessageOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:jsmith.nknsdk.network.proto.EncMessage)
+  public interface EncryptedMessageOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:jsmith.nknsdk.network.proto.EncryptedMessage)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -248,18 +248,18 @@ public final class MessagesP {
     com.google.protobuf.ByteString getNonce();
   }
   /**
-   * Protobuf type {@code jsmith.nknsdk.network.proto.EncMessage}
+   * Protobuf type {@code jsmith.nknsdk.network.proto.EncryptedMessage}
    */
-  public  static final class EncMessage extends
+  public  static final class EncryptedMessage extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:jsmith.nknsdk.network.proto.EncMessage)
-      EncMessageOrBuilder {
+      // @@protoc_insertion_point(message_implements:jsmith.nknsdk.network.proto.EncryptedMessage)
+      EncryptedMessageOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use EncMessage.newBuilder() to construct.
-    private EncMessage(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use EncryptedMessage.newBuilder() to construct.
+    private EncryptedMessage(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private EncMessage() {
+    private EncryptedMessage() {
       payload_ = com.google.protobuf.ByteString.EMPTY;
       encrypted_ = false;
       nonce_ = com.google.protobuf.ByteString.EMPTY;
@@ -270,7 +270,7 @@ public final class MessagesP {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private EncMessage(
+    private EncryptedMessage(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -325,15 +325,15 @@ public final class MessagesP {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_EncMessage_descriptor;
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_EncryptedMessage_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_EncMessage_fieldAccessorTable
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_EncryptedMessage_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              jsmith.nknsdk.network.proto.MessagesP.EncMessage.class, jsmith.nknsdk.network.proto.MessagesP.EncMessage.Builder.class);
+              jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage.class, jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage.Builder.class);
     }
 
     public static final int PAYLOAD_FIELD_NUMBER = 1;
@@ -417,10 +417,10 @@ public final class MessagesP {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof jsmith.nknsdk.network.proto.MessagesP.EncMessage)) {
+      if (!(obj instanceof jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage)) {
         return super.equals(obj);
       }
-      jsmith.nknsdk.network.proto.MessagesP.EncMessage other = (jsmith.nknsdk.network.proto.MessagesP.EncMessage) obj;
+      jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage other = (jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage) obj;
 
       boolean result = true;
       result = result && getPayload()
@@ -452,69 +452,69 @@ public final class MessagesP {
       return hash;
     }
 
-    public static jsmith.nknsdk.network.proto.MessagesP.EncMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static jsmith.nknsdk.network.proto.MessagesP.EncMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.MessagesP.EncMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static jsmith.nknsdk.network.proto.MessagesP.EncMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.MessagesP.EncMessage parseFrom(byte[] data)
+    public static jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static jsmith.nknsdk.network.proto.MessagesP.EncMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.MessagesP.EncMessage parseFrom(java.io.InputStream input)
+    public static jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static jsmith.nknsdk.network.proto.MessagesP.EncMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.MessagesP.EncMessage parseDelimitedFrom(java.io.InputStream input)
+    public static jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static jsmith.nknsdk.network.proto.MessagesP.EncMessage parseDelimitedFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static jsmith.nknsdk.network.proto.MessagesP.EncMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static jsmith.nknsdk.network.proto.MessagesP.EncMessage parseFrom(
+    public static jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -527,7 +527,7 @@ public final class MessagesP {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(jsmith.nknsdk.network.proto.MessagesP.EncMessage prototype) {
+    public static Builder newBuilder(jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -543,26 +543,26 @@ public final class MessagesP {
       return builder;
     }
     /**
-     * Protobuf type {@code jsmith.nknsdk.network.proto.EncMessage}
+     * Protobuf type {@code jsmith.nknsdk.network.proto.EncryptedMessage}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:jsmith.nknsdk.network.proto.EncMessage)
-        jsmith.nknsdk.network.proto.MessagesP.EncMessageOrBuilder {
+        // @@protoc_insertion_point(builder_implements:jsmith.nknsdk.network.proto.EncryptedMessage)
+        jsmith.nknsdk.network.proto.MessagesP.EncryptedMessageOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_EncMessage_descriptor;
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_EncryptedMessage_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_EncMessage_fieldAccessorTable
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_EncryptedMessage_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                jsmith.nknsdk.network.proto.MessagesP.EncMessage.class, jsmith.nknsdk.network.proto.MessagesP.EncMessage.Builder.class);
+                jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage.class, jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage.Builder.class);
       }
 
-      // Construct using jsmith.nknsdk.network.proto.MessagesP.EncMessage.newBuilder()
+      // Construct using jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -592,17 +592,17 @@ public final class MessagesP {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_EncMessage_descriptor;
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_EncryptedMessage_descriptor;
       }
 
       @java.lang.Override
-      public jsmith.nknsdk.network.proto.MessagesP.EncMessage getDefaultInstanceForType() {
-        return jsmith.nknsdk.network.proto.MessagesP.EncMessage.getDefaultInstance();
+      public jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage getDefaultInstanceForType() {
+        return jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage.getDefaultInstance();
       }
 
       @java.lang.Override
-      public jsmith.nknsdk.network.proto.MessagesP.EncMessage build() {
-        jsmith.nknsdk.network.proto.MessagesP.EncMessage result = buildPartial();
+      public jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage build() {
+        jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -610,8 +610,8 @@ public final class MessagesP {
       }
 
       @java.lang.Override
-      public jsmith.nknsdk.network.proto.MessagesP.EncMessage buildPartial() {
-        jsmith.nknsdk.network.proto.MessagesP.EncMessage result = new jsmith.nknsdk.network.proto.MessagesP.EncMessage(this);
+      public jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage buildPartial() {
+        jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage result = new jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage(this);
         result.payload_ = payload_;
         result.encrypted_ = encrypted_;
         result.nonce_ = nonce_;
@@ -653,16 +653,16 @@ public final class MessagesP {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof jsmith.nknsdk.network.proto.MessagesP.EncMessage) {
-          return mergeFrom((jsmith.nknsdk.network.proto.MessagesP.EncMessage)other);
+        if (other instanceof jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage) {
+          return mergeFrom((jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(jsmith.nknsdk.network.proto.MessagesP.EncMessage other) {
-        if (other == jsmith.nknsdk.network.proto.MessagesP.EncMessage.getDefaultInstance()) return this;
+      public Builder mergeFrom(jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage other) {
+        if (other == jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage.getDefaultInstance()) return this;
         if (other.getPayload() != com.google.protobuf.ByteString.EMPTY) {
           setPayload(other.getPayload());
         }
@@ -687,11 +687,11 @@ public final class MessagesP {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        jsmith.nknsdk.network.proto.MessagesP.EncMessage parsedMessage = null;
+        jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (jsmith.nknsdk.network.proto.MessagesP.EncMessage) e.getUnfinishedMessage();
+          parsedMessage = (jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -797,41 +797,41 @@ public final class MessagesP {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:jsmith.nknsdk.network.proto.EncMessage)
+      // @@protoc_insertion_point(builder_scope:jsmith.nknsdk.network.proto.EncryptedMessage)
     }
 
-    // @@protoc_insertion_point(class_scope:jsmith.nknsdk.network.proto.EncMessage)
-    private static final jsmith.nknsdk.network.proto.MessagesP.EncMessage DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:jsmith.nknsdk.network.proto.EncryptedMessage)
+    private static final jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new jsmith.nknsdk.network.proto.MessagesP.EncMessage();
+      DEFAULT_INSTANCE = new jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage();
     }
 
-    public static jsmith.nknsdk.network.proto.MessagesP.EncMessage getDefaultInstance() {
+    public static jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<EncMessage>
-        PARSER = new com.google.protobuf.AbstractParser<EncMessage>() {
+    private static final com.google.protobuf.Parser<EncryptedMessage>
+        PARSER = new com.google.protobuf.AbstractParser<EncryptedMessage>() {
       @java.lang.Override
-      public EncMessage parsePartialFrom(
+      public EncryptedMessage parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new EncMessage(input, extensionRegistry);
+        return new EncryptedMessage(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<EncMessage> parser() {
+    public static com.google.protobuf.Parser<EncryptedMessage> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<EncMessage> getParserForType() {
+    public com.google.protobuf.Parser<EncryptedMessage> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public jsmith.nknsdk.network.proto.MessagesP.EncMessage getDefaultInstanceForType() {
+    public jsmith.nknsdk.network.proto.MessagesP.EncryptedMessage getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -5113,10 +5113,10 @@ public final class MessagesP {
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_jsmith_nknsdk_network_proto_EncMessage_descriptor;
+    internal_static_jsmith_nknsdk_network_proto_EncryptedMessage_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_jsmith_nknsdk_network_proto_EncMessage_fieldAccessorTable;
+      internal_static_jsmith_nknsdk_network_proto_EncryptedMessage_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_jsmith_nknsdk_network_proto_Payload_descriptor;
   private static final 
@@ -5157,25 +5157,25 @@ public final class MessagesP {
   static {
     java.lang.String[] descriptorData = {
       "\n+jsmith/nknsdk/network/proto/messagesP." +
-      "proto\022\033jsmith.nknsdk.network.proto\"?\n\nEn" +
-      "cMessage\022\017\n\007payload\030\001 \001(\014\022\021\n\tencrypted\030\002" +
-      " \001(\010\022\r\n\005nonce\030\003 \001(\014\"\202\001\n\007Payload\0226\n\004type\030" +
-      "\001 \001(\0162(.jsmith.nknsdk.network.proto.Payl" +
-      "oadType\022\013\n\003pid\030\002 \001(\014\022\014\n\004data\030\003 \001(\014\022\024\n\014re" +
-      "ply_to_pid\030\004 \001(\014\022\016\n\006no_ack\030\005 \001(\010\"\030\n\010Text" +
-      "Data\022\014\n\004text\030\001 \001(\t\"Z\n\007Message\022>\n\014message" +
-      "_type\030\001 \001(\0162(.jsmith.nknsdk.network.prot" +
-      "o.MessageType\022\017\n\007message\030\002 \001(\014\"\215\001\n\tClien" +
-      "tMsg\022\014\n\004dest\030\001 \001(\t\022\017\n\007payload\030\002 \001(\014\022\r\n\005d" +
-      "ests\030\003 \003(\t\022\033\n\023max_holding_seconds\030\004 \001(\r\022" +
-      "\r\n\005nonce\030\005 \001(\r\022\022\n\nblock_hash\030\006 \001(\014\022\022\n\nsi" +
-      "gnatures\030\007 \003(\014\"?\n\007NodeMsg\022\013\n\003src\030\001 \001(\t\022\017" +
-      "\n\007payload\030\002 \001(\014\022\026\n\016prev_signature\030\003 \001(\014\"" +
-      "7\n\nReceiptMsg\022\026\n\016prev_signature\030\001 \001(\014\022\021\n" +
-      "\tsignature\030\002 \001(\014*,\n\013PayloadType\022\n\n\006BINAR" +
-      "Y\020\000\022\010\n\004TEXT\020\001\022\007\n\003ACK\020\002*<\n\013MessageType\022\016\n" +
-      "\nCLIENT_MSG\020\000\022\014\n\010NODE_MSG\020\001\022\017\n\013RECEIPT_M" +
-      "SG\020\002b\006proto3"
+      "proto\022\033jsmith.nknsdk.network.proto\"E\n\020En" +
+      "cryptedMessage\022\017\n\007payload\030\001 \001(\014\022\021\n\tencry" +
+      "pted\030\002 \001(\010\022\r\n\005nonce\030\003 \001(\014\"\202\001\n\007Payload\0226\n" +
+      "\004type\030\001 \001(\0162(.jsmith.nknsdk.network.prot" +
+      "o.PayloadType\022\013\n\003pid\030\002 \001(\014\022\014\n\004data\030\003 \001(\014" +
+      "\022\024\n\014reply_to_pid\030\004 \001(\014\022\016\n\006no_ack\030\005 \001(\010\"\030" +
+      "\n\010TextData\022\014\n\004text\030\001 \001(\t\"Z\n\007Message\022>\n\014m" +
+      "essage_type\030\001 \001(\0162(.jsmith.nknsdk.networ" +
+      "k.proto.MessageType\022\017\n\007message\030\002 \001(\014\"\215\001\n" +
+      "\tClientMsg\022\014\n\004dest\030\001 \001(\t\022\017\n\007payload\030\002 \001(" +
+      "\014\022\r\n\005dests\030\003 \003(\t\022\033\n\023max_holding_seconds\030" +
+      "\004 \001(\r\022\r\n\005nonce\030\005 \001(\r\022\022\n\nblock_hash\030\006 \001(\014" +
+      "\022\022\n\nsignatures\030\007 \003(\014\"?\n\007NodeMsg\022\013\n\003src\030\001" +
+      " \001(\t\022\017\n\007payload\030\002 \001(\014\022\026\n\016prev_signature\030" +
+      "\003 \001(\014\"7\n\nReceiptMsg\022\026\n\016prev_signature\030\001 " +
+      "\001(\014\022\021\n\tsignature\030\002 \001(\014*,\n\013PayloadType\022\n\n" +
+      "\006BINARY\020\000\022\010\n\004TEXT\020\001\022\007\n\003ACK\020\002*<\n\013MessageT" +
+      "ype\022\016\n\nCLIENT_MSG\020\000\022\014\n\010NODE_MSG\020\001\022\017\n\013REC" +
+      "EIPT_MSG\020\002b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -5189,11 +5189,11 @@ public final class MessagesP {
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
-    internal_static_jsmith_nknsdk_network_proto_EncMessage_descriptor =
+    internal_static_jsmith_nknsdk_network_proto_EncryptedMessage_descriptor =
       getDescriptor().getMessageTypes().get(0);
-    internal_static_jsmith_nknsdk_network_proto_EncMessage_fieldAccessorTable = new
+    internal_static_jsmith_nknsdk_network_proto_EncryptedMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_jsmith_nknsdk_network_proto_EncMessage_descriptor,
+        internal_static_jsmith_nknsdk_network_proto_EncryptedMessage_descriptor,
         new java.lang.String[] { "Payload", "Encrypted", "Nonce", });
     internal_static_jsmith_nknsdk_network_proto_Payload_descriptor =
       getDescriptor().getMessageTypes().get(1);

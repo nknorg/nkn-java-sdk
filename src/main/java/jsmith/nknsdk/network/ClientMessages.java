@@ -167,6 +167,24 @@ public class ClientMessages extends Thread {
 
         boolean isReplyTo = false;
 
+        MessagesP.EncryptedMessage encryptedMessage;
+        try {
+            encryptedMessage = MessagesP.EncryptedMessage.parseFrom(message.getData());
+        } catch (InvalidProtocolBufferException e) {
+            LOG.warn("Received invalid message, ignoring");
+            return;
+        }
+        final boolean encrypted = encryptedMessage.getEncrypted();
+
+        ByteString data;
+        try {
+            data = ClientEnc.decryptMessage(from, encryptedMessage, ct.identity.wallet);
+        } catch (NKNClientException e) {
+            LOG.warn("Failed to decrypt message, dropping");
+            return;
+        }
+
+
         synchronized (jobLock) {
             for (MessageJob j : waitingForReply) {
                 if (j.messageID.equals(replyTo)) {
@@ -177,8 +195,9 @@ public class ClientMessages extends Thread {
                                     new NKNClient.ReceivedMessage(
                                         from,
                                         messageID,
+                                        encrypted,
                                         MessagesP.PayloadType.TEXT,
-                                        MessagesP.TextData.parseFrom(message.getData()).getText()
+                                        MessagesP.TextData.parseFrom(data).getText()
                                 ));
                         } catch (InvalidProtocolBufferException e) {
                             LOG.warn("Received packet is of type TEXT but does not contain valid text data");
@@ -188,14 +207,16 @@ public class ClientMessages extends Thread {
                                 new NKNClient.ReceivedMessage(
                                     from,
                                     messageID,
+                                    encrypted,
                                     MessagesP.PayloadType.BINARY,
-                                    message.getData()
+                                    data
                             ));
                     } else if (type == MessagesP.PayloadType.ACK) {
                         j.ack.set(indexOf,
                                 new NKNClient.ReceivedMessage(
                                         from,
                                         messageID,
+                                        false,
                                         MessagesP.PayloadType.ACK,
                                         null
                                 ));
@@ -214,14 +235,14 @@ public class ClientMessages extends Thread {
             if (type == MessagesP.PayloadType.TEXT) {
                 try {
                     if (onMessageL != null) {
-                        ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, type, MessagesP.TextData.parseFrom(message.getData()).getText()));
+                        ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, encrypted, type, MessagesP.TextData.parseFrom(data).getText()));
                     }
                 } catch (InvalidProtocolBufferException e) {
                     LOG.warn("Received packet is of type TEXT but does not contain valid text data");
                 }
             } else if (type == MessagesP.PayloadType.BINARY) {
                 if (onMessageL != null) {
-                    ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, type, message.getData()));
+                    ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, encrypted, type, data));
                 }
             }
         }
@@ -260,7 +281,7 @@ public class ClientMessages extends Thread {
                 .setType(type)
                 .setPid(messageID)
                 .setReplyToPid(replyToMessageID)
-                .setData(message)
+                .setData(ClientEnc.encryptMessage(destination, message, ct.identity.wallet))
                 .setNoAck(noAck)
                 .build();
 

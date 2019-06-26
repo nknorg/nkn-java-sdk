@@ -11,7 +11,7 @@ enum PayloadType {
     ACK = 2;
 }
 
-message EncMessage {
+message EncryptedMessage {
     bytes payload = 1;
     bool encrypted = 2;
     bytes nonce = 3;

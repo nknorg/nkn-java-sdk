@@ -188,6 +188,7 @@ public class NKNClient {
 
         public final ByteString msgId;
         public final String from;
+        public final boolean wasEncrypted;
 
         public final ByteString binaryData;
         public final String textData;
@@ -195,9 +196,11 @@ public class NKNClient {
         public final boolean isText;
         public final boolean isAck;
 
-        public ReceivedMessage(String from, ByteString msgId, MessagesP.PayloadType type, Object data) {
+        public ReceivedMessage(String from, ByteString msgId, boolean wasEncrypted, MessagesP.PayloadType type, Object data) {
             this.from = from;
             this.msgId = msgId;
+            this.wasEncrypted = wasEncrypted;
+
             if (type == MessagesP.PayloadType.TEXT) {
                 isText = true;
                 textData = (String) data;

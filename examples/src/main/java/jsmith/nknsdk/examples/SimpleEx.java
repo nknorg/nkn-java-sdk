@@ -29,9 +29,9 @@ public class SimpleEx {
             clientA
                     .onNewMessage(receivedMessage -> {
                         if (receivedMessage.isText) {
-                            System.out.println("Client A: New text from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
+                            System.out.println("Client A: New " + (receivedMessage.wasEncrypted ? "encrypted" : "UNENCRYPTED") + " text from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
                         } else if (receivedMessage.isBinary) {
-                            System.out.println("Client A: New binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
+                            System.out.println("Client A: New " + (receivedMessage.wasEncrypted ? "encrypted" : "UNENCRYPTED") + " binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
                         }
                     })
                     .start();
@@ -45,9 +45,9 @@ public class SimpleEx {
             clientB
                     .onNewMessageWithReply(receivedMessage -> {
                         if (receivedMessage.isText) {
-                            System.out.println("Client B: New text from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
+                            System.out.println("Client B: New " + (receivedMessage.wasEncrypted ? "encrypted" : "UNENCRYPTED") + " text from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
                         } else if (receivedMessage.isBinary) {
-                            System.out.println("Client B: New binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
+                            System.out.println("Client B: New " + (receivedMessage.wasEncrypted ? "encrypted" : "UNENCRYPTED") + " binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
                         }
                         return "Text message reply!";
                     })
@@ -63,7 +63,7 @@ public class SimpleEx {
         final CompletableFuture<NKNClient.ReceivedMessage> promise = clientA.sendTextMessageAsync(identityB.getFullIdentifier(), "Hello!");
         promise.whenComplete((response, error) -> {
             if (error == null) {
-                System.out.println("A: Response ==> " + response.textData);
+                System.out.println("A: " + (response.wasEncrypted ? "Encrypted" : "UNENCRYPTED") + " response ==> " + response.textData);
                 clientA.sendBinaryMessageAsync(identityB.getFullIdentifier(), null, new byte[]{(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE}); // Casts because java (byte) is signed and these numbers would overwrite the msb
             } else {
                 error.printStackTrace();
