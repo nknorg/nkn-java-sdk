@@ -61,4 +61,8 @@ public class EncodeUtils {
         return Objects.requireNonNull(encodeUint(bytes.size())).concat(bytes);
     }
 
+    public static ByteString encodeBool(boolean b) {
+        return encodeUint8(b ? 1 : 0);
+    }
+
 }

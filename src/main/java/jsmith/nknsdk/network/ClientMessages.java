@@ -277,16 +277,21 @@ public class ClientMessages extends Thread {
             promises.add(new CompletableFuture<>());
         }
 
-        final MessagesP.ClientToNodeMessage binMsg = MessagesP.ClientToNodeMessage.newBuilder()
-                .setDest(destination.get(0))
+        final MessagesP.ClientMsg.Builder clientToNodeMsg = MessagesP.ClientMsg.newBuilder()
                 .setPayload(payload)
-                .addAllDests(destination.subList(1, destination.size()))
-                .setMaxHoldingSeconds(0)
+                .addAllDests(destination)
+                .setMaxHoldingSeconds(0);
+
+        ClientEnc.signOutboundMessage(clientToNodeMsg, ct);
+
+        final MessagesP.Message msg = MessagesP.Message.newBuilder()
+                .setMessage(clientToNodeMsg.build().toByteString())
+                .setMessageType(MessagesP.MessageType.CLIENT_MSG)
                 .build();
 
         if (!running) throw new IllegalStateException("Client is not running, cannot send messages.");
 
-        final MessageJob j = new MessageJob(new ArrayList<>(destination), messageID, binMsg.toByteString(), new ArrayList<>(promises), ConnectionProvider.messageAckTimeoutMS());
+        final MessageJob j = new MessageJob(new ArrayList<>(destination), messageID, msg.toByteString(), new ArrayList<>(promises), ConnectionProvider.messageAckTimeoutMS());
 
         LOG.debug("Queueing new MessageJob");
         synchronized (jobLock) {
@@ -305,7 +310,7 @@ public class ClientMessages extends Thread {
                 .setNoAck(true)
                 .build();
 
-        final MessagesP.ClientToNodeMessage binMsg = MessagesP.ClientToNodeMessage.newBuilder()
+        final MessagesP.ClientMsg binMsg = MessagesP.ClientMsg.newBuilder()
                 .setDest(destination)
                 .setPayload(payload.toByteString())
                 .setMaxHoldingSeconds(0)

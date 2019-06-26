@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString;
 import jsmith.nknsdk.client.NKNExplorer;
 import jsmith.nknsdk.network.ConnectionProvider;
 import jsmith.nknsdk.network.HttpApi;
+import jsmith.nknsdk.utils.Crypto;
 import jsmith.nknsdk.wallet.transactions.TransactionT;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
@@ -223,6 +224,10 @@ public class Wallet {
 
     public NKNTransaction tx() {
         return new NKNTransaction(this);
+    }
+
+    public final byte[] sha256andSign(byte[] data) {
+        return Crypto.sha256andSign((EdDSAPrivateKey) keyPair.getPrivate(), data);
     }
 
 }

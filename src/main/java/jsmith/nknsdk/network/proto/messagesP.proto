@@ -11,6 +11,12 @@ enum PayloadType {
     ACK = 2;
 }
 
+message EncMessage {
+    bytes payload = 1;
+    bool encrypted = 2;
+    bytes nonce = 3;
+}
+
 message Payload {
     PayloadType type = 1;
     bytes pid = 2;
@@ -27,9 +33,9 @@ message TextData {
 
 
 enum MessageType {
-    CLIENT_TO_NODE_MESSAGE = 0;
-    NODE_TO_CLIENT_MESSAGE = 1;
-    RECEIPT = 2;
+    CLIENT_MSG = 0;
+    NODE_MSG = 1;
+    RECEIPT_MSG = 2;
 }
 
 message Message {
@@ -37,7 +43,7 @@ message Message {
     bytes message = 2;
 }
 
-message ClientToNodeMessage {
+message ClientMsg {
     string dest = 1;
     bytes payload = 2;
     repeated string dests = 3;
@@ -47,13 +53,13 @@ message ClientToNodeMessage {
     repeated bytes signatures = 7;
 }
 
-message NodeToClientMessage {
+message NodeMsg {
     string src = 1;
     bytes payload = 2;
     bytes prev_signature = 3;
 }
 
-message Receipt {
+message ReceiptMsg {
     bytes prev_signature = 1;
     bytes signature = 2;
 }

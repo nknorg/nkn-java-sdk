@@ -180,7 +180,7 @@ public class NKNClient {
         return clientMessages.sendMessageAsync(dest, null, type, data);
     }
 
-    public String getCurrentSigChainBlockHash() {
+    public ByteString getCurrentSigChainBlockHash() {
         return clientTunnel.currentSigChainBlockHash();
     }
 

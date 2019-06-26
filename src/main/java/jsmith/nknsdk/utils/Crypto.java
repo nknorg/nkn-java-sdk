@@ -112,26 +112,6 @@ public class Crypto {
             signatureEngine.initVerify(key);
             signatureEngine.update(sha256(data));
 
-//            if (signature.length == 64) { // Assuming raw encoding
-//                final boolean extendR = signature[0] < 0;
-//                final boolean extendS = signature[32] < 0;
-//
-//                final byte[] der = new byte[2 + 2 + 32 + (extendR ? 1 : 0) + 2 + 32 + (extendS ? 1 : 0)];
-//                der[0] = 0x30;
-//                der[1] = (byte)(2 + 32 + (extendR ? 1 : 0) + 2 + 32 + (extendS ? 1 : 0));
-//
-//                der[2] = 0x02;
-//                der[3] = (byte)(32 + (extendR ? 1 : 0));
-//                System.arraycopy(signature, 0, der, 4 + (extendR ? 1 : 0), 32);
-//
-//                der[der[3] + 4] = 0x02;
-//                der[der[3] + 5] = (byte)(32 + (extendS ? 1 : 0));
-//                System.arraycopy(signature, 32, der, der[3] + 6 + (extendS ? 1 : 0), 32);
-//
-//                return ecdsaVerify.verify(der);
-//            } else { // Assuming DER encoding
-//                return ecdsaVerify.verify(signature);
-//            }
             return signatureEngine.verify(signature);
 
         } catch (SignatureException | InvalidKeyException e) {
@@ -154,6 +134,9 @@ public class Crypto {
         final byte[] id = new byte[16];
         randomId_sr.nextBytes(id);
         return id;
+    }
+    public static int nextRandomInt32() {
+        return randomId_sr.nextInt();
     }
 
     public static class CryptoError extends Error {

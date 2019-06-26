@@ -1,11 +1,14 @@
 package jsmith.nknsdk.network;
 
 import com.darkyen.dave.WebbException;
+import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import jsmith.nknsdk.client.Identity;
 import jsmith.nknsdk.client.NKNClientException;
 import jsmith.nknsdk.network.proto.MessagesP;
 import jsmith.nknsdk.utils.CountLatch;
+import org.bouncycastle.util.encoders.DecoderException;
+import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +31,7 @@ public class ClientTunnel {
     WsApi ws = null;
     CountLatch messageHold = new CountLatch(1);
 
-    private final Identity identity;
+    final Identity identity;
 
     private static int id = 0;
     private final int myId;
@@ -69,6 +72,8 @@ public class ClientTunnel {
         }
     }
 
+    ByteString nodePubkey, nodeId;
+
     private boolean bootstrapNode(InetSocketAddress bootstrapNode) {
         try {
 
@@ -77,12 +82,19 @@ public class ClientTunnel {
 
             LOG.debug("Client is connecting to bootstrapNode node: {}", bootstrapNode);
 
-            final JSONObject result = HttpApi.rpcCallJson(bootstrapNode, "getwsaddr", parameters);
-            final String wsAddr = result.has("result") ? result.getJSONObject("result").getString("addr") : null;
+            JSONObject result = HttpApi.rpcCallJson(bootstrapNode, "getwsaddr", parameters);
+            if (result.has("result")) {
+                result = result.getJSONObject("result");
 
-            LOG.warn("Invalid response format, does not contain field result: {}", result);
+                final String wsAddr = result.getString("addr");
+                try {
+                    nodePubkey = ByteString.copyFrom(Hex.decode(result.getString("pubkey")));
+                    nodeId = ByteString.copyFrom(Hex.decode(result.getString("id")));
+                } catch (DecoderException e) {
+                    LOG.warn("Couldn't decode response, invalid node");
+                    return false;
+                }
 
-            if (wsAddr != null) {
                 try {
                     final String[] parts = wsAddr.split(":");
                     directNodeWS = new InetSocketAddress(parts[0], Integer.parseInt(parts[1]));
@@ -103,8 +115,8 @@ public class ClientTunnel {
     }
 
     private final Object sigChainHashLock = new Object();
-    private String sigChainHash = "";
-    public String currentSigChainBlockHash() {
+    private ByteString sigChainHash = null;
+    public ByteString currentSigChainBlockHash() {
         synchronized (sigChainHashLock) {
             return sigChainHash;
         }
@@ -164,14 +176,47 @@ public class ClientTunnel {
                             ws.close();
                             success[0] = false;
                         }
+                        final JSONObject result = json.getJSONObject("Result");
+                        final JSONObject node = result.getJSONObject("node");
+
+                        if (node.has("id")) {
+                            if (!Hex.toHexString(nodeId.toByteArray()).equalsIgnoreCase(node.getString("id"))) {
+                                LOG.warn("WS Node has unexpected ID. Possible MiTM attempt; Reconnecting");
+                                ws.close();
+                                success[0] = false;
+                            }
+                            if (!Hex.toHexString(nodePubkey.toByteArray()).equalsIgnoreCase(node.getString("pubkey"))) {
+                                LOG.warn("WS Node has unexpected pubkey. Possible MiTM attempt; Reconnecting");
+                                ws.close();
+                                success[0] = false;
+                            }
+                        }
+
+                        if (result.has("sigChainBlockHash")) {
+                            try {
+                                final ByteString newSigChainHash = ByteString.copyFrom(Hex.decode(result.getString("sigChainBlockHash")));
+                                synchronized (sigChainHashLock) {
+                                    sigChainHash = newSigChainHash;
+                                }
+                            } catch (DecoderException e) {
+                                LOG.warn("Failed to decode sigChainBlockHash: {}", result.getString("sigChainBlockHash"));
+                                sigChainHash = null;
+                            }
+                        }
+
                         closeLatch.countDown();
                         break;
                     }
                     case "updateSigChainBlockHash": {
                         if (json.getInt("Error") == ErrorCodes.SUCCESS) {
-                            final String newSigChainHash = json.getString("Result");
-                            synchronized (sigChainHashLock) {
-                                sigChainHash = newSigChainHash;
+                            try {
+                                final ByteString newSigChainHash = ByteString.copyFrom(Hex.decode(json.getString("Result")));
+                                synchronized (sigChainHashLock) {
+                                    sigChainHash = newSigChainHash;
+                                }
+                            } catch (DecoderException e) {
+                                LOG.warn("Failed to decode sigChainBlockHash: {}", json.getString("Result"));
+                                sigChainHash = null;
                             }
 
                         }
@@ -185,21 +230,37 @@ public class ClientTunnel {
 
         ws.setProtobufMessageListener(bytes -> {
             try {
-                final MessagesP.NodeToClientMessage msg = MessagesP.NodeToClientMessage.parseFrom(bytes);
+                final MessagesP.Message msg = MessagesP.Message.parseFrom(bytes);
+                if (msg.getMessageType() == MessagesP.MessageType.NODE_MSG) {
+                    final MessagesP.NodeMsg nodeToClientMsg = MessagesP.NodeMsg.parseFrom(msg.getMessage());
 
-                final String from = msg.getSrc();
-                final MessagesP.Payload payload = MessagesP.Payload.parseFrom(msg.getPayload());
+                    final String from = nodeToClientMsg.getSrc();
+                    final MessagesP.Payload payload = MessagesP.Payload.parseFrom(nodeToClientMsg.getPayload());
 
-                switch (payload.getType()) {
-                    case ACK:
-                    case TEXT:
-                    case BINARY:
-                        cm.onInboundMessage(from, payload);
-                        break;
+                    final ByteString prevSig = nodeToClientMsg.getPrevSignature();
+                    if (prevSig != null && prevSig.size() != 0) {
+                        ByteString receiptPayload = ClientEnc.generateNewReceipt(prevSig, this);
+                        final ByteString receiptMsg = MessagesP.Message.newBuilder()
+                                .setMessage(receiptPayload)
+                                .setMessageType(MessagesP.MessageType.RECEIPT_MSG)
+                                .build().toByteString();
+                        ws.sendPacket(receiptMsg);
+                        LOG.debug("Sending receipt msg");
+                    }
 
-                    default:
-                        LOG.warn("Got invalid payload type {}, ignoring", payload.getType());
-                        break;
+                    switch (payload.getType()) {
+                        case ACK:
+                        case TEXT:
+                        case BINARY:
+                            cm.onInboundMessage(from, payload);
+                            break;
+
+                        default:
+                            LOG.warn("Got invalid payload type {}, ignoring", payload.getType());
+                            break;
+                    }
+                } else {
+                    LOG.warn("Received unsupported message type, ignoring ({})", msg.getMessageType());
                 }
 
             } catch (InvalidProtocolBufferException e) {
