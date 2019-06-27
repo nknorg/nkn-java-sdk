@@ -2,6 +2,7 @@ package jsmith.nknsdk.network;
 
 import com.google.protobuf.ByteString;
 import com.iwebpp.crypto.TweetNaclFast;
+import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
 import jsmith.nknsdk.network.proto.MessagesP;
 import jsmith.nknsdk.network.proto.SigchainP;
@@ -9,9 +10,10 @@ import jsmith.nknsdk.utils.Crypto;
 import jsmith.nknsdk.utils.EncodeUtils;
 import jsmith.nknsdk.wallet.Wallet;
 import org.bouncycastle.util.encoders.Hex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -19,6 +21,7 @@ import java.util.List;
  */
 public class ClientEnc {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ClientEnc.class);
 
     public static void signOutboundMessage(MessagesP.ClientMsg.Builder msg, ClientTunnel ct) {
 
@@ -92,27 +95,53 @@ public class ClientEnc {
 
 
 
-    public static ByteString encryptMessage(List<String> destinations, ByteString message, Wallet wallet) {
-//        if (destinations.size() > 1) throw new NKNClientException("Encryption with multicast is not supported yet");
-        final String dest = destinations.get(0);
+    public static ByteString encryptMessage(List<String> destinations, ByteString message, Wallet wallet, NKNClient.EncryptionLevel level) {
 
-        final byte[] nonce = TweetNaclFast.randombytes(24);
-        final byte[] sharedKey = wallet.getSharedKey(dest);
-        final byte[] msg = message.toByteArray();
-        final byte[] m = new byte[32 + message.size()];
-        final byte[] encrypted = new byte[m.length];
-        System.arraycopy(msg, 0, m, 32, msg.length);
+        boolean encrypt;
+        switch (level) {
+            case DO_NOT_ENCRYPT:
+                encrypt = false;
+                break;
+            case ENCRYPT_ONLY_UNICAST:
+                encrypt = destinations.size() == 1;
+                break;
+            case ENCRYPT_UNICAST_AND_MULTICAST:
+                if (destinations.size() == 1) {
+                    encrypt = true;
+                } else {
+                    LOG.warn("Multicast encryption requested, but not implemented yet");
+                    throw new Error("Multicast encryption is not implemented yet");
+                }
+                break;
+            default:
+                LOG.warn("Unknown encryption level: {}", level);
+                throw new Error("Encryption level not supported: " + level);
+        }
 
-        TweetNaclFast.crypto_box_afternm(encrypted, m, encrypted.length, nonce, sharedKey);
 
-        final MessagesP.EncryptedMessage encMsg = MessagesP.EncryptedMessage.newBuilder()
-                .setNonce(ByteString.copyFrom(nonce))
-                .setPayload(ByteString.copyFrom(encrypted))
-                .setEncrypted(true)
+        final MessagesP.EncryptedMessage.Builder encMsg = MessagesP.EncryptedMessage.newBuilder();
+        encMsg.setEncrypted(encrypt);
 
-                .build();
+        if (encrypt) {
+            final String dest = destinations.get(0);
+            final byte[] nonce = TweetNaclFast.randombytes(24);
+            final byte[] sharedKey = wallet.getSharedKey(dest);
+            final byte[] msg = message.toByteArray();
+            final byte[] m = new byte[32 + message.size()];
+            final byte[] encrypted = new byte[m.length];
+            System.arraycopy(msg, 0, m, 32, msg.length);
 
-        return encMsg.toByteString();
+            TweetNaclFast.crypto_box_afternm(encrypted, m, encrypted.length, nonce, sharedKey);
+
+            encMsg.setPayload(ByteString.copyFrom(encrypted));
+            encMsg.setNonce(ByteString.copyFrom(nonce));
+        } else {
+            encMsg.setPayload(message);
+        }
+
+
+        return encMsg.build().toByteString();
+
     }
 
     public static ByteString decryptMessage(String from, MessagesP.EncryptedMessage enc, Wallet wallet) throws NKNClientException {

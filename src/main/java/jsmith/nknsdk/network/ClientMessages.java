@@ -44,6 +44,10 @@ public class ClientMessages extends Thread {
     public void setNoAutomaticACKs(boolean noAck) {
         this.noAck = noAck;
     }
+    private NKNClient.EncryptionLevel encryptionLevel = NKNClient.EncryptionLevel.ENCRYPT_ONLY_UNICAST;
+    public void setEncryptionLevel(NKNClient.EncryptionLevel level) {
+        this.encryptionLevel = level;
+    }
 
     public void run() {
         running = true;
@@ -281,7 +285,7 @@ public class ClientMessages extends Thread {
                 .setType(type)
                 .setPid(messageID)
                 .setReplyToPid(replyToMessageID)
-                .setData(ClientEnc.encryptMessage(destination, message, ct.identity.wallet))
+                .setData(ClientEnc.encryptMessage(destination, message, ct.identity.wallet, encryptionLevel))
                 .setNoAck(noAck)
                 .build();
 

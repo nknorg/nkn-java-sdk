@@ -51,6 +51,7 @@ public class SimpleEx {
                         }
                         return "Text message reply!";
                     })
+                    .setEncryptionLevel(NKNClient.EncryptionLevel.DO_NOT_ENCRYPT)
                     .start();
         } catch (NKNClientException e) {
             LOG.error("Client failed to start", e);

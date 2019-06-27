@@ -55,12 +55,23 @@ public class NKNClient {
     }
 
     private boolean noAutomaticACKs = false;
-    public void setNoAutomaticACKs(boolean noAutomaticACKs) {
+    public NKNClient setNoAutomaticACKs(boolean noAutomaticACKs) {
         clientMessages.setNoAutomaticACKs(noAutomaticACKs);
         this.noAutomaticACKs  = noAutomaticACKs;
+        return this;
     }
     public boolean isNoAutomaticACKs() {
         return noAutomaticACKs;
+    }
+
+    private EncryptionLevel encryptionLevel = EncryptionLevel.ENCRYPT_ONLY_UNICAST;
+    public NKNClient setEncryptionLevel(EncryptionLevel level) {
+        clientMessages.setEncryptionLevel(level);
+        this.encryptionLevel = level;
+        return this;
+    }
+    public EncryptionLevel getEncryptionLevel() {
+        return encryptionLevel;
     }
 
     public CompletableFuture<ReceivedMessage> sendTextMessageAsync(String destinationFullIdentifier, String message) {
@@ -231,6 +242,14 @@ public class NKNClient {
             }
 
         }
+
+    }
+
+    public enum EncryptionLevel {
+
+        DO_NOT_ENCRYPT,
+        ENCRYPT_ONLY_UNICAST,
+        ENCRYPT_UNICAST_AND_MULTICAST
 
     }
 
