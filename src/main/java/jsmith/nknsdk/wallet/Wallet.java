@@ -6,6 +6,7 @@ import jsmith.nknsdk.client.NKNExplorer;
 import jsmith.nknsdk.network.ConnectionProvider;
 import jsmith.nknsdk.network.HttpApi;
 import jsmith.nknsdk.utils.Crypto;
+import jsmith.nknsdk.utils.EdToCurve;
 import jsmith.nknsdk.wallet.transactions.TransactionT;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
@@ -13,6 +14,7 @@ import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
+import org.bouncycastle.util.encoders.EncoderException;
 import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -38,6 +40,7 @@ public class Wallet {
     private static final SecureRandom secureRandom = new SecureRandom();
 
     private KeyPair keyPair = null;
+    private byte[] curveSecret;
     private byte[] seed;
     private String contractDataStr = "";
 
@@ -64,6 +67,8 @@ public class Wallet {
                 new EdDSAPublicKey(publicSpec),
                 new EdDSAPrivateKey(privateSpec)
         );
+
+        w.curveSecret = EdToCurve.convertSecretKey(privateSpec.getSeed());
 
         w.seed = seed;
 
@@ -234,12 +239,23 @@ public class Wallet {
     public byte[] getSharedKey(String otherFullIdentifier) {
         // TODO name service lookup
         // TODO cache
-        byte[] pk = Hex.decode(otherFullIdentifier.substring(otherFullIdentifier.lastIndexOf('.') + 1));
+        byte[] pk;
+        try {
+            pk = Hex.decode(otherFullIdentifier.substring(otherFullIdentifier.lastIndexOf('.') + 1));
+            if (pk.length != 32) throw new ArrayIndexOutOfBoundsException("Pk has to be 32bytes long");
+        } catch (EncoderException | IndexOutOfBoundsException e) {
+            LOG.warn("Cannot get shared key, invalid other client identifier");
+            return null; // Invalid identifier
+        }
 
+        final byte[] curvePublic = EdToCurve.convertPublicKey(pk);
+        if (curvePublic == null) return null; // Invalid key
 
-        // TODO
+        final byte[] shared = new byte[32];
+        TweetNaclFast.crypto_box_beforenm(shared, curvePublic, curveSecret);
 
-        return Hex.decode("57431ee1a206904bc0a02f5e58ae7ae888fb3f6dcb07afc79d5eb827e5ced180");
+        return shared;
+
     }
 
 }
