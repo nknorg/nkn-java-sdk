@@ -116,4 +116,11 @@ public class NKNTransaction {
 
         return nonce;
     }
+
+    public String customTransaction(TransactionT tx) throws WalletException {
+        return customTransaction(tx, BigDecimal.ZERO);
+    }
+    public String customTransaction(TransactionT tx, BigDecimal fee) throws WalletException {
+        return submitTransaction(tx, fee);
+    }
 }
