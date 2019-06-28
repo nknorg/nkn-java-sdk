@@ -60,7 +60,7 @@ public class NKNTransaction {
 
         transferToT.setSenderProgramHash(w.getProgramHash());
         transferToT.setRecipientAddress(toAddress);
-        transferToT.setAmountLongValue(amount.multiply(new BigDecimal(Asset.T_NKN.mul)).longValue());
+        transferToT.setAmountLongValue(amount.multiply(new BigDecimal(100000000)).longValue());
 
         return submitTransaction(transferToT, fee);
     }
@@ -99,7 +99,7 @@ public class NKNTransaction {
 
     private String submitTransaction(TransactionT tx, BigDecimal fee) throws WalletException {
         tx.setNonce(nextNonce());
-        tx.setFeeInLongValue(fee.multiply(new BigDecimal(Asset.T_NKN.mul)).longValue());
+        tx.setFeeInLongValue(fee.multiply(new BigDecimal(100000000)).longValue());
 
         return w.submitTransaction(tx);
     }
@@ -108,7 +108,7 @@ public class NKNTransaction {
         long nonce;
 
         try {
-            nonce = ConnectionProvider.attempt((node) -> HttpApi.getNonce(node, w.getAddress(), Asset.T_NKN));
+            nonce = ConnectionProvider.attempt((node) -> HttpApi.getNonce(node, w.getAddress()));
         } catch (Throwable t) {
             if (t instanceof WalletException) throw (WalletException) t;
             throw new WalletException("Transaction failed: Failed to query nonce", t);

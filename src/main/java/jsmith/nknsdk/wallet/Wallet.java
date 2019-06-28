@@ -203,9 +203,6 @@ public class Wallet {
     public BigDecimal queryBalance() throws WalletException {
         return NKNExplorer.queryBalance(getAddress());
     }
-    public BigDecimal queryBalance(Asset asset) throws WalletException {
-        return NKNExplorer.queryBalance(asset, getAddress());
-    }
 
     public byte[] getPublicKey() {
         assert keyPair != null : "KeyPair is null, this should never happen";

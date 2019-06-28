@@ -4,7 +4,6 @@ import com.darkyen.dave.Response;
 import com.darkyen.dave.ResponseTranslator;
 import com.darkyen.dave.Webb;
 import jsmith.nknsdk.client.NKNExplorer;
-import jsmith.nknsdk.wallet.Asset;
 import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -58,7 +57,7 @@ public class HttpApi {
         return subscribers;
     }
 
-    public static BigDecimal getBalance(InetSocketAddress server, String nknAddress, Asset asset) {
+    public static BigDecimal getBalance(InetSocketAddress server, String nknAddress) {
         final JSONObject params = new JSONObject();
         params.put("address", nknAddress);
 //        params.put("assetid", asset.ID); // TODO: Is it possible to set assetid in devnet?
@@ -68,7 +67,7 @@ public class HttpApi {
         return response.getJSONObject("result").getBigDecimal("amount");
     }
 
-    public static long getNonce(InetSocketAddress server, String nknAddress, Asset asset) {
+    public static long getNonce(InetSocketAddress server, String nknAddress) {
         final JSONObject params = new JSONObject();
         params.put("address", nknAddress);
 

@@ -4,7 +4,6 @@ import jsmith.nknsdk.network.ConnectionProvider;
 import jsmith.nknsdk.network.HttpApi;
 import jsmith.nknsdk.utils.Base58;
 import jsmith.nknsdk.utils.Crypto;
-import jsmith.nknsdk.wallet.Asset;
 import jsmith.nknsdk.wallet.WalletException;
 import jsmith.nknsdk.wallet.WalletUtils;
 import org.slf4j.Logger;
@@ -20,16 +19,13 @@ public class NKNExplorer {
     private static final Logger LOG = LoggerFactory.getLogger(NKNExplorer.class);
 
 
-    public static BigDecimal queryBalance(Asset asset, String address) throws WalletException {
+    public static BigDecimal queryBalance(String address) throws WalletException {
         try {
-            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getBalance(bootstrapNode, address, asset == null ? Asset.T_NKN : asset));
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getBalance(bootstrapNode, address));
         } catch (Exception t) {
             if (t instanceof WalletException) throw (WalletException) t;
             throw new WalletException("Failed to query balance", t);
         }
-    }
-    public static BigDecimal queryBalance(String address) throws WalletException {
-        return queryBalance(Asset.T_NKN, address);
     }
 
 
