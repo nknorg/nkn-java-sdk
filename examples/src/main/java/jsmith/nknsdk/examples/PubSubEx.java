@@ -41,20 +41,19 @@ public class PubSubEx {
         }
         System.out.println("Total: " + subscribers.length + " subs");
 
-        new NKNClient(new Identity(null, Wallet.createNew())).start().publishTextMessageAsync(topic, 0, "Hello all my subscribers!");
-
-        if (true) {
+        if (false) {
 
             final String identifier = "clientA";
 
             System.out.println("Subscribing to '" + topic + "' using " + identifier + (identifier == null || identifier.isEmpty() ? "" : ".") + pubsubWallet.getAddress());
-            final String txID = pubsubWallet.tx().subscribe(topic, 0, 100, identifier, "meta");
+            final String txID = pubsubWallet.tx().subscribe(topic, 0, 10, identifier, (String) null);
 
             if (txID == null) {
                 System.out.println("  Transaction failed");
             } else {
                 System.out.println("  Transaction successful: " + txID);
             }
+
 
             new NKNClient(new Identity(identifier, pubsubWallet)).onNewMessage(msg -> {
                 if (msg.isText) {
@@ -63,8 +62,12 @@ public class PubSubEx {
                     System.out.println("New binary from " + msg.from + "\n  ==> 0x" + Hex.toHexString(msg.binaryData.toByteArray()).toUpperCase());
                 }
             }).start();
-            Thread.sleep(10000);
+            Thread.sleep(30000);
         }
+
+        new NKNClient(new Identity(null, Wallet.createNew())).start().publishTextMessageAsync(topic, 0, "Hello all my subscribers!");
+        Thread.sleep(7000);
+
 
     }
 

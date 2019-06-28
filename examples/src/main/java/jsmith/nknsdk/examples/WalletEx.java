@@ -18,9 +18,10 @@ public class WalletEx {
     public static void main(String[] args) throws WalletException {
         setupLogging(TPLogger.DEBUG);
 
-//        final Wallet w = Wallet.createNew();
-//        w.save(new File("devnet-tmpWallet.dat"), "a");
-//        System.out.println("Generated: " + w.getAddress());
+        final Wallet w = Wallet.createNew();
+        w.save(new File("devnet-tmpWallet.dat"), "a");
+        System.out.println("Generated: " + w.getAddress());
+
 
         final Wallet w2 = Wallet.load(new File("devnet-tmpWallet.dat"), "pwd");
         if (w2 != null) {
