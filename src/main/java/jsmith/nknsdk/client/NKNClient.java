@@ -187,7 +187,7 @@ public class NKNClient {
         final ArrayList<String> dest = new ArrayList<>(subscribers.length);
         for (NKNExplorer.Subscriber sub : subscribers) dest.add(sub.fullClientIdentifier);
 
-        LOG.debug("Publishing binary message");
+        LOG.debug("Publishing message");
         return clientMessages.sendMessageAsync(dest, null, type, data);
     }
 
@@ -208,7 +208,7 @@ public class NKNClient {
         public final boolean isAck;
 
         public ReceivedMessage(String from, ByteString msgId, boolean wasEncrypted, MessagesP.PayloadType type, Object data) {
-            this.from = from;
+            this.from = from.lastIndexOf('.') == 0 ? from.substring(1) : from;
             this.msgId = msgId;
             this.wasEncrypted = wasEncrypted;
 

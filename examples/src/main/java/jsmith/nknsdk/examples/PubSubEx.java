@@ -8,6 +8,7 @@ import jsmith.nknsdk.client.NKNExplorer;
 import jsmith.nknsdk.network.HttpApi;
 import jsmith.nknsdk.wallet.Wallet;
 import jsmith.nknsdk.wallet.WalletException;
+import jsmith.nknsdk.wallet.WalletUtils;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.io.File;
@@ -41,12 +42,12 @@ public class PubSubEx {
         }
         System.out.println("Total: " + subscribers.length + " subs");
 
-        if (false) {
+        if (true) {
 
             final String identifier = "clientA";
 
-            System.out.println("Subscribing to '" + topic + "' using " + identifier + (identifier == null || identifier.isEmpty() ? "" : ".") + pubsubWallet.getAddress());
-            final String txID = pubsubWallet.tx().subscribe(topic, 0, 10, identifier, (String) null);
+            System.out.println("Subscribing to '" + topic + "' using " + identifier + (identifier == null || identifier.isEmpty() ? "" : ".") + Hex.toHexString(pubsubWallet.getPublicKey()));
+            final String txID = pubsubWallet.tx().subscribe(topic, 0, 50, identifier, (String) null);
 
             if (txID == null) {
                 System.out.println("  Transaction failed");
@@ -62,7 +63,7 @@ public class PubSubEx {
                     System.out.println("New binary from " + msg.from + "\n  ==> 0x" + Hex.toHexString(msg.binaryData.toByteArray()).toUpperCase());
                 }
             }).start();
-            Thread.sleep(30000);
+            Thread.sleep(1000);
         }
 
         new NKNClient(new Identity(null, Wallet.createNew())).start().publishTextMessageAsync(topic, 0, "Hello all my subscribers!");
