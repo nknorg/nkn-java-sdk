@@ -103,6 +103,7 @@ public class ClientTunnel {
                     return false;
                 }
             } else {
+                LOG.debug("getwsaddr response: {}", result.toString());
                 LOG.error("Did not receive valid rpc result. Result does not contain node address");
                 return false;
             }
