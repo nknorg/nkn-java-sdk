@@ -3,7 +3,11 @@ package jsmith.nknsdk.network;
 import com.darkyen.dave.Response;
 import com.darkyen.dave.ResponseTranslator;
 import com.darkyen.dave.Webb;
+
+import jsmith.nknsdk.client.NKNClientException;
 import jsmith.nknsdk.client.NKNExplorer;
+import jsmith.nknsdk.client.NKNHttpApiException;
+
 import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -37,6 +41,34 @@ public class HttpApi {
                 .execute(ResponseTranslator.STRING_TRANSLATOR);
 
         return new JSONObject(response.getBody());
+    }
+    
+    public static int getFirstAvailableTopicBucket(InetSocketAddress server, String topic) throws NKNClientException {
+        final JSONObject params = new JSONObject();
+        params.put("topic", topic);
+
+        final String apiMethod = "getfirstavailabletopicbucket";
+        final JSONObject response = rpcCallJson(server, apiMethod, params);
+      
+        if (response.has("error")) {
+            throw new NKNHttpApiException(apiMethod, params, response);
+        }
+        
+        return (int)response.getInt("result");
+    }
+
+    public static int getTopicBucketsCount(InetSocketAddress server, String topic) throws NKNClientException {
+        final JSONObject params = new JSONObject();
+        params.put("topic", topic);
+
+        final String apiMethod = "gettopicbucketscount";
+        final JSONObject response = rpcCallJson(server, apiMethod, params);
+      
+        if (response.has("error")) {
+            throw new NKNHttpApiException(apiMethod, params, response);
+        }
+
+        return (int)response.getInt("result");
     }
 
     public static NKNExplorer.Subscriber[] getSubscribers(InetSocketAddress server, String topic, int bucket) {

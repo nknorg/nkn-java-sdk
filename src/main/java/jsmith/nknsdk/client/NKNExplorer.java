@@ -63,6 +63,26 @@ public class NKNExplorer {
             throw new WalletException("Failed to query balance", t);
         }
     }
+    
+    public static int getFirstAvailableTopicBucket(String topic) throws WalletException {
+        try {
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getFirstAvailableTopicBucket(bootstrapNode, topic));
+        } catch (Exception t) {
+            if (t instanceof WalletException)
+                throw (WalletException) t;
+            throw new WalletException("Failed to query first available topic bucket", t);
+        }
+    }
+
+    public static int getTopicBucketsCount(String topic) throws WalletException {
+        try {
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getTopicBucketsCount(bootstrapNode, topic));
+        } catch (Exception t) {
+            if (t instanceof WalletException)
+                throw (WalletException) t;
+            throw new WalletException("Failed to query topic buckets count", t);
+        }
+    }
 
     public static Subscriber[] getSubscribers(String topic, int bucket) throws WalletException {
         try {
