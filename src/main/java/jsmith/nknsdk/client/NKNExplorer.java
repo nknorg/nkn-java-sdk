@@ -18,7 +18,6 @@ public class NKNExplorer {
 
     private static final Logger LOG = LoggerFactory.getLogger(NKNExplorer.class);
 
-
     public static BigDecimal queryBalance(String address) throws WalletException {
         try {
             return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getBalance(bootstrapNode, address));
@@ -27,7 +26,6 @@ public class NKNExplorer {
             throw new WalletException("Failed to query balance", t);
         }
     }
-
 
     public static boolean isAddressValid(String address) {
         try {
@@ -64,6 +62,26 @@ public class NKNExplorer {
         }
     }
     
+    public static int getBlockCount() throws WalletException {
+        try {
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getBlockCount(bootstrapNode));
+        } catch (Exception t) {
+            if (t instanceof WalletException)
+                throw (WalletException) t;
+            throw new WalletException("Failed to query block count", t);
+        }
+    }
+    
+    public static int getConnectionCount() throws WalletException {
+        try {
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getConnectionCount(bootstrapNode));
+        } catch (Exception t) {
+            if (t instanceof WalletException)
+                throw (WalletException) t;
+            throw new WalletException("Failed to query connection count", t);
+        }
+    }
+
     public static int getFirstAvailableTopicBucket(String topic) throws WalletException {
         try {
             return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getFirstAvailableTopicBucket(bootstrapNode, topic));
@@ -71,6 +89,16 @@ public class NKNExplorer {
             if (t instanceof WalletException)
                 throw (WalletException) t;
             throw new WalletException("Failed to query first available topic bucket", t);
+        }
+    }
+    
+    public static NKNExplorer.GetLatestBlockHashResult getLatestBlockHash() throws WalletException {
+        try {
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getLatestBlockHash(bootstrapNode));
+        } catch (Exception t) {
+            if (t instanceof WalletException)
+                throw (WalletException) t;
+            throw new WalletException("Failed to query latest block hash", t);
         }
     }
 
@@ -92,6 +120,47 @@ public class NKNExplorer {
             throw new WalletException("Failed to query subscribers", t);
         }
     }
+    
+    public static GetWsAddrResult getWsAddr(String address) throws WalletException {
+        try {
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getWsAddr(bootstrapNode, address));
+        } catch (Exception t) {
+            if (t instanceof WalletException) throw (WalletException) t;
+            throw new WalletException("Failed to query ws addr", t);
+        }
+    }
+    
+    public static String getVersion() throws WalletException {
+        try {
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getVersion(bootstrapNode));
+        } catch (Exception t) {
+            if (t instanceof WalletException) throw (WalletException) t;
+            throw new WalletException("Failed to query version", t);
+        }
+    }
+    
+    public static final class GetLatestBlockHashResult {
+        public final String hash;
+        public final int height;
+
+        public GetLatestBlockHashResult(String hash, int height) {
+            this.hash = hash;
+            this.height = height;
+        }
+    }
+    
+    public static final class GetWsAddrResult {
+
+        public final String id;
+        public final String addr;
+        public final String pubkey;
+
+        public GetWsAddrResult(String id, String addr, String pubkey) {
+            this.id = id;
+            this.addr = addr;
+            this.pubkey = pubkey;
+        }
+    }
 
     public static final class Subscriber {
         public final String fullClientIdentifier;
@@ -102,6 +171,5 @@ public class NKNExplorer {
             this.meta = meta;
         }
     }
-
-
+    
 }
