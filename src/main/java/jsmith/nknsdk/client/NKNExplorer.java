@@ -18,7 +18,6 @@ public class NKNExplorer {
 
     private static final Logger LOG = LoggerFactory.getLogger(NKNExplorer.class);
 
-
     public static BigDecimal queryBalance(String address) throws WalletException {
         try {
             return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getBalance(bootstrapNode, address));
@@ -27,7 +26,6 @@ public class NKNExplorer {
             throw new WalletException("Failed to query balance", t);
         }
     }
-
 
     public static boolean isAddressValid(String address) {
         try {
@@ -64,6 +62,16 @@ public class NKNExplorer {
         }
     }
     
+    public static int getBlockCount() throws WalletException {
+        try {
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getBlockCount(bootstrapNode));
+        } catch (Exception t) {
+            if (t instanceof WalletException)
+                throw (WalletException) t;
+            throw new WalletException("Failed to query block count", t);
+        }
+    }
+
     public static int getFirstAvailableTopicBucket(String topic) throws WalletException {
         try {
             return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getFirstAvailableTopicBucket(bootstrapNode, topic));
@@ -71,6 +79,16 @@ public class NKNExplorer {
             if (t instanceof WalletException)
                 throw (WalletException) t;
             throw new WalletException("Failed to query first available topic bucket", t);
+        }
+    }
+    
+    public static NKNExplorer.GetLatestBlockHashResult getLatestBlockHash() throws WalletException {
+        try {
+            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getLatestBlockHash(bootstrapNode));
+        } catch (Exception t) {
+            if (t instanceof WalletException)
+                throw (WalletException) t;
+            throw new WalletException("Failed to query latest block hash", t);
         }
     }
 
@@ -93,6 +111,16 @@ public class NKNExplorer {
         }
     }
 
+    public static final class GetLatestBlockHashResult {
+        public final String hash;
+        public final int height;
+
+        public GetLatestBlockHashResult(String hash, int height) {
+            this.hash = hash;
+            this.height = height;
+        }
+    }
+
     public static final class Subscriber {
         public final String fullClientIdentifier;
         public final String meta;
@@ -102,6 +130,5 @@ public class NKNExplorer {
             this.meta = meta;
         }
     }
-
-
+    
 }

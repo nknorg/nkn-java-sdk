@@ -6,7 +6,9 @@ import com.darkyen.dave.Webb;
 
 import jsmith.nknsdk.client.NKNClientException;
 import jsmith.nknsdk.client.NKNExplorer;
+import jsmith.nknsdk.client.NKNExplorer.GetWsAddrResult;
 import jsmith.nknsdk.client.NKNHttpApiException;
+import jsmith.nknsdk.wallet.WalletException;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONObject;
@@ -43,6 +45,19 @@ public class HttpApi {
         return new JSONObject(response.getBody());
     }
     
+    public static int getBlockCount(InetSocketAddress server) throws NKNClientException {
+        final JSONObject params = new JSONObject();
+
+        final String apiMethod = "getblockcount";
+        final JSONObject response = rpcCallJson(server, apiMethod, params);
+      
+        if (response.has("error")) {
+            throw new NKNHttpApiException(apiMethod, params, response);
+        }
+        
+        return response.getInt("result");
+    }
+
     public static int getFirstAvailableTopicBucket(InetSocketAddress server, String topic) throws NKNClientException {
         final JSONObject params = new JSONObject();
         params.put("topic", topic);
@@ -54,7 +69,21 @@ public class HttpApi {
             throw new NKNHttpApiException(apiMethod, params, response);
         }
         
-        return (int)response.getInt("result");
+        return response.getInt("result");
+    }
+    
+    public static NKNExplorer.GetLatestBlockHashResult getLatestBlockHash(InetSocketAddress server) throws NKNClientException {
+        final JSONObject params = new JSONObject();
+
+        final String apiMethod = "getlatestblockhash";
+        final JSONObject response = rpcCallJson(server, apiMethod, params);
+        final JSONObject result = response.getJSONObject("result");
+      
+        if (response.has("error")) {
+            throw new NKNHttpApiException(apiMethod, params, response);
+        }
+        
+        return new NKNExplorer.GetLatestBlockHashResult(result.getString("hash"), result.getInt("height"));
     }
 
     public static int getTopicBucketsCount(InetSocketAddress server, String topic) throws NKNClientException {
@@ -68,7 +97,7 @@ public class HttpApi {
             throw new NKNHttpApiException(apiMethod, params, response);
         }
 
-        return (int)response.getInt("result");
+        return response.getInt("result");
     }
 
     public static NKNExplorer.Subscriber[] getSubscribers(InetSocketAddress server, String topic, int bucket) {
@@ -115,6 +144,7 @@ public class HttpApi {
     public static void sendRawTransaction(InetSocketAddress server, byte[] tx) {
         sendRawTransaction(server, Hex.toHexString(tx));
     }
+    
     public static String sendRawTransaction(InetSocketAddress server, String tx) {
         final JSONObject params = new JSONObject();
         params.put("tx", tx);
@@ -132,5 +162,4 @@ public class HttpApi {
 
         return response.has("error") ? null : response.getString("result");
     }
-
 }
