@@ -144,6 +144,7 @@ public class ConnectionProvider {
                 LOG.warn("Attempt {} failed", i);
                 LOG.debug("Caused by:", t);
             }
+            Thread.sleep(rpcCallTimeoutMS);
             nextNodeI ++;
             if (nextNodeI >= nodes.length) nextNodeI -= nodes.length;
         }

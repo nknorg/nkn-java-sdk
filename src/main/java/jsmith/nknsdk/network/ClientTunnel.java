@@ -17,9 +17,6 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static javax.websocket.CloseReason.CloseCodes.NORMAL_CLOSURE;
-import static javax.websocket.CloseReason.CloseCodes.NO_STATUS_CODE;
-
 /**
  *
  */
@@ -278,7 +275,7 @@ public class ClientTunnel {
             ws.sendPacket(setClientReq);
         });
         ws.setCLoseListener((reason) -> {
-            if (shouldReconnect.get() && !cm.isScheduledStop() && (reason.getCloseCode() != NORMAL_CLOSURE && reason.getCloseCode() != NO_STATUS_CODE)) {
+            if (shouldReconnect.get() && !cm.isScheduledStop()) {
                 LOG.info("Connection closed, reconnecting");
                 messageHold.countUp();
                 ws.close();
