@@ -2,6 +2,7 @@ package jsmith.nknsdk.examples;
 
 import com.darkyen.tproll.TPLogger;
 import jsmith.nknsdk.client.NKNExplorer;
+import jsmith.nknsdk.client.NKNExplorerException;
 import jsmith.nknsdk.wallet.Wallet;
 import jsmith.nknsdk.wallet.WalletException;
 
@@ -15,7 +16,7 @@ import static jsmith.nknsdk.examples.LogUtils.setupLogging;
  */
 public class WalletEx {
 
-    public static void main(String[] args) throws WalletException {
+    public static void main(String[] args) throws WalletException, NKNExplorerException {
         setupLogging(TPLogger.DEBUG);
 
         final Wallet w = Wallet.createNew();
@@ -48,7 +49,7 @@ public class WalletEx {
 
         System.out.println("Balance at " + from.getAddress() + " is " + from.queryBalance() + " tNKN");
         final String nsQueryName = "somename";
-        System.out.println("Name '" + nsQueryName + "' is registered to: " + NKNExplorer.resolveNamedAddress(nsQueryName));
+        System.out.println("Name '" + nsQueryName + "' is registered to: " + NKNExplorer.Wallet.resolveNamedAddress(nsQueryName));
 
         if (false) {
             final String name = "somename";

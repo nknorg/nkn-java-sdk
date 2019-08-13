@@ -164,7 +164,7 @@ public class NKNClient {
         return clientMessages.sendMessageAsync(destinationFullIdentifier, replyTo, message);
     }
 
-    public List<CompletableFuture<ReceivedMessage>> publishTextMessageAsync(String topic, int bucket, String message) throws WalletException {
+    public List<CompletableFuture<ReceivedMessage>> publishTextMessageAsync(String topic, int bucket, String message) throws NKNExplorerException {
         final MessagesP.TextData td = MessagesP.TextData.newBuilder()
                 .setText(message)
                 .build();
@@ -172,20 +172,20 @@ public class NKNClient {
         return publishMessageAsync(topic, bucket, td.toByteString(), MessagesP.PayloadType.TEXT);
     }
 
-    public List<CompletableFuture<ReceivedMessage>> publishBinaryMessageAsync(String topic, int bucket, byte[] message) throws WalletException {
+    public List<CompletableFuture<ReceivedMessage>> publishBinaryMessageAsync(String topic, int bucket, byte[] message) throws NKNExplorerException {
         return publishBinaryMessageAsync(topic, bucket, ByteString.copyFrom(message));
     }
 
-    public List<CompletableFuture<ReceivedMessage>> publishBinaryMessageAsync(String topic, int bucket, ByteString message) throws WalletException {
+    public List<CompletableFuture<ReceivedMessage>> publishBinaryMessageAsync(String topic, int bucket, ByteString message) throws NKNExplorerException {
         return publishMessageAsync(topic, bucket, message, MessagesP.PayloadType.BINARY);
     }
 
-    private List<CompletableFuture<ReceivedMessage>> publishMessageAsync(String topic, int bucket, ByteString data, MessagesP.PayloadType type) throws WalletException {
-        final NKNExplorer.Subscriber[] subscribers = NKNExplorer.getSubscribers(topic, bucket);
+    private List<CompletableFuture<ReceivedMessage>> publishMessageAsync(String topic, int bucket, ByteString data, MessagesP.PayloadType type) throws NKNExplorerException {
+        final NKNExplorer.Subscription.Subscriber[] subscribers = NKNExplorer.Subscription.getSubscribers(topic, bucket);
         if (subscribers.length == 0) return new ArrayList<>();
 
         final ArrayList<String> dest = new ArrayList<>(subscribers.length);
-        for (NKNExplorer.Subscriber sub : subscribers) dest.add(sub.fullClientIdentifier);
+        for (NKNExplorer.Subscription.Subscriber sub : subscribers) dest.add(sub.fullClientIdentifier);
 
         LOG.debug("Publishing message");
         return clientMessages.sendMessageAsync(dest, null, type, data);

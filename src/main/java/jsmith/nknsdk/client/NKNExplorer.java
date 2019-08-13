@@ -6,10 +6,13 @@ import jsmith.nknsdk.utils.Base58;
 import jsmith.nknsdk.utils.Crypto;
 import jsmith.nknsdk.wallet.WalletException;
 import jsmith.nknsdk.wallet.WalletUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.net.InetSocketAddress;
+import java.util.HashMap;
 
 /**
  *
@@ -18,14 +21,7 @@ public class NKNExplorer {
 
     private static final Logger LOG = LoggerFactory.getLogger(NKNExplorer.class);
 
-    public static BigDecimal queryBalance(String address) throws WalletException {
-        try {
-            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getBalance(bootstrapNode, address));
-        } catch (Exception t) {
-            if (t instanceof WalletException) throw (WalletException) t;
-            throw new WalletException("Failed to query balance", t);
-        }
-    }
+    private NKNExplorer() {} // Not instantiable
 
     public static boolean isAddressValid(String address) {
         try {
@@ -52,114 +48,140 @@ public class NKNExplorer {
         }
     }
 
-    public static String resolveNamedAddress(String name) throws WalletException {
-        // https://github.com/nknorg/nkn/blob/master/api/common/interfaces.go#L1070
-        try {
-            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.resolveName(bootstrapNode, name));
-        } catch (Exception t) {
-            if (t instanceof WalletException) throw (WalletException) t;
-            throw new WalletException("Failed to query balance", t);
+    public static class Wallet {
+        private Wallet() {} // Not instantiable
+
+        public static String resolveNamedAddress(String name) throws NKNExplorerException {
+            // https://github.com/nknorg/nkn/blob/master/api/common/interfaces.go#L1070
+            try {
+                final HashMap<String, String> params = new HashMap<>();
+                params.put("name", name);
+                return (String) ConnectionProvider.attempt((node) -> HttpApi.rpcRequest(node, "getaddressbyname", params));
+            } catch (Exception t) {
+                if (t instanceof NKNExplorerException) throw (NKNExplorerException) t;
+                throw new NKNExplorerException("Failed to query balance", t);
+            }
         }
-    }
-    
-    public static int getBlockCount() throws WalletException {
-        try {
-            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getBlockCount(bootstrapNode));
-        } catch (Exception t) {
-            if (t instanceof WalletException)
-                throw (WalletException) t;
-            throw new WalletException("Failed to query block count", t);
+
+        public static BigDecimal queryBalance(String address) throws NKNExplorerException {
+            try {
+                final HashMap<String, String> params = new HashMap<>();
+                params.put("address", address);
+                final JSONObject result = (JSONObject) ConnectionProvider.attempt((bootstrapNode) -> HttpApi.rpcRequest(bootstrapNode, "getbalancebyaddr", params));
+                return result.getBigDecimal("amount");
+            } catch (Exception t) {
+                if (t instanceof NKNExplorerException) throw (NKNExplorerException) t;
+                throw new NKNExplorerException("Failed to query balance", t);
+            }
+        }
+
+        public static long getNonce(String address) throws NKNExplorerException {
+            try {
+                final HashMap<String, String> params = new HashMap<>();
+                params.put("address", address);
+                final JSONObject response = (JSONObject) ConnectionProvider.attempt((node) -> HttpApi.rpcRequest(node, "getnoncebyaddr", params));
+
+                long nonce = response.getJSONObject("result").getLong("nonce");
+                if (response.getJSONObject("result").has("nonceInTxPool")) {
+                    nonce = Math.max(nonce, response.getJSONObject("result").getLong("nonceInTxPool"));
+                }
+                return nonce;
+            } catch (Exception t) {
+                if (t instanceof NKNExplorerException) throw (NKNExplorerException) t;
+                throw new NKNExplorerException("Failed to query nonce", t);
+            }
         }
     }
 
-    public static int getFirstAvailableTopicBucket(String topic) throws WalletException {
-        try {
-            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getFirstAvailableTopicBucket(bootstrapNode, topic));
-        } catch (Exception t) {
-            if (t instanceof WalletException)
-                throw (WalletException) t;
-            throw new WalletException("Failed to query first available topic bucket", t);
+    public static class BlockChain {
+        private BlockChain() {}
+
+        public static int getBlockCount() throws NKNExplorerException {
+            try {
+                return (int)ConnectionProvider.attempt((node) -> HttpApi.rpcRequest(node, "getblockcount"));
+            } catch (Exception t) {
+                if (t instanceof NKNExplorerException) throw (NKNExplorerException) t;
+                throw new NKNExplorerException("Failed to query block count", t);
+            }
         }
-    }
-    
-    public static NKNExplorer.GetLatestBlockHashResult getLatestBlockHash() throws WalletException {
-        try {
-            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getLatestBlockHash(bootstrapNode));
-        } catch (Exception t) {
-            if (t instanceof WalletException)
-                throw (WalletException) t;
-            throw new WalletException("Failed to query latest block hash", t);
+
+
+        public static LatestBlockHash getLatestBlockHash() throws NKNExplorerException {
+            try {
+                final JSONObject result = (JSONObject) ConnectionProvider.attempt((node) -> HttpApi.rpcRequest(node, "getlatestblockhash"));
+                return new LatestBlockHash(result.getString("hash"), result.getInt("height"));
+            } catch (Exception t) {
+                if (t instanceof NKNExplorerException) throw (NKNExplorerException) t;
+                throw new NKNExplorerException("Failed to query block hash", t);
+            }
+        }
+
+        public static final class LatestBlockHash {
+            public final String hash;
+            public final int height;
+
+            public LatestBlockHash(String hash, int height) {
+                this.hash = hash;
+                this.height = height;
+            }
         }
     }
 
-    public static int getTopicBucketsCount(String topic) throws WalletException {
-        try {
-            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getTopicBucketsCount(bootstrapNode, topic));
-        } catch (Exception t) {
-            if (t instanceof WalletException)
-                throw (WalletException) t;
-            throw new WalletException("Failed to query topic buckets count", t);
+    public static class Subscription {
+        private Subscription() {}
+
+        public static int getFirstAvailableTopicBucket(String topic) throws NKNExplorerException {
+            try {
+                final HashMap<String, String> params = new HashMap<>();
+                params.put("topic", topic);
+                return (int) ConnectionProvider.attempt((node) -> HttpApi.rpcRequest(node, "getfirstavailabletopicbucket", params));
+            } catch (Exception t) {
+                if (t instanceof NKNExplorerException) throw (NKNExplorerException) t;
+                throw new NKNExplorerException("Failed to query first available topic bucket", t);
+            }
+        }
+
+        public static int getTopicBucketsCount(String topic) throws NKNExplorerException {
+            try {
+                final HashMap<String, String> params = new HashMap<>();
+                params.put("topic", topic);
+                return (int) ConnectionProvider.attempt((node) -> HttpApi.rpcRequest(node, "gettopicbucketscount", params));
+            } catch (Exception t) {
+                if (t instanceof NKNExplorerException) throw (NKNExplorerException) t;
+                throw new NKNExplorerException("Failed to query topic buckets count", t);
+            }
+        }
+
+        public static Subscriber[] getSubscribers(String topic, int bucket) throws NKNExplorerException {
+            try {
+                final HashMap<String, String> params = new HashMap<>();
+                params.put("topic", topic);
+                params.put("bucket", Integer.toString(bucket));
+                final JSONObject result = (JSONObject) ConnectionProvider.attempt((node) -> HttpApi.rpcRequest(node, "getsubscribers", params));
+
+                int i = 0;
+                final Subscriber[] subscribers = new Subscriber[result.length()];
+                for (String id : result.keySet()) {
+                    subscribers[i++] = new Subscriber(id, result.getString(id));
+                }
+
+                return subscribers;
+            } catch (Exception t) {
+                if (t instanceof NKNExplorerException) throw (NKNExplorerException) t;
+                throw new NKNExplorerException("Failed to query subscribers", t);
+            }
+        }
+
+
+        public static final class Subscriber {
+            public final String fullClientIdentifier;
+            public final String meta;
+
+            public Subscriber(String fullClientIdentifier, String meta) {
+                this.fullClientIdentifier = fullClientIdentifier;
+                this.meta = meta;
+            }
         }
     }
 
-    public static Subscriber[] getSubscribers(String topic, int bucket) throws WalletException {
-        try {
-            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getSubscribers(bootstrapNode, topic, bucket));
-        } catch (Exception t) {
-            if (t instanceof WalletException) throw (WalletException) t;
-            throw new WalletException("Failed to query subscribers", t);
-        }
-    }
-    
-    public static GetWsAddrResult getWsAddr(String address) throws WalletException {
-        try {
-            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getWsAddr(bootstrapNode, address));
-        } catch (Exception t) {
-            if (t instanceof WalletException) throw (WalletException) t;
-            throw new WalletException("Failed to query ws addr", t);
-        }
-    }
-    
-    public static String getVersion() throws WalletException {
-        try {
-            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getVersion(bootstrapNode));
-        } catch (Exception t) {
-            if (t instanceof WalletException) throw (WalletException) t;
-            throw new WalletException("Failed to query version", t);
-        }
-    }
-    
-    public static final class GetLatestBlockHashResult {
-        public final String hash;
-        public final int height;
-
-        public GetLatestBlockHashResult(String hash, int height) {
-            this.hash = hash;
-            this.height = height;
-        }
-    }
-    
-    public static final class GetWsAddrResult {
-
-        public final String id;
-        public final String addr;
-        public final String pubkey;
-
-        public GetWsAddrResult(String id, String addr, String pubkey) {
-            this.id = id;
-            this.addr = addr;
-            this.pubkey = pubkey;
-        }
-    }
-
-    public static final class Subscriber {
-        public final String fullClientIdentifier;
-        public final String meta;
-
-        public Subscriber(String fullClientIdentifier, String meta) {
-            this.fullClientIdentifier = fullClientIdentifier;
-            this.meta = meta;
-        }
-    }
-    
 }

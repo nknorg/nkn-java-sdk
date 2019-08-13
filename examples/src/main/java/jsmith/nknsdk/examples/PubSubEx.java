@@ -1,10 +1,7 @@
 package jsmith.nknsdk.examples;
 
 import com.darkyen.tproll.TPLogger;
-import jsmith.nknsdk.client.Identity;
-import jsmith.nknsdk.client.NKNClient;
-import jsmith.nknsdk.client.NKNClientException;
-import jsmith.nknsdk.client.NKNExplorer;
+import jsmith.nknsdk.client.*;
 import jsmith.nknsdk.network.HttpApi;
 import jsmith.nknsdk.wallet.Wallet;
 import jsmith.nknsdk.wallet.WalletException;
@@ -21,7 +18,7 @@ import static jsmith.nknsdk.examples.LogUtils.setupLogging;
  */
 public class PubSubEx {
 
-    public static void main(String[] args) throws WalletException, InterruptedException, NKNClientException {
+    public static void main(String[] args) throws WalletException, InterruptedException, NKNClientException, NKNExplorerException {
         setupLogging(TPLogger.DEBUG);
 
         final File walletFile = new File("pubsub.dat");
@@ -35,9 +32,9 @@ public class PubSubEx {
 
         final String topic = "testtopic";
 
-        final NKNExplorer.Subscriber[] subscribers = NKNExplorer.getSubscribers(topic, 0);
+        final NKNExplorer.Subscription.Subscriber[] subscribers = NKNExplorer.Subscription.getSubscribers(topic, 0);
         System.out.println("Subscribers of '" + topic + "':");
-        for (NKNExplorer.Subscriber s : subscribers) {
+        for (NKNExplorer.Subscription.Subscriber s : subscribers) {
             System.out.println("  " + s.fullClientIdentifier + (s.meta.isEmpty() ? "" : ": " + s.meta));
         }
         System.out.println("Total: " + subscribers.length + " subs");

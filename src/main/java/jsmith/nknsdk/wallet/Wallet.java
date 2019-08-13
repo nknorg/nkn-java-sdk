@@ -3,6 +3,7 @@ package jsmith.nknsdk.wallet;
 import com.google.protobuf.ByteString;
 import com.iwebpp.crypto.TweetNaclFast;
 import jsmith.nknsdk.client.NKNExplorer;
+import jsmith.nknsdk.client.NKNExplorerException;
 import jsmith.nknsdk.network.ConnectionProvider;
 import jsmith.nknsdk.network.HttpApi;
 import jsmith.nknsdk.utils.Crypto;
@@ -200,8 +201,8 @@ public class Wallet {
 
     }
 
-    public BigDecimal queryBalance() throws WalletException {
-        return NKNExplorer.queryBalance(getAddress());
+    public BigDecimal queryBalance() throws NKNExplorerException {
+        return NKNExplorer.Wallet.queryBalance(getAddress());
     }
 
     public byte[] getPublicKey() {

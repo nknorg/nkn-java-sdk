@@ -2,6 +2,7 @@ package jsmith.nknsdk.wallet;
 
 import com.google.protobuf.ByteString;
 import jsmith.nknsdk.client.NKNExplorer;
+import jsmith.nknsdk.client.NKNExplorerException;
 import jsmith.nknsdk.network.ConnectionProvider;
 import jsmith.nknsdk.network.HttpApi;
 import jsmith.nknsdk.wallet.transactions.NameServiceT;
@@ -98,23 +99,14 @@ public class NKNTransaction {
 
 
     private String submitTransaction(TransactionT tx, BigDecimal fee) throws WalletException {
-        tx.setNonce(nextNonce());
-        tx.setFeeInLongValue(fee.multiply(new BigDecimal(100000000)).longValue());
-
-        return w.submitTransaction(tx);
-    }
-
-    private long nextNonce() throws WalletException {
-        long nonce;
-
         try {
-            nonce = ConnectionProvider.attempt((node) -> HttpApi.getNonce(node, w.getAddress()));
-        } catch (Throwable t) {
-            if (t instanceof WalletException) throw (WalletException) t;
-            throw new WalletException("Transaction failed: Failed to query nonce", t);
-        }
+            tx.setNonce(NKNExplorer.Wallet.getNonce(w.getAddress()));
+            tx.setFeeInLongValue(fee.multiply(new BigDecimal(100000000)).longValue());
 
-        return nonce;
+            return w.submitTransaction(tx);
+        } catch (NKNExplorerException e) {
+            throw new WalletException("Failed to query current nonce", e);
+        }
     }
 
     public String customTransaction(TransactionT tx) throws WalletException {
