@@ -58,19 +58,6 @@ public class HttpApi {
         return response.getInt("result");
     }
     
-    public static int getConnectionCount(InetSocketAddress server) throws NKNClientException {
-        final JSONObject params = new JSONObject();
-
-        final String apiMethod = "getconnectioncount";
-        final JSONObject response = rpcCallJson(server, apiMethod, params);
-      
-        if (response.has("error")) {
-            throw new NKNHttpApiException(apiMethod, params, response);
-        }
-        
-        return response.getInt("result");
-    }
-    
     public static int getFirstAvailableTopicBucket(InetSocketAddress server, String topic) throws NKNClientException {
         final JSONObject params = new JSONObject();
         params.put("topic", topic);

@@ -71,16 +71,6 @@ public class NKNExplorer {
             throw new WalletException("Failed to query block count", t);
         }
     }
-    
-    public static int getConnectionCount() throws WalletException {
-        try {
-            return ConnectionProvider.attempt((bootstrapNode) -> HttpApi.getConnectionCount(bootstrapNode));
-        } catch (Exception t) {
-            if (t instanceof WalletException)
-                throw (WalletException) t;
-            throw new WalletException("Failed to query connection count", t);
-        }
-    }
 
     public static int getFirstAvailableTopicBucket(String topic) throws WalletException {
         try {
