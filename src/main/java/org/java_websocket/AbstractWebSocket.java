@@ -197,6 +197,20 @@ public abstract class AbstractWebSocket extends WebSocketAdapter {
 		connectionLostCheckerFuture = connectionLostCheckerService.scheduleAtFixedRate(connectionLostChecker, connectionLostTimeout, connectionLostTimeout, TimeUnit.NANOSECONDS);
 	}
 
+	public void checkCloseFrameReceived(WebSocket conn) {
+        Runnable closeChecker = new Runnable() {
+            @Override
+            public void run() {
+                if (conn.isClosed()) return;
+                if (!conn.isClosing()) return;
+
+                log.trace("Didn't receive close frame in time, killing");
+                conn.closeConnection( CloseFrame.ABNORMAL_CLOSE, "Close frame lost" );
+            }
+        };
+	    connectionLostCheckerService.schedule(closeChecker, TimeUnit.SECONDS.toNanos(5), TimeUnit.NANOSECONDS);
+    }
+
 	/**
 	 * Send a ping to the endpoint or close the connection since the other endpoint did not respond with a ping
 	 * @param webSocket the websocket instance
@@ -209,7 +223,7 @@ public abstract class AbstractWebSocket extends WebSocketAdapter {
 		WebSocketImpl webSocketImpl = (WebSocketImpl) webSocket;
 		if( webSocketImpl.getLastPong() < minimumPongTime ) {
 			log.trace("Closing connection due to no pong received: {}", webSocketImpl);
-			webSocketImpl.closeConnection( CloseFrame.ABNORMAL_CLOSE, "The connection was closed because the other endpoint did not respond with a pong in time. For more information check: https://github.com/TooTallNate/Java-WebSocket/wiki/Lost-connection-detection" );
+			webSocketImpl.closeConnection( CloseFrame.ABNORMAL_CLOSE, "Ping failed" );
 		} else {
 			if( webSocketImpl.isOpen() ) {
 				webSocketImpl.sendPing();

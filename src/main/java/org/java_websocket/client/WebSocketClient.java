@@ -629,7 +629,8 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
 
 	@Override
 	public void onWebsocketClosing(WebSocket conn, int code, String reason, boolean remote ) {
-		onClosing( code, reason, remote );
+        checkCloseFrameReceived(this);
+	    onClosing( code, reason, remote );
 	}
 
 	/**
