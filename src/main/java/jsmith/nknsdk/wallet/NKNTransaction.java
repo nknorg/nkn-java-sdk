@@ -3,10 +3,8 @@ package jsmith.nknsdk.wallet;
 import com.google.protobuf.ByteString;
 import jsmith.nknsdk.client.NKNExplorer;
 import jsmith.nknsdk.client.NKNExplorerException;
-import jsmith.nknsdk.network.ConnectionProvider;
-import jsmith.nknsdk.network.HttpApi;
 import jsmith.nknsdk.wallet.transactions.NameServiceT;
-import jsmith.nknsdk.wallet.transactions.SubscribeT;
+import jsmith.nknsdk.wallet.transactions.SubscriptionT;
 import jsmith.nknsdk.wallet.transactions.TransactionT;
 import jsmith.nknsdk.wallet.transactions.TransferToT;
 
@@ -84,15 +82,30 @@ public class NKNTransaction {
     }
 
     public String subscribe(String topic, int duration, String clientIdentifier, String meta, BigDecimal fee) throws WalletException {
-        final SubscribeT subscribeT = new SubscribeT();
+        final SubscriptionT subscriptionT = new SubscriptionT();
 
-        subscribeT.setPublicKey(ByteString.copyFrom(w.getPublicKey()));
-        subscribeT.setTopic(topic);
-        subscribeT.setDuration(duration);
-        subscribeT.setIdentifier(clientIdentifier == null ? "" : clientIdentifier);
-        subscribeT.setMeta(meta == null ? "" : meta);
+        subscriptionT.setPublicKey(ByteString.copyFrom(w.getPublicKey()));
+        subscriptionT.setTopic(topic);
+        subscriptionT.setDuration(duration);
+        subscriptionT.setIdentifier(clientIdentifier == null ? "" : clientIdentifier);
+        subscriptionT.setMeta(meta == null ? "" : meta);
 
-        return submitTransaction(subscribeT, fee);
+        return submitTransaction(subscriptionT, fee);
+    }
+
+    public String unsubscribe(String topic, String clientIdentifier) throws WalletException {
+        return unsubscribe(topic, clientIdentifier, BigDecimal.ZERO);
+    }
+
+    public String unsubscribe(String topic, String clientIdentifier, BigDecimal fee) throws WalletException {
+        final SubscriptionT subscriptionT = new SubscriptionT();
+
+        subscriptionT.setPublicKey(ByteString.copyFrom(w.getPublicKey()));
+        subscriptionT.setTopic(topic);
+        subscriptionT.setIdentifier(clientIdentifier == null ? "" : clientIdentifier);
+        subscriptionT.setActionType(SubscriptionT.SubscriptionActionType.UNSUBSCRIBE);
+
+        return submitTransaction(subscriptionT, fee);
     }
 
 

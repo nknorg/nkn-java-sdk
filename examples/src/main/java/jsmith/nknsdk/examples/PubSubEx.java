@@ -50,12 +50,25 @@ public class PubSubEx {
 
 
         NKNClient subscriberClient = null;
-        if (true) {
+        if (false) {
+
+            final String identifier = "clientA";
+
+            System.out.println("UN Subscribing from '" + topic + "' using " + identifier + (identifier == null || identifier.isEmpty() ? "" : ".") + Hex.toHexString(pubsubWallet.getPublicKey()));
+            final String txID = pubsubWallet.tx().unsubscribe(topic, identifier);
+
+            if (txID == null) {
+                System.out.println("  Transaction failed");
+            } else {
+                System.out.println("  Transaction successful: " + txID);
+            }
+        }
+        if (false) {
 
             final String identifier = "clientA";
 
             System.out.println("Subscribing to '" + topic + "' using " + identifier + (identifier == null || identifier.isEmpty() ? "" : ".") + Hex.toHexString(pubsubWallet.getPublicKey()));
-            final String txID = pubsubWallet.tx().subscribe(topic, 10, identifier, (String) null);
+            final String txID = pubsubWallet.tx().subscribe(topic, 15, identifier, (String) null);
 
             if (txID == null) {
                 System.out.println("  Transaction failed");
