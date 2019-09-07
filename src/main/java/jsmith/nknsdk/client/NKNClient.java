@@ -64,7 +64,7 @@ public class NKNClient {
         return noAutomaticACKs;
     }
 
-    private EncryptionLevel encryptionLevel = EncryptionLevel.ENCRYPT_ONLY_UNICAST;
+    private EncryptionLevel encryptionLevel = EncryptionLevel.CONVERT_MULTICAST_TO_UNICAST_AND_ENCRYPT;
     public NKNClient setEncryptionLevel(EncryptionLevel level) {
         clientMessages.setEncryptionLevel(level);
         this.encryptionLevel = level;
@@ -249,6 +249,7 @@ public class NKNClient {
 
         DO_NOT_ENCRYPT,
         ENCRYPT_ONLY_UNICAST,
+        CONVERT_MULTICAST_TO_UNICAST_AND_ENCRYPT,
         ENCRYPT_UNICAST_AND_MULTICAST
 
     }

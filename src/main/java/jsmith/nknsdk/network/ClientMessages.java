@@ -9,10 +9,7 @@ import jsmith.nknsdk.utils.Crypto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
@@ -44,7 +41,7 @@ public class ClientMessages extends Thread {
     public void setNoAutomaticACKs(boolean noAck) {
         this.noAck = noAck;
     }
-    private NKNClient.EncryptionLevel encryptionLevel = NKNClient.EncryptionLevel.ENCRYPT_ONLY_UNICAST;
+    private NKNClient.EncryptionLevel encryptionLevel = NKNClient.EncryptionLevel.CONVERT_MULTICAST_TO_UNICAST_AND_ENCRYPT;
     public void setEncryptionLevel(NKNClient.EncryptionLevel level) {
         this.encryptionLevel = level;
     }
@@ -169,8 +166,6 @@ public class ClientMessages extends Thread {
         final ByteString replyTo = message.getReplyToPid();
         final ByteString messageID = message.getPid();
 
-        boolean isReplyTo = false;
-
         MessagesP.EncryptedMessage encryptedMessage;
         try {
             encryptedMessage = MessagesP.EncryptedMessage.parseFrom(message.getData());
@@ -226,7 +221,6 @@ public class ClientMessages extends Thread {
                                 ));
                     }
                     j.receivedAck.set(indexOf, true);
-                    isReplyTo = true;
                 }
             }
 
@@ -234,20 +228,18 @@ public class ClientMessages extends Thread {
         }
 
         Object ackMessage = null;
-        if (!isReplyTo) {
 
-            if (type == MessagesP.PayloadType.TEXT) {
-                try {
-                    if (onMessageL != null) {
-                        ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, encrypted, type, MessagesP.TextData.parseFrom(data).getText()));
-                    }
-                } catch (InvalidProtocolBufferException e) {
-                    LOG.warn("Received packet is of type TEXT but does not contain valid text data");
-                }
-            } else if (type == MessagesP.PayloadType.BINARY) {
+        if (type == MessagesP.PayloadType.TEXT) {
+            try {
                 if (onMessageL != null) {
-                    ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, encrypted, type, data));
+                    ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, encrypted, type, MessagesP.TextData.parseFrom(data).getText()));
                 }
+            } catch (InvalidProtocolBufferException e) {
+                LOG.warn("Received packet is of type TEXT but does not contain valid text data");
+            }
+        } else if (type == MessagesP.PayloadType.BINARY) {
+            if (onMessageL != null) {
+                ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, encrypted, type, data));
             }
         }
 
@@ -277,20 +269,42 @@ public class ClientMessages extends Thread {
     }
 
     public List<CompletableFuture<NKNClient.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, MessagesP.PayloadType type, ByteString message) {
-        final ByteString messageID = ByteString.copyFrom(Crypto.nextRandom4B());
         final ByteString replyToMessageID = replyTo == null ? ByteString.copyFrom(new byte[0]) : replyTo;
 
+        if (encryptionLevel == NKNClient.EncryptionLevel.CONVERT_MULTICAST_TO_UNICAST_AND_ENCRYPT) {
 
-        final MessagesP.Payload payload = MessagesP.Payload.newBuilder()
-                .setType(type)
-                .setPid(messageID)
-                .setReplyToPid(replyToMessageID)
-                .setData(ClientEnc.encryptMessage(destination, message, ct.identity.wallet, encryptionLevel))
-                .setNoAck(noAck)
-                .build();
+            final List<CompletableFuture<NKNClient.ReceivedMessage>> promises = new ArrayList<>();
+
+            for (String d : destination) {
+                final ByteString messageID = ByteString.copyFrom(Crypto.nextRandom4B());
+
+                final MessagesP.Payload payload = MessagesP.Payload.newBuilder()
+                        .setType(type)
+                        .setPid(messageID)
+                        .setReplyToPid(replyToMessageID)
+                        .setData(ClientEnc.encryptMessage(Collections.singletonList(d), message, ct.identity.wallet, NKNClient.EncryptionLevel.ENCRYPT_ONLY_UNICAST))
+                        .setNoAck(noAck)
+                        .build();
+
+                promises.addAll(sendOutboundMessage(Collections.singletonList(d), messageID, payload.toByteString()));
+            }
+
+            return promises;
+
+        } else {
+            final ByteString messageID = ByteString.copyFrom(Crypto.nextRandom4B());
+
+            final MessagesP.Payload payload = MessagesP.Payload.newBuilder()
+                    .setType(type)
+                    .setPid(messageID)
+                    .setReplyToPid(replyToMessageID)
+                    .setData(ClientEnc.encryptMessage(destination, message, ct.identity.wallet, encryptionLevel))
+                    .setNoAck(noAck)
+                    .build();
 
 
-        return sendOutboundMessage(destination, messageID, payload.toByteString());
+            return sendOutboundMessage(destination, messageID, payload.toByteString());
+        }
     }
 
     private List<CompletableFuture<NKNClient.ReceivedMessage>> sendOutboundMessage(List<String> destination, ByteString messageID, ByteString payload) {
@@ -335,13 +349,19 @@ public class ClientMessages extends Thread {
                 .setNoAck(true)
                 .build();
 
-        final MessagesP.ClientMsg binMsg = MessagesP.ClientMsg.newBuilder()
-                .setDest(destination)
+        final MessagesP.ClientMsg.Builder clientToNodeMsg = MessagesP.ClientMsg.newBuilder()
                 .setPayload(payload.toByteString())
-                .setMaxHoldingSeconds(0)
+                .addDests(destination)
+                .setMaxHoldingSeconds(0);
+
+        ClientEnc.signOutboundMessage(clientToNodeMsg, ct);
+
+        final MessagesP.Message msg = MessagesP.Message.newBuilder()
+                .setMessage(clientToNodeMsg.build().toByteString())
+                .setMessageType(MessagesP.MessageType.CLIENT_MSG)
                 .build();
 
-        ct.ws.sendPacket(binMsg.toByteString());
+        ct.ws.sendPacket(msg.toByteString());
     }
 
 
