@@ -11,7 +11,6 @@ public class SubscribeT extends TransactionT {
 
     private ByteString publicKey;
     private String topic;
-    private int bucket = 0;
     private int duration = 1;
     private String identifier = "";
     private String meta = "";
@@ -34,16 +33,6 @@ public class SubscribeT extends TransactionT {
     public void setPublicKey(ByteString publicKey) {
         if (readonly) throw new IllegalStateException("Transaction is read only");
         this.publicKey = publicKey;
-    }
-
-    public int getBucket() {
-        if (dirty) throw new IllegalStateException("Transaction is in dirty state");
-        return bucket;
-    }
-
-    public void setBucket(int bucket) {
-        if (readonly) throw new IllegalStateException("Transaction is read only");
-        this.bucket = bucket;
     }
 
     public int getDuration() {
@@ -83,7 +72,6 @@ public class SubscribeT extends TransactionT {
         txSub.setSubscriber(publicKey);
         txSub.setIdentifier(identifier);
         txSub.setTopic(topic);
-        txSub.setBucket(bucket);
         txSub.setDuration(duration);
         txSub.setMeta(meta);
 

@@ -164,24 +164,24 @@ public class NKNClient {
         return clientMessages.sendMessageAsync(destinationFullIdentifier, replyTo, message);
     }
 
-    public List<CompletableFuture<ReceivedMessage>> publishTextMessageAsync(String topic, int bucket, String message) throws NKNExplorerException {
+    public List<CompletableFuture<ReceivedMessage>> publishTextMessageAsync(String topic, boolean includeTxPool, String message) throws NKNExplorerException {
         final MessagesP.TextData td = MessagesP.TextData.newBuilder()
                 .setText(message)
                 .build();
 
-        return publishMessageAsync(topic, bucket, td.toByteString(), MessagesP.PayloadType.TEXT);
+        return publishMessageAsync(topic, includeTxPool, td.toByteString(), MessagesP.PayloadType.TEXT);
     }
 
-    public List<CompletableFuture<ReceivedMessage>> publishBinaryMessageAsync(String topic, int bucket, byte[] message) throws NKNExplorerException {
-        return publishBinaryMessageAsync(topic, bucket, ByteString.copyFrom(message));
+    public List<CompletableFuture<ReceivedMessage>> publishBinaryMessageAsync(String topic, boolean includeTxPool, byte[] message) throws NKNExplorerException {
+        return publishBinaryMessageAsync(topic, includeTxPool, ByteString.copyFrom(message));
     }
 
-    public List<CompletableFuture<ReceivedMessage>> publishBinaryMessageAsync(String topic, int bucket, ByteString message) throws NKNExplorerException {
-        return publishMessageAsync(topic, bucket, message, MessagesP.PayloadType.BINARY);
+    public List<CompletableFuture<ReceivedMessage>> publishBinaryMessageAsync(String topic, boolean includeTxPool, ByteString message) throws NKNExplorerException {
+        return publishMessageAsync(topic, includeTxPool, message, MessagesP.PayloadType.BINARY);
     }
 
-    private List<CompletableFuture<ReceivedMessage>> publishMessageAsync(String topic, int bucket, ByteString data, MessagesP.PayloadType type) throws NKNExplorerException {
-        final NKNExplorer.Subscription.Subscriber[] subscribers = NKNExplorer.Subscription.getSubscribers(topic, bucket);
+    private List<CompletableFuture<ReceivedMessage>> publishMessageAsync(String topic, boolean includeTxPool, ByteString data, MessagesP.PayloadType type) throws NKNExplorerException {
+        final NKNExplorer.Subscription.Subscriber[] subscribers = NKNExplorer.Subscription.getSubscribers(topic, 0, NKNExplorer.Subscription.MAX_LIMIT, false, includeTxPool);
         if (subscribers.length == 0) return new ArrayList<>();
 
         final ArrayList<String> dest = new ArrayList<>(subscribers.length);

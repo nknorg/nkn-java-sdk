@@ -59,6 +59,10 @@ public final class TransactionP {
      * <code>NANO_PAY_TYPE = 9;</code>
      */
     NANO_PAY_TYPE(9),
+    /**
+     * <code>ISSUE_ASSET_TYPE = 10;</code>
+     */
+    ISSUE_ASSET_TYPE(10),
     UNRECOGNIZED(-1),
     ;
 
@@ -102,6 +106,10 @@ public final class TransactionP {
      * <code>NANO_PAY_TYPE = 9;</code>
      */
     public static final int NANO_PAY_TYPE_VALUE = 9;
+    /**
+     * <code>ISSUE_ASSET_TYPE = 10;</code>
+     */
+    public static final int ISSUE_ASSET_TYPE_VALUE = 10;
 
 
     public final int getNumber() {
@@ -132,6 +140,7 @@ public final class TransactionP {
         case 7: return UNSUBSCRIBE_TYPE;
         case 8: return GENERATE_ID_TYPE;
         case 9: return NANO_PAY_TYPE;
+        case 10: return ISSUE_ASSET_TYPE;
         default: return null;
       }
     }
@@ -5498,11 +5507,6 @@ public final class TransactionP {
         getTopicBytes();
 
     /**
-     * <code>uint32 bucket = 4;</code>
-     */
-    int getBucket();
-
-    /**
      * <code>uint32 duration = 5;</code>
      */
     int getDuration();
@@ -5533,7 +5537,6 @@ public final class TransactionP {
       subscriber_ = com.google.protobuf.ByteString.EMPTY;
       identifier_ = "";
       topic_ = "";
-      bucket_ = 0;
       duration_ = 0;
       meta_ = "";
     }
@@ -5577,11 +5580,6 @@ public final class TransactionP {
               java.lang.String s = input.readStringRequireUtf8();
 
               topic_ = s;
-              break;
-            }
-            case 32: {
-
-              bucket_ = input.readUInt32();
               break;
             }
             case 40: {
@@ -5704,15 +5702,6 @@ public final class TransactionP {
       }
     }
 
-    public static final int BUCKET_FIELD_NUMBER = 4;
-    private int bucket_;
-    /**
-     * <code>uint32 bucket = 4;</code>
-     */
-    public int getBucket() {
-      return bucket_;
-    }
-
     public static final int DURATION_FIELD_NUMBER = 5;
     private int duration_;
     /**
@@ -5779,9 +5768,6 @@ public final class TransactionP {
       if (!getTopicBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, topic_);
       }
-      if (bucket_ != 0) {
-        output.writeUInt32(4, bucket_);
-      }
       if (duration_ != 0) {
         output.writeUInt32(5, duration_);
       }
@@ -5806,10 +5792,6 @@ public final class TransactionP {
       }
       if (!getTopicBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, topic_);
-      }
-      if (bucket_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(4, bucket_);
       }
       if (duration_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -5840,8 +5822,6 @@ public final class TransactionP {
           .equals(other.getIdentifier());
       result = result && getTopic()
           .equals(other.getTopic());
-      result = result && (getBucket()
-          == other.getBucket());
       result = result && (getDuration()
           == other.getDuration());
       result = result && getMeta()
@@ -5863,8 +5843,6 @@ public final class TransactionP {
       hash = (53 * hash) + getIdentifier().hashCode();
       hash = (37 * hash) + TOPIC_FIELD_NUMBER;
       hash = (53 * hash) + getTopic().hashCode();
-      hash = (37 * hash) + BUCKET_FIELD_NUMBER;
-      hash = (53 * hash) + getBucket();
       hash = (37 * hash) + DURATION_FIELD_NUMBER;
       hash = (53 * hash) + getDuration();
       hash = (37 * hash) + META_FIELD_NUMBER;
@@ -6008,8 +5986,6 @@ public final class TransactionP {
 
         topic_ = "";
 
-        bucket_ = 0;
-
         duration_ = 0;
 
         meta_ = "";
@@ -6043,7 +6019,6 @@ public final class TransactionP {
         result.subscriber_ = subscriber_;
         result.identifier_ = identifier_;
         result.topic_ = topic_;
-        result.bucket_ = bucket_;
         result.duration_ = duration_;
         result.meta_ = meta_;
         onBuilt();
@@ -6104,9 +6079,6 @@ public final class TransactionP {
         if (!other.getTopic().isEmpty()) {
           topic_ = other.topic_;
           onChanged();
-        }
-        if (other.getBucket() != 0) {
-          setBucket(other.getBucket());
         }
         if (other.getDuration() != 0) {
           setDuration(other.getDuration());
@@ -6311,32 +6283,6 @@ public final class TransactionP {
         return this;
       }
 
-      private int bucket_ ;
-      /**
-       * <code>uint32 bucket = 4;</code>
-       */
-      public int getBucket() {
-        return bucket_;
-      }
-      /**
-       * <code>uint32 bucket = 4;</code>
-       */
-      public Builder setBucket(int value) {
-        
-        bucket_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>uint32 bucket = 4;</code>
-       */
-      public Builder clearBucket() {
-        
-        bucket_ = 0;
-        onChanged();
-        return this;
-      }
-
       private int duration_ ;
       /**
        * <code>uint32 duration = 5;</code>
@@ -6479,6 +6425,759 @@ public final class TransactionP {
 
     @java.lang.Override
     public jsmith.nknsdk.network.proto.TransactionP.Subscribe getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface UnsubscribeOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:jsmith.nknsdk.network.proto.Unsubscribe)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bytes subscriber = 1;</code>
+     */
+    com.google.protobuf.ByteString getSubscriber();
+
+    /**
+     * <code>string identifier = 2;</code>
+     */
+    java.lang.String getIdentifier();
+    /**
+     * <code>string identifier = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getIdentifierBytes();
+
+    /**
+     * <code>string topic = 3;</code>
+     */
+    java.lang.String getTopic();
+    /**
+     * <code>string topic = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getTopicBytes();
+  }
+  /**
+   * Protobuf type {@code jsmith.nknsdk.network.proto.Unsubscribe}
+   */
+  public  static final class Unsubscribe extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:jsmith.nknsdk.network.proto.Unsubscribe)
+      UnsubscribeOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Unsubscribe.newBuilder() to construct.
+    private Unsubscribe(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Unsubscribe() {
+      subscriber_ = com.google.protobuf.ByteString.EMPTY;
+      identifier_ = "";
+      topic_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Unsubscribe(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+
+              subscriber_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              identifier_ = s;
+              break;
+            }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              topic_ = s;
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return jsmith.nknsdk.network.proto.TransactionP.internal_static_jsmith_nknsdk_network_proto_Unsubscribe_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return jsmith.nknsdk.network.proto.TransactionP.internal_static_jsmith_nknsdk_network_proto_Unsubscribe_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              jsmith.nknsdk.network.proto.TransactionP.Unsubscribe.class, jsmith.nknsdk.network.proto.TransactionP.Unsubscribe.Builder.class);
+    }
+
+    public static final int SUBSCRIBER_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString subscriber_;
+    /**
+     * <code>bytes subscriber = 1;</code>
+     */
+    public com.google.protobuf.ByteString getSubscriber() {
+      return subscriber_;
+    }
+
+    public static final int IDENTIFIER_FIELD_NUMBER = 2;
+    private volatile java.lang.Object identifier_;
+    /**
+     * <code>string identifier = 2;</code>
+     */
+    public java.lang.String getIdentifier() {
+      java.lang.Object ref = identifier_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        identifier_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string identifier = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getIdentifierBytes() {
+      java.lang.Object ref = identifier_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        identifier_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TOPIC_FIELD_NUMBER = 3;
+    private volatile java.lang.Object topic_;
+    /**
+     * <code>string topic = 3;</code>
+     */
+    public java.lang.String getTopic() {
+      java.lang.Object ref = topic_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        topic_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string topic = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTopicBytes() {
+      java.lang.Object ref = topic_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        topic_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!subscriber_.isEmpty()) {
+        output.writeBytes(1, subscriber_);
+      }
+      if (!getIdentifierBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, identifier_);
+      }
+      if (!getTopicBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, topic_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!subscriber_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, subscriber_);
+      }
+      if (!getIdentifierBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, identifier_);
+      }
+      if (!getTopicBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, topic_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof jsmith.nknsdk.network.proto.TransactionP.Unsubscribe)) {
+        return super.equals(obj);
+      }
+      jsmith.nknsdk.network.proto.TransactionP.Unsubscribe other = (jsmith.nknsdk.network.proto.TransactionP.Unsubscribe) obj;
+
+      boolean result = true;
+      result = result && getSubscriber()
+          .equals(other.getSubscriber());
+      result = result && getIdentifier()
+          .equals(other.getIdentifier());
+      result = result && getTopic()
+          .equals(other.getTopic());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + SUBSCRIBER_FIELD_NUMBER;
+      hash = (53 * hash) + getSubscriber().hashCode();
+      hash = (37 * hash) + IDENTIFIER_FIELD_NUMBER;
+      hash = (53 * hash) + getIdentifier().hashCode();
+      hash = (37 * hash) + TOPIC_FIELD_NUMBER;
+      hash = (53 * hash) + getTopic().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static jsmith.nknsdk.network.proto.TransactionP.Unsubscribe parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.Unsubscribe parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.Unsubscribe parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.Unsubscribe parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.Unsubscribe parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.Unsubscribe parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.Unsubscribe parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.Unsubscribe parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.Unsubscribe parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.Unsubscribe parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.Unsubscribe parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.Unsubscribe parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(jsmith.nknsdk.network.proto.TransactionP.Unsubscribe prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code jsmith.nknsdk.network.proto.Unsubscribe}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:jsmith.nknsdk.network.proto.Unsubscribe)
+        jsmith.nknsdk.network.proto.TransactionP.UnsubscribeOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return jsmith.nknsdk.network.proto.TransactionP.internal_static_jsmith_nknsdk_network_proto_Unsubscribe_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return jsmith.nknsdk.network.proto.TransactionP.internal_static_jsmith_nknsdk_network_proto_Unsubscribe_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                jsmith.nknsdk.network.proto.TransactionP.Unsubscribe.class, jsmith.nknsdk.network.proto.TransactionP.Unsubscribe.Builder.class);
+      }
+
+      // Construct using jsmith.nknsdk.network.proto.TransactionP.Unsubscribe.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        subscriber_ = com.google.protobuf.ByteString.EMPTY;
+
+        identifier_ = "";
+
+        topic_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return jsmith.nknsdk.network.proto.TransactionP.internal_static_jsmith_nknsdk_network_proto_Unsubscribe_descriptor;
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.TransactionP.Unsubscribe getDefaultInstanceForType() {
+        return jsmith.nknsdk.network.proto.TransactionP.Unsubscribe.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.TransactionP.Unsubscribe build() {
+        jsmith.nknsdk.network.proto.TransactionP.Unsubscribe result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.TransactionP.Unsubscribe buildPartial() {
+        jsmith.nknsdk.network.proto.TransactionP.Unsubscribe result = new jsmith.nknsdk.network.proto.TransactionP.Unsubscribe(this);
+        result.subscriber_ = subscriber_;
+        result.identifier_ = identifier_;
+        result.topic_ = topic_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof jsmith.nknsdk.network.proto.TransactionP.Unsubscribe) {
+          return mergeFrom((jsmith.nknsdk.network.proto.TransactionP.Unsubscribe)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(jsmith.nknsdk.network.proto.TransactionP.Unsubscribe other) {
+        if (other == jsmith.nknsdk.network.proto.TransactionP.Unsubscribe.getDefaultInstance()) return this;
+        if (other.getSubscriber() != com.google.protobuf.ByteString.EMPTY) {
+          setSubscriber(other.getSubscriber());
+        }
+        if (!other.getIdentifier().isEmpty()) {
+          identifier_ = other.identifier_;
+          onChanged();
+        }
+        if (!other.getTopic().isEmpty()) {
+          topic_ = other.topic_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        jsmith.nknsdk.network.proto.TransactionP.Unsubscribe parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (jsmith.nknsdk.network.proto.TransactionP.Unsubscribe) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private com.google.protobuf.ByteString subscriber_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes subscriber = 1;</code>
+       */
+      public com.google.protobuf.ByteString getSubscriber() {
+        return subscriber_;
+      }
+      /**
+       * <code>bytes subscriber = 1;</code>
+       */
+      public Builder setSubscriber(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        subscriber_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes subscriber = 1;</code>
+       */
+      public Builder clearSubscriber() {
+        
+        subscriber_ = getDefaultInstance().getSubscriber();
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object identifier_ = "";
+      /**
+       * <code>string identifier = 2;</code>
+       */
+      public java.lang.String getIdentifier() {
+        java.lang.Object ref = identifier_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          identifier_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string identifier = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getIdentifierBytes() {
+        java.lang.Object ref = identifier_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          identifier_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string identifier = 2;</code>
+       */
+      public Builder setIdentifier(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        identifier_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string identifier = 2;</code>
+       */
+      public Builder clearIdentifier() {
+        
+        identifier_ = getDefaultInstance().getIdentifier();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string identifier = 2;</code>
+       */
+      public Builder setIdentifierBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        identifier_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object topic_ = "";
+      /**
+       * <code>string topic = 3;</code>
+       */
+      public java.lang.String getTopic() {
+        java.lang.Object ref = topic_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          topic_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string topic = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTopicBytes() {
+        java.lang.Object ref = topic_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          topic_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string topic = 3;</code>
+       */
+      public Builder setTopic(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        topic_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string topic = 3;</code>
+       */
+      public Builder clearTopic() {
+        
+        topic_ = getDefaultInstance().getTopic();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string topic = 3;</code>
+       */
+      public Builder setTopicBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        topic_ = value;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:jsmith.nknsdk.network.proto.Unsubscribe)
+    }
+
+    // @@protoc_insertion_point(class_scope:jsmith.nknsdk.network.proto.Unsubscribe)
+    private static final jsmith.nknsdk.network.proto.TransactionP.Unsubscribe DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new jsmith.nknsdk.network.proto.TransactionP.Unsubscribe();
+    }
+
+    public static jsmith.nknsdk.network.proto.TransactionP.Unsubscribe getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Unsubscribe>
+        PARSER = new com.google.protobuf.AbstractParser<Unsubscribe>() {
+      @java.lang.Override
+      public Unsubscribe parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Unsubscribe(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Unsubscribe> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Unsubscribe> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public jsmith.nknsdk.network.proto.TransactionP.Unsubscribe getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -8435,6 +9134,886 @@ public final class TransactionP {
 
   }
 
+  public interface IssueAssetOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:jsmith.nknsdk.network.proto.IssueAsset)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bytes sender = 1;</code>
+     */
+    com.google.protobuf.ByteString getSender();
+
+    /**
+     * <code>string name = 2;</code>
+     */
+    java.lang.String getName();
+    /**
+     * <code>string name = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
+    /**
+     * <code>string symbol = 3;</code>
+     */
+    java.lang.String getSymbol();
+    /**
+     * <code>string symbol = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getSymbolBytes();
+
+    /**
+     * <code>int64 total_supply = 4;</code>
+     */
+    long getTotalSupply();
+
+    /**
+     * <code>uint32 precision = 5;</code>
+     */
+    int getPrecision();
+  }
+  /**
+   * Protobuf type {@code jsmith.nknsdk.network.proto.IssueAsset}
+   */
+  public  static final class IssueAsset extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:jsmith.nknsdk.network.proto.IssueAsset)
+      IssueAssetOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use IssueAsset.newBuilder() to construct.
+    private IssueAsset(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private IssueAsset() {
+      sender_ = com.google.protobuf.ByteString.EMPTY;
+      name_ = "";
+      symbol_ = "";
+      totalSupply_ = 0L;
+      precision_ = 0;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private IssueAsset(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+
+              sender_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              name_ = s;
+              break;
+            }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              symbol_ = s;
+              break;
+            }
+            case 32: {
+
+              totalSupply_ = input.readInt64();
+              break;
+            }
+            case 40: {
+
+              precision_ = input.readUInt32();
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return jsmith.nknsdk.network.proto.TransactionP.internal_static_jsmith_nknsdk_network_proto_IssueAsset_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return jsmith.nknsdk.network.proto.TransactionP.internal_static_jsmith_nknsdk_network_proto_IssueAsset_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              jsmith.nknsdk.network.proto.TransactionP.IssueAsset.class, jsmith.nknsdk.network.proto.TransactionP.IssueAsset.Builder.class);
+    }
+
+    public static final int SENDER_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString sender_;
+    /**
+     * <code>bytes sender = 1;</code>
+     */
+    public com.google.protobuf.ByteString getSender() {
+      return sender_;
+    }
+
+    public static final int NAME_FIELD_NUMBER = 2;
+    private volatile java.lang.Object name_;
+    /**
+     * <code>string name = 2;</code>
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        name_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string name = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int SYMBOL_FIELD_NUMBER = 3;
+    private volatile java.lang.Object symbol_;
+    /**
+     * <code>string symbol = 3;</code>
+     */
+    public java.lang.String getSymbol() {
+      java.lang.Object ref = symbol_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        symbol_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string symbol = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSymbolBytes() {
+      java.lang.Object ref = symbol_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        symbol_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TOTAL_SUPPLY_FIELD_NUMBER = 4;
+    private long totalSupply_;
+    /**
+     * <code>int64 total_supply = 4;</code>
+     */
+    public long getTotalSupply() {
+      return totalSupply_;
+    }
+
+    public static final int PRECISION_FIELD_NUMBER = 5;
+    private int precision_;
+    /**
+     * <code>uint32 precision = 5;</code>
+     */
+    public int getPrecision() {
+      return precision_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!sender_.isEmpty()) {
+        output.writeBytes(1, sender_);
+      }
+      if (!getNameBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, name_);
+      }
+      if (!getSymbolBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, symbol_);
+      }
+      if (totalSupply_ != 0L) {
+        output.writeInt64(4, totalSupply_);
+      }
+      if (precision_ != 0) {
+        output.writeUInt32(5, precision_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!sender_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, sender_);
+      }
+      if (!getNameBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, name_);
+      }
+      if (!getSymbolBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, symbol_);
+      }
+      if (totalSupply_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(4, totalSupply_);
+      }
+      if (precision_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, precision_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof jsmith.nknsdk.network.proto.TransactionP.IssueAsset)) {
+        return super.equals(obj);
+      }
+      jsmith.nknsdk.network.proto.TransactionP.IssueAsset other = (jsmith.nknsdk.network.proto.TransactionP.IssueAsset) obj;
+
+      boolean result = true;
+      result = result && getSender()
+          .equals(other.getSender());
+      result = result && getName()
+          .equals(other.getName());
+      result = result && getSymbol()
+          .equals(other.getSymbol());
+      result = result && (getTotalSupply()
+          == other.getTotalSupply());
+      result = result && (getPrecision()
+          == other.getPrecision());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + SENDER_FIELD_NUMBER;
+      hash = (53 * hash) + getSender().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + SYMBOL_FIELD_NUMBER;
+      hash = (53 * hash) + getSymbol().hashCode();
+      hash = (37 * hash) + TOTAL_SUPPLY_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTotalSupply());
+      hash = (37 * hash) + PRECISION_FIELD_NUMBER;
+      hash = (53 * hash) + getPrecision();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static jsmith.nknsdk.network.proto.TransactionP.IssueAsset parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.IssueAsset parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.IssueAsset parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.IssueAsset parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.IssueAsset parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.IssueAsset parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.IssueAsset parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.IssueAsset parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.IssueAsset parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.IssueAsset parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.IssueAsset parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.TransactionP.IssueAsset parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(jsmith.nknsdk.network.proto.TransactionP.IssueAsset prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code jsmith.nknsdk.network.proto.IssueAsset}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:jsmith.nknsdk.network.proto.IssueAsset)
+        jsmith.nknsdk.network.proto.TransactionP.IssueAssetOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return jsmith.nknsdk.network.proto.TransactionP.internal_static_jsmith_nknsdk_network_proto_IssueAsset_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return jsmith.nknsdk.network.proto.TransactionP.internal_static_jsmith_nknsdk_network_proto_IssueAsset_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                jsmith.nknsdk.network.proto.TransactionP.IssueAsset.class, jsmith.nknsdk.network.proto.TransactionP.IssueAsset.Builder.class);
+      }
+
+      // Construct using jsmith.nknsdk.network.proto.TransactionP.IssueAsset.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        sender_ = com.google.protobuf.ByteString.EMPTY;
+
+        name_ = "";
+
+        symbol_ = "";
+
+        totalSupply_ = 0L;
+
+        precision_ = 0;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return jsmith.nknsdk.network.proto.TransactionP.internal_static_jsmith_nknsdk_network_proto_IssueAsset_descriptor;
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.TransactionP.IssueAsset getDefaultInstanceForType() {
+        return jsmith.nknsdk.network.proto.TransactionP.IssueAsset.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.TransactionP.IssueAsset build() {
+        jsmith.nknsdk.network.proto.TransactionP.IssueAsset result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.TransactionP.IssueAsset buildPartial() {
+        jsmith.nknsdk.network.proto.TransactionP.IssueAsset result = new jsmith.nknsdk.network.proto.TransactionP.IssueAsset(this);
+        result.sender_ = sender_;
+        result.name_ = name_;
+        result.symbol_ = symbol_;
+        result.totalSupply_ = totalSupply_;
+        result.precision_ = precision_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof jsmith.nknsdk.network.proto.TransactionP.IssueAsset) {
+          return mergeFrom((jsmith.nknsdk.network.proto.TransactionP.IssueAsset)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(jsmith.nknsdk.network.proto.TransactionP.IssueAsset other) {
+        if (other == jsmith.nknsdk.network.proto.TransactionP.IssueAsset.getDefaultInstance()) return this;
+        if (other.getSender() != com.google.protobuf.ByteString.EMPTY) {
+          setSender(other.getSender());
+        }
+        if (!other.getName().isEmpty()) {
+          name_ = other.name_;
+          onChanged();
+        }
+        if (!other.getSymbol().isEmpty()) {
+          symbol_ = other.symbol_;
+          onChanged();
+        }
+        if (other.getTotalSupply() != 0L) {
+          setTotalSupply(other.getTotalSupply());
+        }
+        if (other.getPrecision() != 0) {
+          setPrecision(other.getPrecision());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        jsmith.nknsdk.network.proto.TransactionP.IssueAsset parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (jsmith.nknsdk.network.proto.TransactionP.IssueAsset) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private com.google.protobuf.ByteString sender_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes sender = 1;</code>
+       */
+      public com.google.protobuf.ByteString getSender() {
+        return sender_;
+      }
+      /**
+       * <code>bytes sender = 1;</code>
+       */
+      public Builder setSender(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        sender_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes sender = 1;</code>
+       */
+      public Builder clearSender() {
+        
+        sender_ = getDefaultInstance().getSender();
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object name_ = "";
+      /**
+       * <code>string name = 2;</code>
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string name = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string name = 2;</code>
+       */
+      public Builder setName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        name_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string name = 2;</code>
+       */
+      public Builder clearName() {
+        
+        name_ = getDefaultInstance().getName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string name = 2;</code>
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        name_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object symbol_ = "";
+      /**
+       * <code>string symbol = 3;</code>
+       */
+      public java.lang.String getSymbol() {
+        java.lang.Object ref = symbol_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          symbol_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string symbol = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSymbolBytes() {
+        java.lang.Object ref = symbol_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          symbol_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string symbol = 3;</code>
+       */
+      public Builder setSymbol(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        symbol_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string symbol = 3;</code>
+       */
+      public Builder clearSymbol() {
+        
+        symbol_ = getDefaultInstance().getSymbol();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string symbol = 3;</code>
+       */
+      public Builder setSymbolBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        symbol_ = value;
+        onChanged();
+        return this;
+      }
+
+      private long totalSupply_ ;
+      /**
+       * <code>int64 total_supply = 4;</code>
+       */
+      public long getTotalSupply() {
+        return totalSupply_;
+      }
+      /**
+       * <code>int64 total_supply = 4;</code>
+       */
+      public Builder setTotalSupply(long value) {
+        
+        totalSupply_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 total_supply = 4;</code>
+       */
+      public Builder clearTotalSupply() {
+        
+        totalSupply_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private int precision_ ;
+      /**
+       * <code>uint32 precision = 5;</code>
+       */
+      public int getPrecision() {
+        return precision_;
+      }
+      /**
+       * <code>uint32 precision = 5;</code>
+       */
+      public Builder setPrecision(int value) {
+        
+        precision_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint32 precision = 5;</code>
+       */
+      public Builder clearPrecision() {
+        
+        precision_ = 0;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:jsmith.nknsdk.network.proto.IssueAsset)
+    }
+
+    // @@protoc_insertion_point(class_scope:jsmith.nknsdk.network.proto.IssueAsset)
+    private static final jsmith.nknsdk.network.proto.TransactionP.IssueAsset DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new jsmith.nknsdk.network.proto.TransactionP.IssueAsset();
+    }
+
+    public static jsmith.nknsdk.network.proto.TransactionP.IssueAsset getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<IssueAsset>
+        PARSER = new com.google.protobuf.AbstractParser<IssueAsset>() {
+      @java.lang.Override
+      public IssueAsset parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new IssueAsset(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<IssueAsset> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<IssueAsset> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public jsmith.nknsdk.network.proto.TransactionP.IssueAsset getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_jsmith_nknsdk_network_proto_UnsignedTx_descriptor;
   private static final 
@@ -8481,6 +10060,11 @@ public final class TransactionP {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_jsmith_nknsdk_network_proto_Subscribe_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_jsmith_nknsdk_network_proto_Unsubscribe_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_jsmith_nknsdk_network_proto_Unsubscribe_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_jsmith_nknsdk_network_proto_TransferAsset_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -8495,6 +10079,11 @@ public final class TransactionP {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_jsmith_nknsdk_network_proto_NanoPay_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_jsmith_nknsdk_network_proto_IssueAsset_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_jsmith_nknsdk_network_proto_IssueAsset_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -8521,22 +10110,26 @@ public final class TransactionP {
       "\010sigChain\030\001 \001(\014\022\021\n\tsubmitter\030\002 \001(\014\"0\n\014Re" +
       "gisterName\022\022\n\nregistrant\030\001 \001(\014\022\014\n\004name\030\002" +
       " \001(\t\".\n\nDeleteName\022\022\n\nregistrant\030\001 \001(\014\022\014" +
-      "\n\004name\030\002 \001(\t\"r\n\tSubscribe\022\022\n\nsubscriber\030" +
+      "\n\004name\030\002 \001(\t\"b\n\tSubscribe\022\022\n\nsubscriber\030" +
       "\001 \001(\014\022\022\n\nidentifier\030\002 \001(\t\022\r\n\005topic\030\003 \001(\t" +
-      "\022\016\n\006bucket\030\004 \001(\r\022\020\n\010duration\030\005 \001(\r\022\014\n\004me" +
-      "ta\030\006 \001(\t\"B\n\rTransferAsset\022\016\n\006sender\030\001 \001(" +
-      "\014\022\021\n\trecipient\030\002 \001(\014\022\016\n\006amount\030\003 \001(\003\":\n\n" +
-      "GenerateID\022\022\n\npublic_key\030\001 \001(\014\022\030\n\020regist" +
-      "ration_fee\030\002 \001(\003\"m\n\007NanoPay\022\016\n\006sender\030\001 " +
-      "\001(\014\022\021\n\trecipient\030\002 \001(\014\022\r\n\005nonce\030\003 \001(\004\022\016\n" +
-      "\006amount\030\004 \001(\003\022\016\n\006height\030\005 \001(\r\022\020\n\010duratio" +
-      "n\030\006 \001(\r*\365\001\n\026TransactionPayloadType\022\021\n\rCO" +
-      "INBASE_TYPE\020\000\022\027\n\023TRANSFER_ASSET_TYPE\020\001\022\026" +
-      "\n\022SIG_CHAIN_TXN_TYPE\020\002\022\026\n\022REGISTER_NAME_" +
-      "TYPE\020\003\022\026\n\022TRANSFER_NAME_TYPE\020\004\022\024\n\020DELETE" +
-      "_NAME_TYPE\020\005\022\022\n\016SUBSCRIBE_TYPE\020\006\022\024\n\020UNSU" +
-      "BSCRIBE_TYPE\020\007\022\024\n\020GENERATE_ID_TYPE\020\010\022\021\n\r" +
-      "NANO_PAY_TYPE\020\tb\006proto3"
+      "\022\020\n\010duration\030\005 \001(\r\022\014\n\004meta\030\006 \001(\t\"D\n\013Unsu" +
+      "bscribe\022\022\n\nsubscriber\030\001 \001(\014\022\022\n\nidentifie" +
+      "r\030\002 \001(\t\022\r\n\005topic\030\003 \001(\t\"B\n\rTransferAsset\022" +
+      "\016\n\006sender\030\001 \001(\014\022\021\n\trecipient\030\002 \001(\014\022\016\n\006am" +
+      "ount\030\003 \001(\003\":\n\nGenerateID\022\022\n\npublic_key\030\001" +
+      " \001(\014\022\030\n\020registration_fee\030\002 \001(\003\"m\n\007NanoPa" +
+      "y\022\016\n\006sender\030\001 \001(\014\022\021\n\trecipient\030\002 \001(\014\022\r\n\005" +
+      "nonce\030\003 \001(\004\022\016\n\006amount\030\004 \001(\003\022\016\n\006height\030\005 " +
+      "\001(\r\022\020\n\010duration\030\006 \001(\r\"c\n\nIssueAsset\022\016\n\006s" +
+      "ender\030\001 \001(\014\022\014\n\004name\030\002 \001(\t\022\016\n\006symbol\030\003 \001(" +
+      "\t\022\024\n\014total_supply\030\004 \001(\003\022\021\n\tprecision\030\005 \001" +
+      "(\r*\213\002\n\026TransactionPayloadType\022\021\n\rCOINBAS" +
+      "E_TYPE\020\000\022\027\n\023TRANSFER_ASSET_TYPE\020\001\022\026\n\022SIG" +
+      "_CHAIN_TXN_TYPE\020\002\022\026\n\022REGISTER_NAME_TYPE\020" +
+      "\003\022\026\n\022TRANSFER_NAME_TYPE\020\004\022\024\n\020DELETE_NAME" +
+      "_TYPE\020\005\022\022\n\016SUBSCRIBE_TYPE\020\006\022\024\n\020UNSUBSCRI" +
+      "BE_TYPE\020\007\022\024\n\020GENERATE_ID_TYPE\020\010\022\021\n\rNANO_" +
+      "PAY_TYPE\020\t\022\024\n\020ISSUE_ASSET_TYPE\020\nb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -8603,25 +10196,37 @@ public final class TransactionP {
     internal_static_jsmith_nknsdk_network_proto_Subscribe_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_jsmith_nknsdk_network_proto_Subscribe_descriptor,
-        new java.lang.String[] { "Subscriber", "Identifier", "Topic", "Bucket", "Duration", "Meta", });
-    internal_static_jsmith_nknsdk_network_proto_TransferAsset_descriptor =
+        new java.lang.String[] { "Subscriber", "Identifier", "Topic", "Duration", "Meta", });
+    internal_static_jsmith_nknsdk_network_proto_Unsubscribe_descriptor =
       getDescriptor().getMessageTypes().get(9);
+    internal_static_jsmith_nknsdk_network_proto_Unsubscribe_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_jsmith_nknsdk_network_proto_Unsubscribe_descriptor,
+        new java.lang.String[] { "Subscriber", "Identifier", "Topic", });
+    internal_static_jsmith_nknsdk_network_proto_TransferAsset_descriptor =
+      getDescriptor().getMessageTypes().get(10);
     internal_static_jsmith_nknsdk_network_proto_TransferAsset_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_jsmith_nknsdk_network_proto_TransferAsset_descriptor,
         new java.lang.String[] { "Sender", "Recipient", "Amount", });
     internal_static_jsmith_nknsdk_network_proto_GenerateID_descriptor =
-      getDescriptor().getMessageTypes().get(10);
+      getDescriptor().getMessageTypes().get(11);
     internal_static_jsmith_nknsdk_network_proto_GenerateID_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_jsmith_nknsdk_network_proto_GenerateID_descriptor,
         new java.lang.String[] { "PublicKey", "RegistrationFee", });
     internal_static_jsmith_nknsdk_network_proto_NanoPay_descriptor =
-      getDescriptor().getMessageTypes().get(11);
+      getDescriptor().getMessageTypes().get(12);
     internal_static_jsmith_nknsdk_network_proto_NanoPay_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_jsmith_nknsdk_network_proto_NanoPay_descriptor,
         new java.lang.String[] { "Sender", "Recipient", "Nonce", "Amount", "Height", "Duration", });
+    internal_static_jsmith_nknsdk_network_proto_IssueAsset_descriptor =
+      getDescriptor().getMessageTypes().get(13);
+    internal_static_jsmith_nknsdk_network_proto_IssueAsset_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_jsmith_nknsdk_network_proto_IssueAsset_descriptor,
+        new java.lang.String[] { "Sender", "Name", "Symbol", "TotalSupply", "Precision", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

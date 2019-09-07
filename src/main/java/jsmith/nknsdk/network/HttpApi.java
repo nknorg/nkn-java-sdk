@@ -44,10 +44,10 @@ public class HttpApi {
         return rpcRequest(server, method, new HashMap<>());
     }
 
-    public static Object rpcRequest(InetSocketAddress server, String method, HashMap<String, String> params) throws NKNExplorerException {
+    public static Object rpcRequest(InetSocketAddress server, String method, HashMap<String, Object> params) throws NKNExplorerException {
         final JSONObject paramsJson = new JSONObject();
 
-        for (Map.Entry<String, String> e : params.entrySet()) {
+        for (Map.Entry<String, Object> e : params.entrySet()) {
             paramsJson.put(e.getKey(), e.getValue());
         }
 

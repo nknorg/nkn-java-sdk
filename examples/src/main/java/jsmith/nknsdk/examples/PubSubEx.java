@@ -32,19 +32,30 @@ public class PubSubEx {
 
         final String topic = "testtopic";
 
-        final NKNExplorer.Subscription.Subscriber[] subscribers = NKNExplorer.Subscription.getSubscribers(topic, 0);
+        final NKNExplorer.Subscription.Subscriber[] subscribers = NKNExplorer.Subscription.getSubscribers(topic);
         System.out.println("Subscribers of '" + topic + "':");
         for (NKNExplorer.Subscription.Subscriber s : subscribers) {
-            System.out.println("  " + s.fullClientIdentifier + (s.meta.isEmpty() ? "" : ": " + s.meta));
+            System.out.println("  " + s.fullClientIdentifier + (s.meta != null && s.meta.isEmpty() ? "" : (": " + s.meta)));
         }
-        System.out.println("Total: " + subscribers.length + " subs");
+        System.out.println("Total: " + NKNExplorer.Subscription.getSubscriberCount(topic) + " subs");
 
+        if (subscribers.length > 0) {
+            final NKNExplorer.Subscription.SubscriptionDetail detail = NKNExplorer.Subscription.getSubscriptionDetail(topic, subscribers[0].fullClientIdentifier);
+            if (detail == null) {
+                System.out.println("Seems like there is no record of requested subscription");
+            } else {
+                System.out.println("Meta of the " + detail.fullClientIdentifier + ": '" + detail.meta + "', expires At: " + detail.expiresAt);
+            }
+        }
+
+
+        NKNClient subscriberClient = null;
         if (true) {
 
             final String identifier = "clientA";
 
             System.out.println("Subscribing to '" + topic + "' using " + identifier + (identifier == null || identifier.isEmpty() ? "" : ".") + Hex.toHexString(pubsubWallet.getPublicKey()));
-            final String txID = pubsubWallet.tx().subscribe(topic, 0, 50, identifier, (String) null);
+            final String txID = pubsubWallet.tx().subscribe(topic, 10, identifier, (String) null);
 
             if (txID == null) {
                 System.out.println("  Transaction failed");
@@ -53,19 +64,23 @@ public class PubSubEx {
             }
 
 
-            new NKNClient(new Identity(identifier, pubsubWallet)).onNewMessage(msg -> {
+            subscriberClient = new NKNClient(new Identity(identifier, pubsubWallet)).onNewMessage(msg -> {
                 if (msg.isText) {
                     System.out.println("New text from " + msg.from + "\n  ==> " + msg.textData);
                 } else if (msg.isBinary) {
                     System.out.println("New binary from " + msg.from + "\n  ==> 0x" + Hex.toHexString(msg.binaryData.toByteArray()).toUpperCase());
                 }
-            }).start();
+            });
+            subscriberClient.start();
             Thread.sleep(1000);
         }
 
-        new NKNClient(new Identity(null, Wallet.createNew())).start().publishTextMessageAsync(topic, 0, "Hello all my subscribers!");
+        final NKNClient publisherClient = new NKNClient(new Identity(null, Wallet.createNew()));
+        publisherClient.start().publishTextMessageAsync(topic, true, "Hello all my subscribers!");
         Thread.sleep(7000);
 
+        publisherClient.close();
+        if (subscriberClient != null) subscriberClient.close();
 
     }
 

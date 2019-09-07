@@ -66,29 +66,28 @@ public class NKNTransaction {
         return submitTransaction(transferToT, fee);
     }
 
-    public String subscribe(String topic, int bucket, int duration) throws WalletException {
-        return subscribe(topic, bucket, duration, BigDecimal.ZERO);
+    public String subscribe(String topic, int duration) throws WalletException {
+        return subscribe(topic, duration, BigDecimal.ZERO);
     }
-    public String subscribe(String topic, int bucket, int duration, String clientIdentifier) throws WalletException {
-        return subscribe(topic, bucket, duration, clientIdentifier, BigDecimal.ZERO);
+    public String subscribe(String topic, int duration, String clientIdentifier) throws WalletException {
+        return subscribe(topic, duration, clientIdentifier, BigDecimal.ZERO);
     }
-    public String subscribe(String topic, int bucket, int duration, String clientIdentifier, String meta) throws WalletException {
-        return subscribe(topic, bucket, duration, clientIdentifier, meta, BigDecimal.ZERO);
-    }
-
-    public String subscribe(String topic, int bucket, int duration, BigDecimal fee) throws WalletException {
-        return subscribe(topic, bucket, duration, null, null, fee);
-    }
-    public String subscribe(String topic, int bucket, int duration, String clientIdentifier, BigDecimal fee) throws WalletException {
-        return subscribe(topic, bucket, duration, clientIdentifier, null, fee);
+    public String subscribe(String topic, int duration, String clientIdentifier, String meta) throws WalletException {
+        return subscribe(topic, duration, clientIdentifier, meta, BigDecimal.ZERO);
     }
 
-    public String subscribe(String topic, int bucket, int duration, String clientIdentifier, String meta, BigDecimal fee) throws WalletException {
+    public String subscribe(String topic, int duration, BigDecimal fee) throws WalletException {
+        return subscribe(topic, duration, null, null, fee);
+    }
+    public String subscribe(String topic, int duration, String clientIdentifier, BigDecimal fee) throws WalletException {
+        return subscribe(topic, duration, clientIdentifier, null, fee);
+    }
+
+    public String subscribe(String topic, int duration, String clientIdentifier, String meta, BigDecimal fee) throws WalletException {
         final SubscribeT subscribeT = new SubscribeT();
 
         subscribeT.setPublicKey(ByteString.copyFrom(w.getPublicKey()));
         subscribeT.setTopic(topic);
-        subscribeT.setBucket(bucket);
         subscribeT.setDuration(duration);
         subscribeT.setIdentifier(clientIdentifier == null ? "" : clientIdentifier);
         subscribeT.setMeta(meta == null ? "" : meta);
