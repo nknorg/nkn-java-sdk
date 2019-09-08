@@ -77,7 +77,7 @@ public class WsApi extends WebSocketClient {
     }
 
     public void close() {
-        LOG.warn("WS#{} Closing", myId);
+        LOG.debug("WS#{} Closing", myId);
         super.close();
     }
 

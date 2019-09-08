@@ -220,6 +220,10 @@ public class ClientTunnel {
                         }
                         break;
                     }
+                    case "sendRawBlock": {
+                        // Ignore for now. TODO maybe use sendRawBlock message somehow
+                        break;
+                    }
                     default:
                         LOG.warn("Got unknown message (action='{}'), ignoring", json.getString("Action"));
                 }
