@@ -30,9 +30,11 @@ Substitute `<ExampleName>` for any of the prepared examples:
  * `WalletExample` Demonstration of generating, saving and loading a wallet. Including explorer queries for balance and wallet transaction to register a name or transfer assets to a different wallet
  * `PubSubExample` Sub transactions, pub message broadcast and receiving.
 
+For more information about `wemi` build system, visit GitHub page: [Darkyenus/WEMI](https://github.com/Darkyenus/wemi)
 
-For more information about `wemi` build system, visit GitHub page: [Darkyenus/WEMI](https://github.com/Darkyenus/wemi) 
+### How to integrate to other projects? 
 
+Add a dependency to a build system of your liking. Make sure to use `https://jitpack.io` resolver and `com.github.nknorg:nkn-java-sdk:0.1.1` locator
 
 
 ## Contributions
