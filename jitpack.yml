@@ -1,0 +1,8 @@
+# See https://jitpack.io/docs/BUILDING/
+
+# Need to publish to a local directory first and then copy the results over to the ~/.m2/repo,
+# for Jitpack to detect it as artifacts.
+jdk:
+  - oraclejdk8
+install:
+  - java -jar wemi "NknSdk/jitpack:publish"
