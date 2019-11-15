@@ -7,8 +7,11 @@ import jsmith.nknsdk.client.NKNClientException;
 import jsmith.nknsdk.network.proto.MessagesP;
 import jsmith.nknsdk.network.proto.SigchainP;
 import jsmith.nknsdk.utils.Crypto;
+import jsmith.nknsdk.utils.EdToCurve;
 import jsmith.nknsdk.utils.EncodeUtils;
 import jsmith.nknsdk.wallet.Wallet;
+
+import org.bouncycastle.util.encoders.EncoderException;
 import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +99,6 @@ public class ClientEnc {
 
 
     public static ByteString encryptMessage(List<String> destinations, ByteString message, Wallet wallet, NKNClient.EncryptionLevel level) {
-
         boolean encrypt;
         switch (level) {
             case DO_NOT_ENCRYPT:
@@ -121,24 +123,18 @@ public class ClientEnc {
 
         final MessagesP.EncryptedMessage.Builder encMsg = MessagesP.EncryptedMessage.newBuilder();
         encMsg.setEncrypted(encrypt);
-
         if (encrypt) {
             final String dest = destinations.get(0);
             final byte[] nonce = TweetNaclFast.randombytes(24);
             final byte[] sharedKey = wallet.getSharedKey(dest);
             final byte[] msg = message.toByteArray();
-            final byte[] m = new byte[32 + message.size()];
-            final byte[] encrypted = new byte[m.length];
-            System.arraycopy(msg, 0, m, 32, msg.length);
 
-            TweetNaclFast.crypto_box_afternm(encrypted, m, encrypted.length, nonce, sharedKey);
-
-            encMsg.setPayload(ByteString.copyFrom(encrypted));
+            byte[] bytes =new TweetNaclFast.SecretBox(sharedKey).box(msg, nonce);
+            encMsg.setPayload(ByteString.copyFrom(bytes, 0, bytes.length));
             encMsg.setNonce(ByteString.copyFrom(nonce));
         } else {
             encMsg.setPayload(message);
         }
-
 
         return encMsg.build().toByteString();
 
@@ -147,14 +143,12 @@ public class ClientEnc {
     public static ByteString decryptMessage(String from, MessagesP.EncryptedMessage enc, Wallet wallet) throws NKNClientException {
         if (enc.getEncrypted()) {
 
-            final byte[] sharedKey = wallet.getSharedKey(from);
-            final byte[] ciphertext = enc.getPayload().toByteArray();
-            final byte[] plaintext = new byte[ciphertext.length];
+            final byte[] key = wallet.getSharedKey(from);
+            final byte[] msg = enc.getPayload().toByteArray();
+            final byte[] nonce = enc.getNonce().toByteArray();
 
-            if (TweetNaclFast.crypto_box_open_afternm(plaintext, ciphertext, ciphertext.length, enc.getNonce().toByteArray(), sharedKey) != 0) {
-                throw new NKNClientException("Message decryption failed");
-            }
-            return ByteString.copyFrom(plaintext, 32, plaintext.length - 32);
+            byte[] bytes = new TweetNaclFast.SecretBox(key).open(msg, nonce);
+            return ByteString.copyFrom(bytes, 0, bytes.length);
 
         } else {
             return enc.getPayload();

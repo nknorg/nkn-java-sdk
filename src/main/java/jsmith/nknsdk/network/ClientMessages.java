@@ -163,28 +163,29 @@ public class ClientMessages extends Thread {
     }
 
 
-    public void onInboundMessage(String from, MessagesP.Payload message) {
-        final MessagesP.PayloadType type = message.getType();
-        final ByteString replyTo = message.getReplyToPid();
-        final ByteString messageID = message.getPid();
+    public void onInboundMessage(String from, MessagesP.EncryptedMessage pldMsg) {
 
-        MessagesP.EncryptedMessage encryptedMessage;
+        ByteString msg;
         try {
-            encryptedMessage = MessagesP.EncryptedMessage.parseFrom(message.getData());
-        } catch (InvalidProtocolBufferException e) {
-            LOG.warn("Received invalid message, ignoring");
-            return;
-        }
-        final boolean encrypted = encryptedMessage.getEncrypted();
-
-        ByteString data;
-        try {
-            data = ClientEnc.decryptMessage(from, encryptedMessage, ct.identity.wallet);
+            msg = ClientEnc.decryptMessage(from, pldMsg, ct.identity.wallet);
         } catch (NKNClientException e) {
             LOG.warn("Failed to decrypt message, dropping");
             return;
         }
+        final MessagesP.Payload message;
+        try {
+            message = MessagesP.Payload.parseFrom(msg);
+        } catch (InvalidProtocolBufferException e) {
+            LOG.warn("Payload.parseFrom invalid message, ignoring");
+            return;
+        }
 
+        final MessagesP.PayloadType type = message.getType();
+        final ByteString replyTo = message.getReplyToPid();
+        final ByteString messageID = message.getPid();
+
+        final boolean encrypted = pldMsg.getEncrypted();
+        final ByteString data = message.getData();
 
         synchronized (jobLock) {
             for (MessageJob j : waitingForReply) {
@@ -284,28 +285,41 @@ public class ClientMessages extends Thread {
                         .setType(type)
                         .setPid(messageID)
                         .setReplyToPid(replyToMessageID)
-                        .setData(ClientEnc.encryptMessage(Collections.singletonList(d), message, ct.identity.wallet, NKNClient.EncryptionLevel.ENCRYPT_ONLY_UNICAST))
+                        .setData(message)
                         .setNoAck(noAck)
                         .build();
+                final MessagesP.EncryptedMessage encryptedMessage;
+                try {
+                    encryptedMessage = MessagesP.EncryptedMessage.parseFrom(ClientEnc.encryptMessage(Collections.singletonList(d), payload.toByteString(), ct.identity.wallet, NKNClient.EncryptionLevel.ENCRYPT_ONLY_UNICAST));
+                    promises.addAll(sendOutboundMessage(Collections.singletonList(d), messageID, encryptedMessage.toByteString()));
+                } catch (InvalidProtocolBufferException e) {
+                    LOG.error("Encrypted message error", e);
+                }
 
-                promises.addAll(sendOutboundMessage(Collections.singletonList(d), messageID, payload.toByteString()));
             }
 
             return promises;
 
         } else {
             final ByteString messageID = ByteString.copyFrom(Crypto.nextRandom4B());
-
             final MessagesP.Payload payload = MessagesP.Payload.newBuilder()
                     .setType(type)
                     .setPid(messageID)
                     .setReplyToPid(replyToMessageID)
-                    .setData(ClientEnc.encryptMessage(destination, message, ct.identity.wallet, encryptionLevel))
+                    .setData(message)
                     .setNoAck(noAck)
                     .build();
 
+            final MessagesP.EncryptedMessage encryptedMessage;
+            try {
+                encryptedMessage = MessagesP.EncryptedMessage.parseFrom(ClientEnc.encryptMessage(destination, payload.toByteString(), ct.identity.wallet, encryptionLevel));
+                return sendOutboundMessage(destination, messageID, encryptedMessage.toByteString());
+            } catch (InvalidProtocolBufferException e) {
+                e.printStackTrace();
+                return null;
 
-            return sendOutboundMessage(destination, messageID, payload.toByteString());
+            }
+
         }
     }
 
