@@ -29,7 +29,7 @@ public class CountLatch {
 
     public void countDown() {
         synchronized(signal) {
-            if (count.getAndUpdate(i -> i > 0 ? i - 1 : 0) == 0) {
+            if (count.updateAndGet(i -> i > 0 ? i - 1 : 0) == 0) {
                 signal.notify();
             }
         }

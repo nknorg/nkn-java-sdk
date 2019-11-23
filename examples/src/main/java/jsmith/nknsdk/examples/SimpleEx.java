@@ -72,7 +72,15 @@ public class SimpleEx {
         });
 
 
+
+        // Keep sending messages, for experiments with reconnecting and stuff.
+        for (int number = 0; number < 100; number ++) {
+            Thread.sleep(5_000);
+            clientA.sendTextMessageAsync(identityB.getFullIdentifier(), "Message #" + number);
+        }
+
         Thread.sleep(7_000);
+
         System.out.println("Closing!");
         clientA.close();
         clientB.close();

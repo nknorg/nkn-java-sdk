@@ -9,12 +9,15 @@ import jsmith.nknsdk.network.proto.MessagesP;
 import jsmith.nknsdk.utils.CountLatch;
 import org.bouncycastle.util.encoders.DecoderException;
 import org.bouncycastle.util.encoders.Hex;
+import org.java_websocket.util.NamedThreadFactory;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -24,8 +27,10 @@ public class ClientTunnel {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClientTunnel.class);
 
+    private static final ExecutorService reconnectionService = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("reconnector"));
+
     private InetSocketAddress directNodeWS = null;
-    WsApi ws = null;
+    volatile WsApi ws = null;
     CountLatch messageHold = new CountLatch(1);
 
     final Identity identity;
@@ -54,6 +59,7 @@ public class ClientTunnel {
     }
 
     private void reconnect() throws NKNClientException {
+        LOG.debug("(Re)connecting...");
         try {
             ConnectionProvider.attempt((bootstrapNode) -> {
                 if (!bootstrapNode(bootstrapNode)) {
@@ -136,7 +142,9 @@ public class ClientTunnel {
             if (json.has("Error") && json.getInt("Error") == ErrorCodes.WRONG_NODE) {
                 LOG.info("Network topology changed, re-establishing connection");
 
+                LOG.debug("WrongNode err: Message hold ({})+1", messageHold.getCount());
                 messageHold.countUp();
+
                 ws.close();
 
                 try {
@@ -162,6 +170,7 @@ public class ClientTunnel {
                     cm.close();
                 }
 
+                LOG.debug("WrongNode err: Message hold ({})-1", messageHold.getCount());
                 messageHold.countDown();
                 closeLatch.countDown();
 
@@ -281,19 +290,23 @@ public class ClientTunnel {
         ws.setCLoseListener((reason) -> {
             if (shouldReconnect.get() && !cm.isScheduledStop()) {
                 LOG.info("Connection closed, reconnecting");
+                LOG.debug("Ws on close: Message hold ({})+1", messageHold.getCount());
                 messageHold.countUp();
                 ws.close();
-                try {
-                    reconnect();
-                    success[0] = true;
-                } catch (NKNClientException e) {
-                    LOG.error("Failed to reconnect to ws", e);
-                    success[0] = false;
-                    shouldReconnect.set(false);
-                    cm.close();
-                }
-                messageHold.countDown();
-                closeLatch.countDown();
+                reconnectionService.submit(() -> {
+                    try {
+                        reconnect();
+                        success[0] = true;
+                    } catch (NKNClientException e) {
+                        LOG.error("Failed to reconnect to ws", e);
+                        success[0] = false;
+                        shouldReconnect.set(false);
+                        cm.close();
+                    }
+                    LOG.debug("Ws on close: Message hold ({})-1", messageHold.getCount());
+                    messageHold.countDown();
+                    closeLatch.countDown();
+                });
             }
         });
         ws.connect();

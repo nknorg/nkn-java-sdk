@@ -1,4 +1,5 @@
 # NKN SDK for Java/Kotlin/JVM
+[![](https://jitpack.io/v/nknorg/nkn-java-sdk.svg)](https://jitpack.io/#nknorg/nkn-java-sdk)
 
 
 Java implementation of [NKN](https://github.com/nknorg/nkn/) sdk.

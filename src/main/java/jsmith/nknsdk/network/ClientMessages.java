@@ -142,6 +142,8 @@ public class ClientMessages extends Thread {
     public void close() {
         if (!running) throw new IllegalStateException("Client is not (yet) running, cannot close");
 
+        LOG.info("Closing CM");
+
         synchronized (jobLock) {
             scheduledStop.set(true);
             jobLock.notify();
