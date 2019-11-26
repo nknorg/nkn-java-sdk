@@ -113,6 +113,14 @@ public class ClientEnc {
                     throw new Error("Multicast encryption is not implemented yet");
                 }
                 break;
+            case CONVERT_MULTICAST_TO_UNICAST_AND_ENCRYPT:
+                if (destinations.size() == 1) {
+                    encrypt = true;
+                } else {
+                    LOG.warn("EncryptMessage can handle only one destination in CONVERT_MULTICAST_TO_UNICAST_AND_ENCRYPT mode");
+                    throw new Error("EncryptMessage can handle only one destination in CONVERT_MULTICAST_TO_UNICAST_AND_ENCRYPT mode");
+                }
+                break;
             default:
                 LOG.warn("Unknown encryption level: {}", level);
                 throw new Error("Encryption level not supported: " + level);

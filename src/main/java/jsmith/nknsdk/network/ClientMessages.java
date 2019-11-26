@@ -163,28 +163,21 @@ public class ClientMessages extends Thread {
     }
 
 
-    public void onInboundMessage(String from, MessagesP.Payload message) {
-        final MessagesP.PayloadType type = message.getType();
-        final ByteString replyTo = message.getReplyToPid();
-        final ByteString messageID = message.getPid();
+    public void onInboundMessage(String from, MessagesP.EncryptedMessage encryptedMessage) {
+        final boolean isEncrypted = encryptedMessage.getEncrypted();
 
-        MessagesP.EncryptedMessage encryptedMessage;
+        MessagesP.Payload message;
         try {
-            encryptedMessage = MessagesP.EncryptedMessage.parseFrom(message.getData());
-        } catch (InvalidProtocolBufferException e) {
-            LOG.warn("Received invalid message, ignoring");
-            return;
-        }
-        final boolean encrypted = encryptedMessage.getEncrypted();
-
-        ByteString data;
-        try {
-            data = ClientEnc.decryptMessage(from, encryptedMessage, ct.identity.wallet);
-        } catch (NKNClientException e) {
+            message = MessagesP.Payload.parseFrom(ClientEnc.decryptMessage(from, encryptedMessage, ct.identity.wallet));
+        } catch (NKNClientException | InvalidProtocolBufferException e) {
             LOG.warn("Failed to decrypt message, dropping");
             return;
         }
 
+        final MessagesP.PayloadType type = message.getType();
+        final ByteString replyTo = message.getReplyToPid();
+        final ByteString messageID = message.getPid();
+        final ByteString data = message.getData();
 
         synchronized (jobLock) {
             for (MessageJob j : waitingForReply) {
@@ -196,7 +189,7 @@ public class ClientMessages extends Thread {
                                     new NKNClient.ReceivedMessage(
                                         from,
                                         messageID,
-                                        encrypted,
+                                        isEncrypted,
                                         MessagesP.PayloadType.TEXT,
                                         MessagesP.TextData.parseFrom(data).getText()
                                 ));
@@ -208,7 +201,7 @@ public class ClientMessages extends Thread {
                                 new NKNClient.ReceivedMessage(
                                     from,
                                     messageID,
-                                    encrypted,
+                                    isEncrypted,
                                     MessagesP.PayloadType.BINARY,
                                     data
                             ));
@@ -234,14 +227,14 @@ public class ClientMessages extends Thread {
         if (type == MessagesP.PayloadType.TEXT) {
             try {
                 if (onMessageL != null) {
-                    ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, encrypted, type, MessagesP.TextData.parseFrom(data).getText()));
+                    ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, isEncrypted, type, MessagesP.TextData.parseFrom(data).getText()));
                 }
             } catch (InvalidProtocolBufferException e) {
                 LOG.warn("Received packet is of type TEXT but does not contain valid text data");
             }
         } else if (type == MessagesP.PayloadType.BINARY) {
             if (onMessageL != null) {
-                ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, encrypted, type, data));
+                ackMessage = onMessageL.apply(new NKNClient.ReceivedMessage(from, messageID, isEncrypted, type, data));
             }
         }
 
@@ -284,11 +277,12 @@ public class ClientMessages extends Thread {
                         .setType(type)
                         .setPid(messageID)
                         .setReplyToPid(replyToMessageID)
-                        .setData(ClientEnc.encryptMessage(Collections.singletonList(d), message, ct.identity.wallet, NKNClient.EncryptionLevel.ENCRYPT_ONLY_UNICAST))
+                        .setData(message)
                         .setNoAck(noAck)
                         .build();
 
-                promises.addAll(sendOutboundMessage(Collections.singletonList(d), messageID, payload.toByteString()));
+                final ByteString encryptedPayload = ClientEnc.encryptMessage(Collections.singletonList(d), payload.toByteString(), ct.identity.wallet, NKNClient.EncryptionLevel.ENCRYPT_ONLY_UNICAST);
+                promises.addAll(sendOutboundMessage(Collections.singletonList(d), messageID, encryptedPayload));
             }
 
             return promises;
@@ -300,12 +294,14 @@ public class ClientMessages extends Thread {
                     .setType(type)
                     .setPid(messageID)
                     .setReplyToPid(replyToMessageID)
-                    .setData(ClientEnc.encryptMessage(destination, message, ct.identity.wallet, encryptionLevel))
+                    .setData(message)
                     .setNoAck(noAck)
                     .build();
 
 
-            return sendOutboundMessage(destination, messageID, payload.toByteString());
+            final ByteString encryptedPayload = ClientEnc.encryptMessage(destination, payload.toByteString(), ct.identity.wallet, encryptionLevel);
+
+            return sendOutboundMessage(destination, messageID, encryptedPayload);
         }
     }
 
@@ -351,8 +347,10 @@ public class ClientMessages extends Thread {
                 .setNoAck(true)
                 .build();
 
+        final ByteString encryptedPayload = ClientEnc.encryptMessage(Collections.singletonList(destination), payload.toByteString(), ct.identity.wallet, encryptionLevel);
+
         final MessagesP.ClientMsg.Builder clientToNodeMsg = MessagesP.ClientMsg.newBuilder()
-                .setPayload(payload.toByteString())
+                .setPayload(encryptedPayload)
                 .addDests(destination)
                 .setMaxHoldingSeconds(0);
 

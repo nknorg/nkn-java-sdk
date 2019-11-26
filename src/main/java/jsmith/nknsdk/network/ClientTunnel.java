@@ -246,7 +246,7 @@ public class ClientTunnel {
                     final MessagesP.NodeMsg nodeToClientMsg = MessagesP.NodeMsg.parseFrom(msg.getMessage());
 
                     final String from = nodeToClientMsg.getSrc();
-                    final MessagesP.Payload payload = MessagesP.Payload.parseFrom(nodeToClientMsg.getPayload());
+                    final MessagesP.EncryptedMessage pldMsg = MessagesP.EncryptedMessage.parseFrom(nodeToClientMsg.getPayload());
 
                     final ByteString prevSig = nodeToClientMsg.getPrevSignature();
                     if (prevSig != null && prevSig.size() != 0) {
@@ -258,18 +258,7 @@ public class ClientTunnel {
                         ws.sendPacket(receiptMsg);
                         LOG.debug("Sending receipt msg");
                     }
-
-                    switch (payload.getType()) {
-                        case ACK:
-                        case TEXT:
-                        case BINARY:
-                            cm.onInboundMessage(from, payload);
-                            break;
-
-                        default:
-                            LOG.warn("Got invalid payload type {}, ignoring", payload.getType());
-                            break;
-                    }
+                    cm.onInboundMessage(from, pldMsg);
                 } else {
                     LOG.warn("Received unsupported message type, ignoring ({})", msg.getMessageType());
                 }
