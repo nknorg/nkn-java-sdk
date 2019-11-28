@@ -95,7 +95,7 @@ public class ClientEnc {
 
 
 
-    public static ByteString encryptMessage(List<String> destinations, ByteString message, Wallet wallet, NKNClient.EncryptionLevel level) {
+    public static ByteString encryptMessage(List<String> destinations, ByteString message, Wallet wallet, NKNClient.EncryptionLevel level) throws NKNClientException {
 
         boolean encrypt;
         switch (level) {
@@ -135,14 +135,13 @@ public class ClientEnc {
             final byte[] nonce = TweetNaclFast.randombytes(24);
             final byte[] sharedKey = wallet.getSharedKey(dest);
             final byte[] msg = message.toByteArray();
-            final byte[] m = new byte[32 + message.size()];
-            final byte[] encrypted = new byte[m.length];
-            System.arraycopy(msg, 0, m, 32, msg.length);
 
-            TweetNaclFast.crypto_box_afternm(encrypted, m, encrypted.length, nonce, sharedKey);
-
-            encMsg.setPayload(ByteString.copyFrom(encrypted));
+            byte[] bytes = new TweetNaclFast.SecretBox(sharedKey).box(msg, nonce);
+            if (bytes == null) {
+                throw new NKNClientException("Failed to encrypt a message");
+            }
             encMsg.setNonce(ByteString.copyFrom(nonce));
+            encMsg.setPayload(ByteString.copyFrom(bytes));
         } else {
             encMsg.setPayload(message);
         }
@@ -157,12 +156,13 @@ public class ClientEnc {
 
             final byte[] sharedKey = wallet.getSharedKey(from);
             final byte[] ciphertext = enc.getPayload().toByteArray();
-            final byte[] plaintext = new byte[ciphertext.length];
+            final byte[] nonce = enc.getNonce().toByteArray();
 
-            if (TweetNaclFast.crypto_box_open_afternm(plaintext, ciphertext, ciphertext.length, enc.getNonce().toByteArray(), sharedKey) != 0) {
-                throw new NKNClientException("Message decryption failed");
+            byte[] plaintext = new TweetNaclFast.SecretBox(sharedKey).open(ciphertext, nonce);
+            if (plaintext == null) {
+                throw new NKNClientException("Failed to decrypt a message");
             }
-            return ByteString.copyFrom(plaintext, 32, plaintext.length - 32);
+            return ByteString.copyFrom(plaintext);
 
         } else {
             return enc.getPayload();

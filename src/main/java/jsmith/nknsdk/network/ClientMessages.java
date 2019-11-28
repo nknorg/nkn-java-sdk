@@ -281,8 +281,12 @@ public class ClientMessages extends Thread {
                         .setNoAck(noAck)
                         .build();
 
-                final ByteString encryptedPayload = ClientEnc.encryptMessage(Collections.singletonList(d), payload.toByteString(), ct.identity.wallet, NKNClient.EncryptionLevel.ENCRYPT_ONLY_UNICAST);
-                promises.addAll(sendOutboundMessage(Collections.singletonList(d), messageID, encryptedPayload));
+                try {
+                    final ByteString encryptedPayload = ClientEnc.encryptMessage(Collections.singletonList(d), payload.toByteString(), ct.identity.wallet, NKNClient.EncryptionLevel.ENCRYPT_ONLY_UNICAST);
+                    promises.addAll(sendOutboundMessage(Collections.singletonList(d), messageID, encryptedPayload));
+                } catch (NKNClientException e) {
+                    LOG.warn("Failed to send message", e);
+                }
             }
 
             return promises;
@@ -299,9 +303,15 @@ public class ClientMessages extends Thread {
                     .build();
 
 
-            final ByteString encryptedPayload = ClientEnc.encryptMessage(destination, payload.toByteString(), ct.identity.wallet, encryptionLevel);
+            try {
+                final ByteString encryptedPayload = ClientEnc.encryptMessage(destination, payload.toByteString(), ct.identity.wallet, encryptionLevel);
 
-            return sendOutboundMessage(destination, messageID, encryptedPayload);
+                return sendOutboundMessage(destination, messageID, encryptedPayload);
+            } catch (NKNClientException e) {
+                LOG.warn("Failed to send message", e);
+
+                return Collections.emptyList();
+            }
         }
     }
 
@@ -347,21 +357,25 @@ public class ClientMessages extends Thread {
                 .setNoAck(true)
                 .build();
 
-        final ByteString encryptedPayload = ClientEnc.encryptMessage(Collections.singletonList(destination), payload.toByteString(), ct.identity.wallet, encryptionLevel);
+        try {
+            final ByteString encryptedPayload = ClientEnc.encryptMessage(Collections.singletonList(destination), payload.toByteString(), ct.identity.wallet, encryptionLevel);
 
-        final MessagesP.ClientMsg.Builder clientToNodeMsg = MessagesP.ClientMsg.newBuilder()
-                .setPayload(encryptedPayload)
-                .addDests(destination)
-                .setMaxHoldingSeconds(0);
+            final MessagesP.ClientMsg.Builder clientToNodeMsg = MessagesP.ClientMsg.newBuilder()
+                    .setPayload(encryptedPayload)
+                    .addDests(destination)
+                    .setMaxHoldingSeconds(0);
 
-        ClientEnc.signOutboundMessage(clientToNodeMsg, ct);
+            ClientEnc.signOutboundMessage(clientToNodeMsg, ct);
 
-        final MessagesP.Message msg = MessagesP.Message.newBuilder()
-                .setMessage(clientToNodeMsg.build().toByteString())
-                .setMessageType(MessagesP.MessageType.CLIENT_MSG)
-                .build();
+            final MessagesP.Message msg = MessagesP.Message.newBuilder()
+                    .setMessage(clientToNodeMsg.build().toByteString())
+                    .setMessageType(MessagesP.MessageType.CLIENT_MSG)
+                    .build();
 
-        ct.ws.sendPacket(msg.toByteString());
+            ct.ws.sendPacket(msg.toByteString());
+        } catch (NKNClientException e) {
+            LOG.warn("Failed to send ACK message", e);
+        }
     }
 
 
