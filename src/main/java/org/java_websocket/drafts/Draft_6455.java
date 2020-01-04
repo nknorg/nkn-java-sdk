@@ -784,14 +784,17 @@ public class Draft_6455 extends Draft {
 			webSocketImpl.updateLastPong();
 			webSocketImpl.getWebSocketListener().onWebsocketPong( webSocketImpl, frame );
 		} else if( !frame.isFin() || curop == Opcode.CONTINUOUS ) {
-            processFrameContinuousAndNonFin(webSocketImpl, frame, curop);
+            webSocketImpl.updateLastPong();
+		    processFrameContinuousAndNonFin(webSocketImpl, frame, curop);
 		} else if( currentContinuousFrame != null ) {
 			log.error( "Protocol error: Continuous frame sequence not completed." );
 			throw new InvalidDataException( CloseFrame.PROTOCOL_ERROR, "Continuous frame sequence not completed." );
 		} else if( curop == Opcode.TEXT ) {
-			processFrameText(webSocketImpl, frame);
+            webSocketImpl.updateLastPong();
+		    processFrameText(webSocketImpl, frame);
 		} else if( curop == Opcode.BINARY ) {
-			processFrameBinary(webSocketImpl, frame);
+            webSocketImpl.updateLastPong();
+		    processFrameBinary(webSocketImpl, frame);
 		} else {
 			log.error( "non control or continious frame expected");
 			throw new InvalidDataException( CloseFrame.PROTOCOL_ERROR, "non control or continious frame expected" );
