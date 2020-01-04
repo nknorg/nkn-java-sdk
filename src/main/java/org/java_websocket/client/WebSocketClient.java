@@ -489,9 +489,7 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
 				return;
 			}
 			throw e;
-		} catch (NoSuchAlgorithmException | KeyManagementException e) {
-            // TODO: Log and handle
-		    e.printStackTrace();
+		} catch (NoSuchAlgorithmException | KeyManagementException ignored) {
 		    return;
         }
 
