@@ -81,6 +81,9 @@ public class ClientMessageWorkers {
 
     void onInboundMessage(String from, MessagesP.EncryptedMessage encryptedMessage) {
         final boolean isEncrypted = encryptedMessage.getEncrypted();
+        if (!isEncrypted) {
+            if (encryptionRequirement == NKNClient.PeerEncryptionRequirement.ON_NON_ENCRYPTED_MESSAGE___ALLOW_NONE_DROP_ALL) return;
+        }
 
         MessagesP.Payload message;
         try {
@@ -94,6 +97,10 @@ public class ClientMessageWorkers {
         final ByteString replyTo = message.getReplyToPid();
         final ByteString messageID = message.getPid();
         final ByteString data = message.getData();
+
+        if (!isEncrypted && type != MessagesP.PayloadType.ACK) {
+            if (encryptionRequirement == NKNClient.PeerEncryptionRequirement.ON_NON_ENCRYPTED_MESSAGE___ALLOW_ACK_DROP_OTHER) return;
+        }
 
         String text = null;
         try {
@@ -151,8 +158,12 @@ public class ClientMessageWorkers {
         this.noAck = noAck;
     }
     private NKNClient.EncryptionLevel encryptionLevel = NKNClient.EncryptionLevel.CONVERT_MULTICAST_TO_UNICAST_AND_ENCRYPT;
+    private NKNClient.PeerEncryptionRequirement encryptionRequirement = NKNClient.PeerEncryptionRequirement.ON_NON_ENCRYPTED_MESSAGE___ALLOW_ALL_DROP_NONE;
     public void setEncryptionLevel(NKNClient.EncryptionLevel level) {
         this.encryptionLevel = level;
+    }
+    public void setPeerEncryptionRequirement(NKNClient.PeerEncryptionRequirement requirement) {
+        this.encryptionRequirement = requirement;
     }
 
     public void close() {

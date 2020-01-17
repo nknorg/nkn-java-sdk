@@ -73,6 +73,17 @@ public class NKNClient {
         return encryptionLevel;
     }
 
+    private PeerEncryptionRequirement encryptionRequirement = PeerEncryptionRequirement.ON_NON_ENCRYPTED_MESSAGE___ALLOW_ALL_DROP_NONE;
+    public NKNClient setPeerEncryptionRequirement(PeerEncryptionRequirement requirement) {
+        clientMessageWorkers.setPeerEncryptionRequirement(requirement);
+        this.encryptionRequirement = requirement;
+        return this;
+    }
+    public PeerEncryptionRequirement getPeerEncryptionRequirement() {
+        return encryptionRequirement;
+    }
+
+
     public CompletableFuture<ReceivedMessage> sendTextMessageAsync(String destinationFullIdentifier, String message) {
         return sendTextMessageAsync(destinationFullIdentifier, null, message);
     }
@@ -250,6 +261,14 @@ public class NKNClient {
         ENCRYPT_ONLY_UNICAST,
         CONVERT_MULTICAST_TO_UNICAST_AND_ENCRYPT,
         ENCRYPT_UNICAST_AND_MULTICAST
+
+    }
+
+    public enum PeerEncryptionRequirement {
+
+        ON_NON_ENCRYPTED_MESSAGE___ALLOW_NONE_DROP_ALL,
+        ON_NON_ENCRYPTED_MESSAGE___ALLOW_ACK_DROP_OTHER,
+        ON_NON_ENCRYPTED_MESSAGE___ALLOW_ALL_DROP_NONE
 
     }
 
