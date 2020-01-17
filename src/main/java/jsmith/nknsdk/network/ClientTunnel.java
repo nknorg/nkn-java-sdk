@@ -37,11 +37,11 @@ public class ClientTunnel {
 
     private static int id = 0;
     private final int myId;
-    private final ClientMessages cm;
+    private final ClientMessageWorkers cm;
     public ClientTunnel(Identity identity) {
         this.identity = identity;
         this.myId = ++id;
-        cm = new ClientMessages(this, myId);
+        cm = new ClientMessageWorkers(this, myId);
     }
 
     private boolean running = false;
@@ -54,7 +54,7 @@ public class ClientTunnel {
         cm.start();
     }
 
-    public ClientMessages getAssociatedCM() {
+    public ClientMessageWorkers getAssociatedCM() {
         return cm;
     }
 
@@ -77,6 +77,7 @@ public class ClientTunnel {
 
     ByteString nodePubkey, nodeId;
 
+    private final AtomicBoolean shouldReconnect = new AtomicBoolean(true);
     private boolean bootstrapNode(InetSocketAddress bootstrapNode) {
         try {
 
@@ -126,9 +127,10 @@ public class ClientTunnel {
         }
     }
 
-    private AtomicBoolean shouldReconnect = new AtomicBoolean(true);
-    public boolean shouldReconnect() {
-        return shouldReconnect.get();
+    public void close() {
+        this.running = false;
+        cm.close();
+        ws.close();
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -241,26 +243,28 @@ public class ClientTunnel {
 
         ws.setProtobufMessageListener(bytes -> {
             try {
-                final MessagesP.Message msg = MessagesP.Message.parseFrom(bytes);
-                if (msg.getMessageType() == MessagesP.MessageType.NODE_MSG) {
-                    final MessagesP.NodeMsg nodeToClientMsg = MessagesP.NodeMsg.parseFrom(msg.getMessage());
+                if (running) {
+                    final MessagesP.Message msg = MessagesP.Message.parseFrom(bytes);
+                    if (msg.getMessageType() == MessagesP.MessageType.NODE_MSG) {
+                        final MessagesP.NodeMsg nodeToClientMsg = MessagesP.NodeMsg.parseFrom(msg.getMessage());
 
-                    final String from = nodeToClientMsg.getSrc();
-                    final MessagesP.EncryptedMessage pldMsg = MessagesP.EncryptedMessage.parseFrom(nodeToClientMsg.getPayload());
+                        final String from = nodeToClientMsg.getSrc();
+                        final MessagesP.EncryptedMessage pldMsg = MessagesP.EncryptedMessage.parseFrom(nodeToClientMsg.getPayload());
 
-                    final ByteString prevSig = nodeToClientMsg.getPrevSignature();
-                    if (prevSig != null && prevSig.size() != 0) {
-                        ByteString receiptPayload = ClientEnc.generateNewReceipt(prevSig, this);
-                        final ByteString receiptMsg = MessagesP.Message.newBuilder()
-                                .setMessage(receiptPayload)
-                                .setMessageType(MessagesP.MessageType.RECEIPT_MSG)
-                                .build().toByteString();
-                        ws.sendPacket(receiptMsg);
-                        LOG.debug("Sending receipt msg");
+                        final ByteString prevSig = nodeToClientMsg.getPrevSignature();
+                        if (prevSig != null && prevSig.size() != 0) {
+                            ByteString receiptPayload = ClientEnc.generateNewReceipt(prevSig, this);
+                            final ByteString receiptMsg = MessagesP.Message.newBuilder()
+                                    .setMessage(receiptPayload)
+                                    .setMessageType(MessagesP.MessageType.RECEIPT_MSG)
+                                    .build().toByteString();
+                            ws.sendPacket(receiptMsg);
+                            LOG.debug("Sending receipt msg");
+                        }
+                        cm.onInboundMessage(from, pldMsg);
+                    } else {
+                        LOG.warn("Received unsupported message type, ignoring ({})", msg.getMessageType());
                     }
-                    cm.onInboundMessage(from, pldMsg);
-                } else {
-                    LOG.warn("Received unsupported message type, ignoring ({})", msg.getMessageType());
                 }
 
             } catch (InvalidProtocolBufferException e) {
@@ -277,7 +281,7 @@ public class ClientTunnel {
             ws.sendPacket(setClientReq);
         });
         ws.setCLoseListener((reason) -> {
-            if (shouldReconnect.get() && !cm.isScheduledStop()) {
+            if (shouldReconnect.get() && running) {
                 LOG.info("Connection closed, reconnecting");
                 LOG.debug("Ws on close: Message hold ({})+1", messageHold.getCount());
                 messageHold.countUp();

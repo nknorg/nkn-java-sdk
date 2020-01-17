@@ -1,10 +1,9 @@
 package jsmith.nknsdk.client;
 
 import com.google.protobuf.ByteString;
-import jsmith.nknsdk.network.ClientMessages;
+import jsmith.nknsdk.network.ClientMessageWorkers;
 import jsmith.nknsdk.network.ClientTunnel;
 import jsmith.nknsdk.network.proto.MessagesP;
-import jsmith.nknsdk.wallet.WalletException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,11 +24,11 @@ public class NKNClient {
     private static final Logger LOG = LoggerFactory.getLogger(NKNClient.class);
 
     private final ClientTunnel clientTunnel;
-    private ClientMessages clientMessages;
+    private ClientMessageWorkers clientMessageWorkers;
 
     public NKNClient(Identity identity) {
         this.clientTunnel = new ClientTunnel(identity);
-        this.clientMessages = clientTunnel.getAssociatedCM();
+        this.clientMessageWorkers = clientTunnel.getAssociatedCM();
     }
 
     public NKNClient start() throws NKNClientException {
@@ -38,11 +37,11 @@ public class NKNClient {
     }
 
     public void close() {
-        clientMessages.close();
+        clientTunnel.close();
     }
 
     public NKNClient onNewMessage(Consumer<ReceivedMessage> listener) {
-        clientMessages.onMessage((msg) -> {
+        clientMessageWorkers.onMessage((msg) -> {
             listener.accept(msg);
             return null;
         });
@@ -50,13 +49,13 @@ public class NKNClient {
     }
 
     public NKNClient onNewMessageWithReply(Function<ReceivedMessage, Object> listener) {
-        clientMessages.onMessage(listener);
+        clientMessageWorkers.onMessage(listener);
         return this;
     }
 
     private boolean noAutomaticACKs = false;
     public NKNClient setNoAutomaticACKs(boolean noAutomaticACKs) {
-        clientMessages.setNoAutomaticACKs(noAutomaticACKs);
+        clientMessageWorkers.setNoAutomaticACKs(noAutomaticACKs);
         this.noAutomaticACKs  = noAutomaticACKs;
         return this;
     }
@@ -66,7 +65,7 @@ public class NKNClient {
 
     private EncryptionLevel encryptionLevel = EncryptionLevel.CONVERT_MULTICAST_TO_UNICAST_AND_ENCRYPT;
     public NKNClient setEncryptionLevel(EncryptionLevel level) {
-        clientMessages.setEncryptionLevel(level);
+        clientMessageWorkers.setEncryptionLevel(level);
         this.encryptionLevel = level;
         return this;
     }
@@ -84,7 +83,7 @@ public class NKNClient {
                 .build();
 
         LOG.debug("Sending text message: {}", message);
-        return clientMessages.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, MessagesP.PayloadType.TEXT, td.toByteString()).get(0);
+        return clientMessageWorkers.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, MessagesP.PayloadType.TEXT, td.toByteString()).get(0);
     }
 
     public CompletableFuture<ReceivedMessage> sendBinaryMessageAsync(String destinationFullIdentifier, byte[] message) {
@@ -101,12 +100,12 @@ public class NKNClient {
 
     public CompletableFuture<ReceivedMessage> sendBinaryMessageAsync(String destinationFullIdentifier, ByteString replyTo, ByteString message) {
         LOG.debug("Sending binary message");
-        return clientMessages.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, MessagesP.PayloadType.BINARY, message).get(0);
+        return clientMessageWorkers.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, MessagesP.PayloadType.BINARY, message).get(0);
     }
 
     public CompletableFuture<ReceivedMessage> sendMessageAsync(String destinationFullIdentifier, ByteString replyTo, Object message) {
         LOG.debug("Sending multicast message");
-        return clientMessages.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, message).get(0);
+        return clientMessageWorkers.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, message).get(0);
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendTextMessageMulticastAsync(String[] destinationFullIdentifier, String message) {
@@ -147,7 +146,7 @@ public class NKNClient {
                 .build();
 
         LOG.debug("Sending multicast text message: {}", message);
-        return clientMessages.sendMessageAsync(destinationFullIdentifier, replyTo, MessagesP.PayloadType.TEXT, td.toByteString());
+        return clientMessageWorkers.sendMessageAsync(destinationFullIdentifier, replyTo, MessagesP.PayloadType.TEXT, td.toByteString());
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, byte[] message) {
@@ -156,12 +155,12 @@ public class NKNClient {
 
     public List<CompletableFuture<ReceivedMessage>> sendBinaryMessageMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, ByteString message) {
         LOG.debug("Sending multicast binary message");
-        return clientMessages.sendMessageAsync(destinationFullIdentifier, replyTo, MessagesP.PayloadType.BINARY, message);
+        return clientMessageWorkers.sendMessageAsync(destinationFullIdentifier, replyTo, MessagesP.PayloadType.BINARY, message);
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendMessageMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, Object message) {
         LOG.debug("Sending multicast message");
-        return clientMessages.sendMessageAsync(destinationFullIdentifier, replyTo, message);
+        return clientMessageWorkers.sendMessageAsync(destinationFullIdentifier, replyTo, message);
     }
 
     public List<CompletableFuture<ReceivedMessage>> publishTextMessageAsync(String topic, boolean includeTxPool, String message) throws NKNExplorerException {
@@ -188,7 +187,7 @@ public class NKNClient {
         for (NKNExplorer.Subscription.Subscriber sub : subscribers) dest.add(sub.fullClientIdentifier);
 
         LOG.debug("Publishing message");
-        return clientMessages.sendMessageAsync(dest, null, type, data);
+        return clientMessageWorkers.sendMessageAsync(dest, null, type, data);
     }
 
     public ByteString getCurrentSigChainBlockHash() {
