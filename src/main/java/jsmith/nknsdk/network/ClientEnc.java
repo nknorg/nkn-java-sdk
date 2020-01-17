@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -38,7 +39,7 @@ public class ClientEnc {
         final SigchainP.SigChain.Builder sigChain = SigchainP.SigChain.newBuilder()
                 .setNonce(Crypto.nextRandomInt32())
                 .setDataSize(msg.getPayload().size())
-                .setSrcId(ByteString.copyFrom(Crypto.sha256(ct.identity.getFullIdentifier().getBytes(Charset.forName("UTF-8")))))
+                .setSrcId(ByteString.copyFrom(Crypto.sha256(ct.identity.getFullIdentifier().getBytes(StandardCharsets.UTF_8))))
                 .setSrcPubkey(ByteString.copyFrom(ct.identity.wallet.getPublicKey()));
 
         final ByteString bh = ct.currentSigChainBlockHash();
@@ -47,7 +48,7 @@ public class ClientEnc {
         }
 
         for (String dest : msg.getDestsList()) {
-            sigChain.setDestId(ByteString.copyFrom(Crypto.sha256(dest.getBytes(Charset.forName("UTF-8")))));
+            sigChain.setDestId(ByteString.copyFrom(Crypto.sha256(dest.getBytes(StandardCharsets.UTF_8))));
             sigChain.setDestPubkey(ByteString.copyFrom(Hex.decode(dest.substring(dest.lastIndexOf('.') + 1))));
 
             ByteString hex =

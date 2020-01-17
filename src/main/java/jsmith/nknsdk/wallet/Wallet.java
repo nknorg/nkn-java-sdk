@@ -112,7 +112,7 @@ public class Wallet {
                 throw new WalletException("Unsuported version of wallet save file: " + json.getString("Version"));
             }
 
-            byte[] passwd = doubleSha256(password.getBytes(Charset.forName("UTF-8")));
+            byte[] passwd = doubleSha256(password.getBytes(StandardCharsets.UTF_8));
             final byte[] passwordHash = Hex.decode(json.getString("PasswordHash"));
             if (!Arrays.equals(sha256(passwd), passwordHash)) {
                    LOG.warn("Unlocking wallet failed, wrong password");
@@ -166,7 +166,7 @@ public class Wallet {
         }
     }
     public void save(OutputStream os, String password) throws WalletException {
-        byte[] passwd = doubleSha256(password.getBytes(Charset.forName("UTF-8")));
+        byte[] passwd = doubleSha256(password.getBytes(StandardCharsets.UTF_8));
 
         final JSONObject json = new JSONObject();
 
