@@ -2,14 +2,11 @@ package jsmith.nknsdk.examples;
 
 import com.darkyen.tproll.TPLogger;
 import jsmith.nknsdk.client.*;
-import jsmith.nknsdk.network.HttpApi;
 import jsmith.nknsdk.wallet.Wallet;
 import jsmith.nknsdk.wallet.WalletException;
-import jsmith.nknsdk.wallet.WalletUtils;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.io.File;
-import java.math.BigDecimal;
 
 import static jsmith.nknsdk.examples.LogUtils.setupLogging;
 
@@ -77,7 +74,8 @@ public class PubSubEx {
             }
 
 
-            subscriberClient = new NKNClient(new Identity(identifier, pubsubWallet)).onNewMessage(msg -> {
+            subscriberClient = new NKNClient(new Identity(identifier, pubsubWallet));
+            subscriberClient.simpleMessagesProtocol().onNewMessage(msg -> {
                 if (msg.isText) {
                     System.out.println("New text from " + msg.from + "\n  ==> " + msg.textData);
                 } else if (msg.isBinary) {
@@ -89,7 +87,7 @@ public class PubSubEx {
         }
 
         final NKNClient publisherClient = new NKNClient(new Identity(null, Wallet.createNew()));
-        publisherClient.start().publishTextMessageAsync(topic, true, "Hello all my subscribers!");
+        publisherClient.start().simpleMessagesProtocol().publishTextAsync(topic, true, "Hello all my subscribers!");
         Thread.sleep(7000);
 
         publisherClient.close();

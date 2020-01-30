@@ -31,6 +31,10 @@ public final class MessagesP {
      * <code>ACK = 2;</code>
      */
     ACK(2),
+    /**
+     * <code>SESSION = 3;</code>
+     */
+    SESSION(3),
     UNRECOGNIZED(-1),
     ;
 
@@ -46,6 +50,10 @@ public final class MessagesP {
      * <code>ACK = 2;</code>
      */
     public static final int ACK_VALUE = 2;
+    /**
+     * <code>SESSION = 3;</code>
+     */
+    public static final int SESSION_VALUE = 3;
 
 
     public final int getNumber() {
@@ -69,6 +77,7 @@ public final class MessagesP {
         case 0: return BINARY;
         case 1: return TEXT;
         case 2: return ACK;
+        case 3: return SESSION;
         default: return null;
       }
     }
@@ -2151,6 +2160,1275 @@ public final class MessagesP {
 
     @java.lang.Override
     public jsmith.nknsdk.network.proto.MessagesP.TextData getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface SessionDataOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:jsmith.nknsdk.network.proto.SessionData)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>uint32 sequence_id = 1;</code>
+     */
+    int getSequenceId();
+
+    /**
+     * <code>bytes data = 2;</code>
+     */
+    com.google.protobuf.ByteString getData();
+
+    /**
+     * <code>repeated uint32 ack_start_seq = 3;</code>
+     */
+    java.util.List<java.lang.Integer> getAckStartSeqList();
+    /**
+     * <code>repeated uint32 ack_start_seq = 3;</code>
+     */
+    int getAckStartSeqCount();
+    /**
+     * <code>repeated uint32 ack_start_seq = 3;</code>
+     */
+    int getAckStartSeq(int index);
+
+    /**
+     * <code>repeated uint32 ack_seq_count = 4;</code>
+     */
+    java.util.List<java.lang.Integer> getAckSeqCountList();
+    /**
+     * <code>repeated uint32 ack_seq_count = 4;</code>
+     */
+    int getAckSeqCountCount();
+    /**
+     * <code>repeated uint32 ack_seq_count = 4;</code>
+     */
+    int getAckSeqCount(int index);
+
+    /**
+     * <code>repeated string identifier_prefix = 5;</code>
+     */
+    java.util.List<java.lang.String>
+        getIdentifierPrefixList();
+    /**
+     * <code>repeated string identifier_prefix = 5;</code>
+     */
+    int getIdentifierPrefixCount();
+    /**
+     * <code>repeated string identifier_prefix = 5;</code>
+     */
+    java.lang.String getIdentifierPrefix(int index);
+    /**
+     * <code>repeated string identifier_prefix = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getIdentifierPrefixBytes(int index);
+
+    /**
+     * <code>uint32 window_size = 7;</code>
+     */
+    int getWindowSize();
+
+    /**
+     * <code>uint32 mtu = 8;</code>
+     */
+    int getMtu();
+
+    /**
+     * <code>bool close = 9;</code>
+     */
+    boolean getClose();
+  }
+  /**
+   * Protobuf type {@code jsmith.nknsdk.network.proto.SessionData}
+   */
+  public  static final class SessionData extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:jsmith.nknsdk.network.proto.SessionData)
+      SessionDataOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use SessionData.newBuilder() to construct.
+    private SessionData(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private SessionData() {
+      sequenceId_ = 0;
+      data_ = com.google.protobuf.ByteString.EMPTY;
+      ackStartSeq_ = java.util.Collections.emptyList();
+      ackSeqCount_ = java.util.Collections.emptyList();
+      identifierPrefix_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      windowSize_ = 0;
+      mtu_ = 0;
+      close_ = false;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SessionData(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+
+              sequenceId_ = input.readUInt32();
+              break;
+            }
+            case 18: {
+
+              data_ = input.readBytes();
+              break;
+            }
+            case 24: {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                ackStartSeq_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              ackStartSeq_.add(input.readUInt32());
+              break;
+            }
+            case 26: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004) && input.getBytesUntilLimit() > 0) {
+                ackStartSeq_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                ackStartSeq_.add(input.readUInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 32: {
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+                ackSeqCount_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000008;
+              }
+              ackSeqCount_.add(input.readUInt32());
+              break;
+            }
+            case 34: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008) && input.getBytesUntilLimit() > 0) {
+                ackSeqCount_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField0_ |= 0x00000008;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                ackSeqCount_.add(input.readUInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                identifierPrefix_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000010;
+              }
+              identifierPrefix_.add(s);
+              break;
+            }
+            case 56: {
+
+              windowSize_ = input.readUInt32();
+              break;
+            }
+            case 64: {
+
+              mtu_ = input.readUInt32();
+              break;
+            }
+            case 72: {
+
+              close_ = input.readBool();
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+          ackStartSeq_ = java.util.Collections.unmodifiableList(ackStartSeq_);
+        }
+        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+          ackSeqCount_ = java.util.Collections.unmodifiableList(ackSeqCount_);
+        }
+        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+          identifierPrefix_ = identifierPrefix_.getUnmodifiableView();
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_SessionData_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_SessionData_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              jsmith.nknsdk.network.proto.MessagesP.SessionData.class, jsmith.nknsdk.network.proto.MessagesP.SessionData.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int SEQUENCE_ID_FIELD_NUMBER = 1;
+    private int sequenceId_;
+    /**
+     * <code>uint32 sequence_id = 1;</code>
+     */
+    public int getSequenceId() {
+      return sequenceId_;
+    }
+
+    public static final int DATA_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString data_;
+    /**
+     * <code>bytes data = 2;</code>
+     */
+    public com.google.protobuf.ByteString getData() {
+      return data_;
+    }
+
+    public static final int ACK_START_SEQ_FIELD_NUMBER = 3;
+    private java.util.List<java.lang.Integer> ackStartSeq_;
+    /**
+     * <code>repeated uint32 ack_start_seq = 3;</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getAckStartSeqList() {
+      return ackStartSeq_;
+    }
+    /**
+     * <code>repeated uint32 ack_start_seq = 3;</code>
+     */
+    public int getAckStartSeqCount() {
+      return ackStartSeq_.size();
+    }
+    /**
+     * <code>repeated uint32 ack_start_seq = 3;</code>
+     */
+    public int getAckStartSeq(int index) {
+      return ackStartSeq_.get(index);
+    }
+    private int ackStartSeqMemoizedSerializedSize = -1;
+
+    public static final int ACK_SEQ_COUNT_FIELD_NUMBER = 4;
+    private java.util.List<java.lang.Integer> ackSeqCount_;
+    /**
+     * <code>repeated uint32 ack_seq_count = 4;</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getAckSeqCountList() {
+      return ackSeqCount_;
+    }
+    /**
+     * <code>repeated uint32 ack_seq_count = 4;</code>
+     */
+    public int getAckSeqCountCount() {
+      return ackSeqCount_.size();
+    }
+    /**
+     * <code>repeated uint32 ack_seq_count = 4;</code>
+     */
+    public int getAckSeqCount(int index) {
+      return ackSeqCount_.get(index);
+    }
+    private int ackSeqCountMemoizedSerializedSize = -1;
+
+    public static final int IDENTIFIER_PREFIX_FIELD_NUMBER = 5;
+    private com.google.protobuf.LazyStringList identifierPrefix_;
+    /**
+     * <code>repeated string identifier_prefix = 5;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getIdentifierPrefixList() {
+      return identifierPrefix_;
+    }
+    /**
+     * <code>repeated string identifier_prefix = 5;</code>
+     */
+    public int getIdentifierPrefixCount() {
+      return identifierPrefix_.size();
+    }
+    /**
+     * <code>repeated string identifier_prefix = 5;</code>
+     */
+    public java.lang.String getIdentifierPrefix(int index) {
+      return identifierPrefix_.get(index);
+    }
+    /**
+     * <code>repeated string identifier_prefix = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getIdentifierPrefixBytes(int index) {
+      return identifierPrefix_.getByteString(index);
+    }
+
+    public static final int WINDOW_SIZE_FIELD_NUMBER = 7;
+    private int windowSize_;
+    /**
+     * <code>uint32 window_size = 7;</code>
+     */
+    public int getWindowSize() {
+      return windowSize_;
+    }
+
+    public static final int MTU_FIELD_NUMBER = 8;
+    private int mtu_;
+    /**
+     * <code>uint32 mtu = 8;</code>
+     */
+    public int getMtu() {
+      return mtu_;
+    }
+
+    public static final int CLOSE_FIELD_NUMBER = 9;
+    private boolean close_;
+    /**
+     * <code>bool close = 9;</code>
+     */
+    public boolean getClose() {
+      return close_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (sequenceId_ != 0) {
+        output.writeUInt32(1, sequenceId_);
+      }
+      if (!data_.isEmpty()) {
+        output.writeBytes(2, data_);
+      }
+      if (getAckStartSeqList().size() > 0) {
+        output.writeUInt32NoTag(26);
+        output.writeUInt32NoTag(ackStartSeqMemoizedSerializedSize);
+      }
+      for (int i = 0; i < ackStartSeq_.size(); i++) {
+        output.writeUInt32NoTag(ackStartSeq_.get(i));
+      }
+      if (getAckSeqCountList().size() > 0) {
+        output.writeUInt32NoTag(34);
+        output.writeUInt32NoTag(ackSeqCountMemoizedSerializedSize);
+      }
+      for (int i = 0; i < ackSeqCount_.size(); i++) {
+        output.writeUInt32NoTag(ackSeqCount_.get(i));
+      }
+      for (int i = 0; i < identifierPrefix_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, identifierPrefix_.getRaw(i));
+      }
+      if (windowSize_ != 0) {
+        output.writeUInt32(7, windowSize_);
+      }
+      if (mtu_ != 0) {
+        output.writeUInt32(8, mtu_);
+      }
+      if (close_ != false) {
+        output.writeBool(9, close_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (sequenceId_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(1, sequenceId_);
+      }
+      if (!data_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, data_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < ackStartSeq_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(ackStartSeq_.get(i));
+        }
+        size += dataSize;
+        if (!getAckStartSeqList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        ackStartSeqMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < ackSeqCount_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(ackSeqCount_.get(i));
+        }
+        size += dataSize;
+        if (!getAckSeqCountList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        ackSeqCountMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < identifierPrefix_.size(); i++) {
+          dataSize += computeStringSizeNoTag(identifierPrefix_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getIdentifierPrefixList().size();
+      }
+      if (windowSize_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(7, windowSize_);
+      }
+      if (mtu_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(8, mtu_);
+      }
+      if (close_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(9, close_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof jsmith.nknsdk.network.proto.MessagesP.SessionData)) {
+        return super.equals(obj);
+      }
+      jsmith.nknsdk.network.proto.MessagesP.SessionData other = (jsmith.nknsdk.network.proto.MessagesP.SessionData) obj;
+
+      boolean result = true;
+      result = result && (getSequenceId()
+          == other.getSequenceId());
+      result = result && getData()
+          .equals(other.getData());
+      result = result && getAckStartSeqList()
+          .equals(other.getAckStartSeqList());
+      result = result && getAckSeqCountList()
+          .equals(other.getAckSeqCountList());
+      result = result && getIdentifierPrefixList()
+          .equals(other.getIdentifierPrefixList());
+      result = result && (getWindowSize()
+          == other.getWindowSize());
+      result = result && (getMtu()
+          == other.getMtu());
+      result = result && (getClose()
+          == other.getClose());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + SEQUENCE_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getSequenceId();
+      hash = (37 * hash) + DATA_FIELD_NUMBER;
+      hash = (53 * hash) + getData().hashCode();
+      if (getAckStartSeqCount() > 0) {
+        hash = (37 * hash) + ACK_START_SEQ_FIELD_NUMBER;
+        hash = (53 * hash) + getAckStartSeqList().hashCode();
+      }
+      if (getAckSeqCountCount() > 0) {
+        hash = (37 * hash) + ACK_SEQ_COUNT_FIELD_NUMBER;
+        hash = (53 * hash) + getAckSeqCountList().hashCode();
+      }
+      if (getIdentifierPrefixCount() > 0) {
+        hash = (37 * hash) + IDENTIFIER_PREFIX_FIELD_NUMBER;
+        hash = (53 * hash) + getIdentifierPrefixList().hashCode();
+      }
+      hash = (37 * hash) + WINDOW_SIZE_FIELD_NUMBER;
+      hash = (53 * hash) + getWindowSize();
+      hash = (37 * hash) + MTU_FIELD_NUMBER;
+      hash = (53 * hash) + getMtu();
+      hash = (37 * hash) + CLOSE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getClose());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static jsmith.nknsdk.network.proto.MessagesP.SessionData parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.SessionData parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.SessionData parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.SessionData parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.SessionData parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.SessionData parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.SessionData parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.SessionData parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.SessionData parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.SessionData parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.SessionData parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static jsmith.nknsdk.network.proto.MessagesP.SessionData parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(jsmith.nknsdk.network.proto.MessagesP.SessionData prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code jsmith.nknsdk.network.proto.SessionData}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:jsmith.nknsdk.network.proto.SessionData)
+        jsmith.nknsdk.network.proto.MessagesP.SessionDataOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_SessionData_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_SessionData_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                jsmith.nknsdk.network.proto.MessagesP.SessionData.class, jsmith.nknsdk.network.proto.MessagesP.SessionData.Builder.class);
+      }
+
+      // Construct using jsmith.nknsdk.network.proto.MessagesP.SessionData.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        sequenceId_ = 0;
+
+        data_ = com.google.protobuf.ByteString.EMPTY;
+
+        ackStartSeq_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        ackSeqCount_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000008);
+        identifierPrefix_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        windowSize_ = 0;
+
+        mtu_ = 0;
+
+        close_ = false;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return jsmith.nknsdk.network.proto.MessagesP.internal_static_jsmith_nknsdk_network_proto_SessionData_descriptor;
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.SessionData getDefaultInstanceForType() {
+        return jsmith.nknsdk.network.proto.MessagesP.SessionData.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.SessionData build() {
+        jsmith.nknsdk.network.proto.MessagesP.SessionData result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public jsmith.nknsdk.network.proto.MessagesP.SessionData buildPartial() {
+        jsmith.nknsdk.network.proto.MessagesP.SessionData result = new jsmith.nknsdk.network.proto.MessagesP.SessionData(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        result.sequenceId_ = sequenceId_;
+        result.data_ = data_;
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          ackStartSeq_ = java.util.Collections.unmodifiableList(ackStartSeq_);
+          bitField0_ = (bitField0_ & ~0x00000004);
+        }
+        result.ackStartSeq_ = ackStartSeq_;
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          ackSeqCount_ = java.util.Collections.unmodifiableList(ackSeqCount_);
+          bitField0_ = (bitField0_ & ~0x00000008);
+        }
+        result.ackSeqCount_ = ackSeqCount_;
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          identifierPrefix_ = identifierPrefix_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000010);
+        }
+        result.identifierPrefix_ = identifierPrefix_;
+        result.windowSize_ = windowSize_;
+        result.mtu_ = mtu_;
+        result.close_ = close_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof jsmith.nknsdk.network.proto.MessagesP.SessionData) {
+          return mergeFrom((jsmith.nknsdk.network.proto.MessagesP.SessionData)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(jsmith.nknsdk.network.proto.MessagesP.SessionData other) {
+        if (other == jsmith.nknsdk.network.proto.MessagesP.SessionData.getDefaultInstance()) return this;
+        if (other.getSequenceId() != 0) {
+          setSequenceId(other.getSequenceId());
+        }
+        if (other.getData() != com.google.protobuf.ByteString.EMPTY) {
+          setData(other.getData());
+        }
+        if (!other.ackStartSeq_.isEmpty()) {
+          if (ackStartSeq_.isEmpty()) {
+            ackStartSeq_ = other.ackStartSeq_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureAckStartSeqIsMutable();
+            ackStartSeq_.addAll(other.ackStartSeq_);
+          }
+          onChanged();
+        }
+        if (!other.ackSeqCount_.isEmpty()) {
+          if (ackSeqCount_.isEmpty()) {
+            ackSeqCount_ = other.ackSeqCount_;
+            bitField0_ = (bitField0_ & ~0x00000008);
+          } else {
+            ensureAckSeqCountIsMutable();
+            ackSeqCount_.addAll(other.ackSeqCount_);
+          }
+          onChanged();
+        }
+        if (!other.identifierPrefix_.isEmpty()) {
+          if (identifierPrefix_.isEmpty()) {
+            identifierPrefix_ = other.identifierPrefix_;
+            bitField0_ = (bitField0_ & ~0x00000010);
+          } else {
+            ensureIdentifierPrefixIsMutable();
+            identifierPrefix_.addAll(other.identifierPrefix_);
+          }
+          onChanged();
+        }
+        if (other.getWindowSize() != 0) {
+          setWindowSize(other.getWindowSize());
+        }
+        if (other.getMtu() != 0) {
+          setMtu(other.getMtu());
+        }
+        if (other.getClose() != false) {
+          setClose(other.getClose());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        jsmith.nknsdk.network.proto.MessagesP.SessionData parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (jsmith.nknsdk.network.proto.MessagesP.SessionData) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private int sequenceId_ ;
+      /**
+       * <code>uint32 sequence_id = 1;</code>
+       */
+      public int getSequenceId() {
+        return sequenceId_;
+      }
+      /**
+       * <code>uint32 sequence_id = 1;</code>
+       */
+      public Builder setSequenceId(int value) {
+        
+        sequenceId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint32 sequence_id = 1;</code>
+       */
+      public Builder clearSequenceId() {
+        
+        sequenceId_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes data = 2;</code>
+       */
+      public com.google.protobuf.ByteString getData() {
+        return data_;
+      }
+      /**
+       * <code>bytes data = 2;</code>
+       */
+      public Builder setData(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        data_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes data = 2;</code>
+       */
+      public Builder clearData() {
+        
+        data_ = getDefaultInstance().getData();
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> ackStartSeq_ = java.util.Collections.emptyList();
+      private void ensureAckStartSeqIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          ackStartSeq_ = new java.util.ArrayList<java.lang.Integer>(ackStartSeq_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+      /**
+       * <code>repeated uint32 ack_start_seq = 3;</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getAckStartSeqList() {
+        return java.util.Collections.unmodifiableList(ackStartSeq_);
+      }
+      /**
+       * <code>repeated uint32 ack_start_seq = 3;</code>
+       */
+      public int getAckStartSeqCount() {
+        return ackStartSeq_.size();
+      }
+      /**
+       * <code>repeated uint32 ack_start_seq = 3;</code>
+       */
+      public int getAckStartSeq(int index) {
+        return ackStartSeq_.get(index);
+      }
+      /**
+       * <code>repeated uint32 ack_start_seq = 3;</code>
+       */
+      public Builder setAckStartSeq(
+          int index, int value) {
+        ensureAckStartSeqIsMutable();
+        ackStartSeq_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 ack_start_seq = 3;</code>
+       */
+      public Builder addAckStartSeq(int value) {
+        ensureAckStartSeqIsMutable();
+        ackStartSeq_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 ack_start_seq = 3;</code>
+       */
+      public Builder addAllAckStartSeq(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureAckStartSeqIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, ackStartSeq_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 ack_start_seq = 3;</code>
+       */
+      public Builder clearAckStartSeq() {
+        ackStartSeq_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> ackSeqCount_ = java.util.Collections.emptyList();
+      private void ensureAckSeqCountIsMutable() {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          ackSeqCount_ = new java.util.ArrayList<java.lang.Integer>(ackSeqCount_);
+          bitField0_ |= 0x00000008;
+         }
+      }
+      /**
+       * <code>repeated uint32 ack_seq_count = 4;</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getAckSeqCountList() {
+        return java.util.Collections.unmodifiableList(ackSeqCount_);
+      }
+      /**
+       * <code>repeated uint32 ack_seq_count = 4;</code>
+       */
+      public int getAckSeqCountCount() {
+        return ackSeqCount_.size();
+      }
+      /**
+       * <code>repeated uint32 ack_seq_count = 4;</code>
+       */
+      public int getAckSeqCount(int index) {
+        return ackSeqCount_.get(index);
+      }
+      /**
+       * <code>repeated uint32 ack_seq_count = 4;</code>
+       */
+      public Builder setAckSeqCount(
+          int index, int value) {
+        ensureAckSeqCountIsMutable();
+        ackSeqCount_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 ack_seq_count = 4;</code>
+       */
+      public Builder addAckSeqCount(int value) {
+        ensureAckSeqCountIsMutable();
+        ackSeqCount_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 ack_seq_count = 4;</code>
+       */
+      public Builder addAllAckSeqCount(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureAckSeqCountIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, ackSeqCount_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 ack_seq_count = 4;</code>
+       */
+      public Builder clearAckSeqCount() {
+        ackSeqCount_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000008);
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringList identifierPrefix_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureIdentifierPrefixIsMutable() {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+          identifierPrefix_ = new com.google.protobuf.LazyStringArrayList(identifierPrefix_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+      /**
+       * <code>repeated string identifier_prefix = 5;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getIdentifierPrefixList() {
+        return identifierPrefix_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string identifier_prefix = 5;</code>
+       */
+      public int getIdentifierPrefixCount() {
+        return identifierPrefix_.size();
+      }
+      /**
+       * <code>repeated string identifier_prefix = 5;</code>
+       */
+      public java.lang.String getIdentifierPrefix(int index) {
+        return identifierPrefix_.get(index);
+      }
+      /**
+       * <code>repeated string identifier_prefix = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getIdentifierPrefixBytes(int index) {
+        return identifierPrefix_.getByteString(index);
+      }
+      /**
+       * <code>repeated string identifier_prefix = 5;</code>
+       */
+      public Builder setIdentifierPrefix(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureIdentifierPrefixIsMutable();
+        identifierPrefix_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string identifier_prefix = 5;</code>
+       */
+      public Builder addIdentifierPrefix(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureIdentifierPrefixIsMutable();
+        identifierPrefix_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string identifier_prefix = 5;</code>
+       */
+      public Builder addAllIdentifierPrefix(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureIdentifierPrefixIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, identifierPrefix_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string identifier_prefix = 5;</code>
+       */
+      public Builder clearIdentifierPrefix() {
+        identifierPrefix_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string identifier_prefix = 5;</code>
+       */
+      public Builder addIdentifierPrefixBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        ensureIdentifierPrefixIsMutable();
+        identifierPrefix_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private int windowSize_ ;
+      /**
+       * <code>uint32 window_size = 7;</code>
+       */
+      public int getWindowSize() {
+        return windowSize_;
+      }
+      /**
+       * <code>uint32 window_size = 7;</code>
+       */
+      public Builder setWindowSize(int value) {
+        
+        windowSize_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint32 window_size = 7;</code>
+       */
+      public Builder clearWindowSize() {
+        
+        windowSize_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int mtu_ ;
+      /**
+       * <code>uint32 mtu = 8;</code>
+       */
+      public int getMtu() {
+        return mtu_;
+      }
+      /**
+       * <code>uint32 mtu = 8;</code>
+       */
+      public Builder setMtu(int value) {
+        
+        mtu_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint32 mtu = 8;</code>
+       */
+      public Builder clearMtu() {
+        
+        mtu_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private boolean close_ ;
+      /**
+       * <code>bool close = 9;</code>
+       */
+      public boolean getClose() {
+        return close_;
+      }
+      /**
+       * <code>bool close = 9;</code>
+       */
+      public Builder setClose(boolean value) {
+        
+        close_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool close = 9;</code>
+       */
+      public Builder clearClose() {
+        
+        close_ = false;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:jsmith.nknsdk.network.proto.SessionData)
+    }
+
+    // @@protoc_insertion_point(class_scope:jsmith.nknsdk.network.proto.SessionData)
+    private static final jsmith.nknsdk.network.proto.MessagesP.SessionData DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new jsmith.nknsdk.network.proto.MessagesP.SessionData();
+    }
+
+    public static jsmith.nknsdk.network.proto.MessagesP.SessionData getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<SessionData>
+        PARSER = new com.google.protobuf.AbstractParser<SessionData>() {
+      @java.lang.Override
+      public SessionData parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new SessionData(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<SessionData> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SessionData> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public jsmith.nknsdk.network.proto.MessagesP.SessionData getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -5128,6 +6406,11 @@ public final class MessagesP {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_jsmith_nknsdk_network_proto_TextData_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_jsmith_nknsdk_network_proto_SessionData_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_jsmith_nknsdk_network_proto_SessionData_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_jsmith_nknsdk_network_proto_Message_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -5163,19 +6446,24 @@ public final class MessagesP {
       "\004type\030\001 \001(\0162(.jsmith.nknsdk.network.prot" +
       "o.PayloadType\022\013\n\003pid\030\002 \001(\014\022\014\n\004data\030\003 \001(\014" +
       "\022\024\n\014reply_to_pid\030\004 \001(\014\022\016\n\006no_ack\030\005 \001(\010\"\030" +
-      "\n\010TextData\022\014\n\004text\030\001 \001(\t\"Z\n\007Message\022>\n\014m" +
-      "essage_type\030\001 \001(\0162(.jsmith.nknsdk.networ" +
-      "k.proto.MessageType\022\017\n\007message\030\002 \001(\014\"\215\001\n" +
-      "\tClientMsg\022\014\n\004dest\030\001 \001(\t\022\017\n\007payload\030\002 \001(" +
-      "\014\022\r\n\005dests\030\003 \003(\t\022\033\n\023max_holding_seconds\030" +
-      "\004 \001(\r\022\r\n\005nonce\030\005 \001(\r\022\022\n\nblock_hash\030\006 \001(\014" +
-      "\022\022\n\nsignatures\030\007 \003(\014\"?\n\007NodeMsg\022\013\n\003src\030\001" +
-      " \001(\t\022\017\n\007payload\030\002 \001(\014\022\026\n\016prev_signature\030" +
-      "\003 \001(\014\"7\n\nReceiptMsg\022\026\n\016prev_signature\030\001 " +
-      "\001(\014\022\021\n\tsignature\030\002 \001(\014*,\n\013PayloadType\022\n\n" +
-      "\006BINARY\020\000\022\010\n\004TEXT\020\001\022\007\n\003ACK\020\002*<\n\013MessageT" +
-      "ype\022\016\n\nCLIENT_MSG\020\000\022\014\n\010NODE_MSG\020\001\022\017\n\013REC" +
-      "EIPT_MSG\020\002b\006proto3"
+      "\n\010TextData\022\014\n\004text\030\001 \001(\t\"\252\001\n\013SessionData" +
+      "\022\023\n\013sequence_id\030\001 \001(\r\022\014\n\004data\030\002 \001(\014\022\025\n\ra" +
+      "ck_start_seq\030\003 \003(\r\022\025\n\rack_seq_count\030\004 \003(" +
+      "\r\022\031\n\021identifier_prefix\030\005 \003(\t\022\023\n\013window_s" +
+      "ize\030\007 \001(\r\022\013\n\003mtu\030\010 \001(\r\022\r\n\005close\030\t \001(\010\"Z\n" +
+      "\007Message\022>\n\014message_type\030\001 \001(\0162(.jsmith." +
+      "nknsdk.network.proto.MessageType\022\017\n\007mess" +
+      "age\030\002 \001(\014\"\215\001\n\tClientMsg\022\014\n\004dest\030\001 \001(\t\022\017\n" +
+      "\007payload\030\002 \001(\014\022\r\n\005dests\030\003 \003(\t\022\033\n\023max_hol" +
+      "ding_seconds\030\004 \001(\r\022\r\n\005nonce\030\005 \001(\r\022\022\n\nblo" +
+      "ck_hash\030\006 \001(\014\022\022\n\nsignatures\030\007 \003(\014\"?\n\007Nod" +
+      "eMsg\022\013\n\003src\030\001 \001(\t\022\017\n\007payload\030\002 \001(\014\022\026\n\016pr" +
+      "ev_signature\030\003 \001(\014\"7\n\nReceiptMsg\022\026\n\016prev" +
+      "_signature\030\001 \001(\014\022\021\n\tsignature\030\002 \001(\014*9\n\013P" +
+      "ayloadType\022\n\n\006BINARY\020\000\022\010\n\004TEXT\020\001\022\007\n\003ACK\020" +
+      "\002\022\013\n\007SESSION\020\003*<\n\013MessageType\022\016\n\nCLIENT_" +
+      "MSG\020\000\022\014\n\010NODE_MSG\020\001\022\017\n\013RECEIPT_MSG\020\002b\006pr" +
+      "oto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -5207,26 +6495,32 @@ public final class MessagesP {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_jsmith_nknsdk_network_proto_TextData_descriptor,
         new java.lang.String[] { "Text", });
-    internal_static_jsmith_nknsdk_network_proto_Message_descriptor =
+    internal_static_jsmith_nknsdk_network_proto_SessionData_descriptor =
       getDescriptor().getMessageTypes().get(3);
+    internal_static_jsmith_nknsdk_network_proto_SessionData_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_jsmith_nknsdk_network_proto_SessionData_descriptor,
+        new java.lang.String[] { "SequenceId", "Data", "AckStartSeq", "AckSeqCount", "IdentifierPrefix", "WindowSize", "Mtu", "Close", });
+    internal_static_jsmith_nknsdk_network_proto_Message_descriptor =
+      getDescriptor().getMessageTypes().get(4);
     internal_static_jsmith_nknsdk_network_proto_Message_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_jsmith_nknsdk_network_proto_Message_descriptor,
         new java.lang.String[] { "MessageType", "Message", });
     internal_static_jsmith_nknsdk_network_proto_ClientMsg_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_jsmith_nknsdk_network_proto_ClientMsg_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_jsmith_nknsdk_network_proto_ClientMsg_descriptor,
         new java.lang.String[] { "Dest", "Payload", "Dests", "MaxHoldingSeconds", "Nonce", "BlockHash", "Signatures", });
     internal_static_jsmith_nknsdk_network_proto_NodeMsg_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_jsmith_nknsdk_network_proto_NodeMsg_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_jsmith_nknsdk_network_proto_NodeMsg_descriptor,
         new java.lang.String[] { "Src", "Payload", "PrevSignature", });
     internal_static_jsmith_nknsdk_network_proto_ReceiptMsg_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_jsmith_nknsdk_network_proto_ReceiptMsg_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_jsmith_nknsdk_network_proto_ReceiptMsg_descriptor,

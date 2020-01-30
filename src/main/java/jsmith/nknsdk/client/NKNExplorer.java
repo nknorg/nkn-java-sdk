@@ -4,7 +4,6 @@ import jsmith.nknsdk.network.ConnectionProvider;
 import jsmith.nknsdk.network.HttpApi;
 import jsmith.nknsdk.utils.Base58;
 import jsmith.nknsdk.utils.Crypto;
-import jsmith.nknsdk.wallet.WalletException;
 import jsmith.nknsdk.wallet.WalletUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.net.InetSocketAddress;
 import java.util.HashMap;
 
 /**

@@ -28,13 +28,14 @@ package org.java_websocket.drafts;
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.enums.*;
 import org.java_websocket.exceptions.*;
-import org.java_websocket.extensions.*;
+import org.java_websocket.extensions.DefaultExtension;
+import org.java_websocket.extensions.IExtension;
 import org.java_websocket.framing.*;
 import org.java_websocket.handshake.*;
 import org.java_websocket.protocols.IProtocol;
 import org.java_websocket.protocols.Protocol;
-import org.java_websocket.util.*;
 import org.java_websocket.util.Base64;
+import org.java_websocket.util.Charsetfunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

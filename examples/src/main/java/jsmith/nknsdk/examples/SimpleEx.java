@@ -4,6 +4,7 @@ import com.darkyen.tproll.TPLogger;
 import jsmith.nknsdk.client.Identity;
 import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
+import jsmith.nknsdk.client.SimpleMessages;
 import jsmith.nknsdk.wallet.Wallet;
 import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
@@ -26,15 +27,15 @@ public class SimpleEx {
 
         final NKNClient clientA = new NKNClient(identityA);
         try {
-            clientA
+            clientA.simpleMessagesProtocol()
                     .onNewMessage(receivedMessage -> {
                         if (receivedMessage.isText) {
                             System.out.println("Client A: New " + (receivedMessage.wasEncrypted ? "encrypted" : "UNENCRYPTED") + " text from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
                         } else if (receivedMessage.isBinary) {
                             System.out.println("Client A: New " + (receivedMessage.wasEncrypted ? "encrypted" : "UNENCRYPTED") + " binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
                         }
-                    })
-                    .start();
+                    });
+            clientA.start();
         } catch (NKNClientException e) {
             LOG.error("Client failed to start:", e);
             return;
@@ -42,7 +43,7 @@ public class SimpleEx {
 
         final NKNClient clientB = new NKNClient(identityB);
         try {
-            clientB
+            clientB.simpleMessagesProtocol()
                     .onNewMessageWithReply(receivedMessage -> {
                         if (receivedMessage.isText) {
                             System.out.println("Client B: New " + (receivedMessage.wasEncrypted ? "encrypted" : "UNENCRYPTED") + " text from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
@@ -50,7 +51,8 @@ public class SimpleEx {
                             System.out.println("Client B: New " + (receivedMessage.wasEncrypted ? "encrypted" : "UNENCRYPTED") + " binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
                         }
                         return "Text message reply!";
-                    })
+                    });
+            clientB
                     .setEncryptionLevel(NKNClient.EncryptionLevel.DO_NOT_ENCRYPT)
                     .start();
         } catch (NKNClientException e) {
@@ -61,11 +63,11 @@ public class SimpleEx {
         System.out.println("Started!");
         Thread.sleep(500);
 
-        final CompletableFuture<NKNClient.ReceivedMessage> promise = clientA.sendTextMessageAsync(identityB.getFullIdentifier(), "Hello!");
+        final CompletableFuture<SimpleMessages.ReceivedMessage> promise = clientA.simpleMessagesProtocol().sendTextAsync(identityB.getFullIdentifier(), "Hello!");
         promise.whenComplete((response, error) -> {
             if (error == null) {
                 System.out.println("A: " + (response.wasEncrypted ? "Encrypted" : "UNENCRYPTED") + " response ==> " + response.textData);
-                clientA.sendBinaryMessageAsync(identityB.getFullIdentifier(), null, new byte[]{(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE}); // Casts because java (byte) is signed and these numbers would overwrite the msb
+                clientA.simpleMessagesProtocol().sendBinaryAsync(identityB.getFullIdentifier(), null, new byte[]{(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE}); // Casts because java (byte) is signed and these numbers would overwrite the msb
             } else {
                 error.printStackTrace();
             }
@@ -76,7 +78,7 @@ public class SimpleEx {
         // Keep sending messages, for experiments with reconnecting and stuff.
         for (int number = 0; number < 100; number ++) {
             Thread.sleep(5_000);
-            clientA.sendTextMessageAsync(identityB.getFullIdentifier(), "Message #" + number);
+            clientA.simpleMessagesProtocol().sendTextAsync(identityB.getFullIdentifier(), "Message #" + number);
         }
 
         Thread.sleep(7_000);

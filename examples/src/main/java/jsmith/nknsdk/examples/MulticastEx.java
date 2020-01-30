@@ -4,6 +4,7 @@ import com.darkyen.tproll.TPLogger;
 import jsmith.nknsdk.client.Identity;
 import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
+import jsmith.nknsdk.client.SimpleMessages;
 import jsmith.nknsdk.wallet.Wallet;
 import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
@@ -29,15 +30,16 @@ public class MulticastEx {
 
         LOG.info("Initializing clients");
 
-        final NKNClient clientSender = new NKNClient(identitySender)
+        final NKNClient clientSender = new NKNClient(identitySender);
+        clientSender.simpleMessagesProtocol()
                 .onNewMessage(receivedMessage -> {
                     if (receivedMessage.isText) {
                         System.out.println("Sender: New text from " + receivedMessage.from + "\n  ==> " + receivedMessage.textData);
                     } else if (receivedMessage.isBinary) {
                         System.out.println("Sender: New binary from " + receivedMessage.from + "\n  ==> 0x" + Hex.toHexString(receivedMessage.binaryData.toByteArray()).toUpperCase());
                     }
-                })
-                .start();
+                });
+        clientSender.start();
 
         // These will just reply with ACK
         final NKNClient clientA = new NKNClient(identityA).start();
@@ -47,7 +49,7 @@ public class MulticastEx {
         LOG.info("All clients ready, broadcasting");
 
         // Change one of the addresses or dont start one client to see what happens if the message is not sent and received correctly
-        final List<CompletableFuture<NKNClient.ReceivedMessage>> promises = clientSender.sendTextMessageMulticastAsync(new String[] {
+        final List<CompletableFuture<SimpleMessages.ReceivedMessage>> promises = clientSender.simpleMessagesProtocol().sendTextMulticastAsync(new String[] {
                 identityA.getFullIdentifier(),
                 identityB.getFullIdentifier(),
                 identityC.getFullIdentifier()

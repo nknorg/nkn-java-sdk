@@ -9,7 +9,7 @@ val NknSdk by project {
 
     projectName set { "NknSdk" }
     projectGroup set { "cz.jsmith.nkn" }
-    projectVersion set { "0.1.2-SNAPSHOT" }
+    projectVersion set { "0.2.1-SNAPSHOT" }
 
     repositories add { Jitpack }
 
@@ -35,6 +35,19 @@ val SimpleExample by project(path("examples")) {
     libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.1") } // Logging frontend
 
     mainClass set { "jsmith.nknsdk.examples.SimpleEx" }
+
+    runDirectory set { projectRoot.get() }
+
+}
+
+val SessionExample by project(path("examples")) {
+
+    projectDependencies add { ProjectDependency(NknSdk, false) }
+
+    repositories add { Jitpack }
+    libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.1") } // Logging frontend
+
+    mainClass set { "jsmith.nknsdk.examples.SessionEx" }
 
     runDirectory set { projectRoot.get() }
 

@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
+import jsmith.nknsdk.client.SimpleMessages;
 import jsmith.nknsdk.network.proto.MessagesP;
 import jsmith.nknsdk.utils.Crypto;
 import org.slf4j.Logger;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.function.Function;
 
 /**
  *
@@ -24,7 +24,7 @@ public class ClientMessageWorkers {
 
     private final ClientTunnel ct;
 
-    private final BlockingQueue<MessageJob> outboundQ = new ArrayBlockingQueue<>(100);
+    private final BlockingQueue<MessageJob> outboundQ = new ArrayBlockingQueue<>(16);
     private final BlockingQueue<MessageJob> timerQ = new PriorityBlockingQueue<>(100, (j1, j2) -> (int)(j1.timeoutAt - j2.timeoutAt));
     private final ConcurrentHashMap<ByteString, MessageJob> inboundQ = new ConcurrentHashMap<>();
 
@@ -47,8 +47,10 @@ public class ClientMessageWorkers {
                         ct.messageHold.await();
 
                         job.timeoutAt = System.currentTimeMillis() + job.timeoutIn;
-                        timerQ.put(job);
-                        inboundQ.put(job.messageID, job);
+                        if (!job.noreplyQ) {
+                            timerQ.put(job);
+                            inboundQ.put(job.messageID, job);
+                        }
 
                         ct.ws.sendPacket(job.payload);
 
@@ -65,7 +67,7 @@ public class ClientMessageWorkers {
                         final MessageJob job = timerQ.take();
                         Thread.sleep(Math.max(job.timeoutAt - System.currentTimeMillis(), 0));
 
-                        for (CompletableFuture<NKNClient.ReceivedMessage> p : job.promise) {
+                        for (CompletableFuture<SimpleMessages.ReceivedMessage> p : job.promise) {
                             events.submit(() -> p.completeExceptionally(new NKNClientException.MessageAckTimeout(job.messageID)));
                         }
 
@@ -82,7 +84,7 @@ public class ClientMessageWorkers {
     void onInboundMessage(String from, MessagesP.EncryptedMessage encryptedMessage) {
         final boolean isEncrypted = encryptedMessage.getEncrypted();
         if (!isEncrypted) {
-            if (encryptionRequirement == NKNClient.PeerEncryptionRequirement.ON_NON_ENCRYPTED_MESSAGE___ALLOW_NONE_DROP_ALL) return;
+            if (ct.forClient.getPeerEncryptionRequirement() == NKNClient.PeerEncryptionRequirement.ON_NON_ENCRYPTED_MESSAGE___ALLOW_NONE_DROP_ALL) return;
         }
 
         MessagesP.Payload message;
@@ -99,7 +101,7 @@ public class ClientMessageWorkers {
         final ByteString data = message.getData();
 
         if (!isEncrypted && type != MessagesP.PayloadType.ACK) {
-            if (encryptionRequirement == NKNClient.PeerEncryptionRequirement.ON_NON_ENCRYPTED_MESSAGE___ALLOW_ACK_DROP_OTHER) return;
+            if (ct.forClient.getPeerEncryptionRequirement() == NKNClient.PeerEncryptionRequirement.ON_NON_ENCRYPTED_MESSAGE___ALLOW_ACK_DROP_OTHER) return;
         }
 
         String text = null;
@@ -111,34 +113,39 @@ public class ClientMessageWorkers {
             LOG.warn("Received message of TEXT type, but the content isn't valid text");
         }
 
-        final NKNClient.ReceivedMessage receivedMessage = new NKNClient.ReceivedMessage(
+        final SimpleMessages.ReceivedMessage receivedMessage = new SimpleMessages.ReceivedMessage(
             from, messageID, isEncrypted, type, type == MessagesP.PayloadType.TEXT ? text : type == MessagesP.PayloadType.BINARY ? data : null
         );
 
-        final MessageJob job = inboundQ.get(replyTo);
-        if (job != null) {
-            for (int i = 0; i < job.destination.size(); i++) {
-                if (job.destination.get(i).equalsIgnoreCase(from)) {
-                    final CompletableFuture<NKNClient.ReceivedMessage> p = job.promise.get(i);
-                    events.submit(() -> p.complete(receivedMessage));
+        if (type == MessagesP.PayloadType.SESSION) {
+            ct.forClient.sessionProtocol().onMessage(this, from, messageID, data);
+        } else {
+
+            final MessageJob job = inboundQ.get(replyTo);
+            if (job != null) {
+                for (int i = 0; i < job.destination.size(); i++) {
+                    if (job.destination.get(i).equalsIgnoreCase(from)) {
+                        final CompletableFuture<SimpleMessages.ReceivedMessage> p = job.promise.get(i);
+                        events.submit(() -> p.complete(receivedMessage));
+                    }
                 }
             }
-        }
 
-        if (onMessageL != null) {
-            if (type != MessagesP.PayloadType.ACK) {
-                events.submit(() -> {
-                    Object response = onMessageL.apply(receivedMessage);
-                    if (response != null) {
-                        sendMessageAsync(Collections.singletonList(from), messageID, response);
-                    } else if (!noAck) {
-                        sendAckMessage(from, messageID);
-                    }
-                });
-            }
-        } else {
-            if (type != MessagesP.PayloadType.ACK && !noAck) {
-                sendAckMessage(from, messageID);
+            if (ct.forClient.simpleMessagesProtocol().getOnMessageListener() != null) {
+                if (type != MessagesP.PayloadType.ACK) {
+                    events.submit(() -> {
+                        Object response = ct.forClient.simpleMessagesProtocol().getOnMessageListener().apply(receivedMessage);
+                        if (response != null) {
+                            sendMessageAsync(Collections.singletonList(from), messageID, response);
+                        } else if (!ct.forClient.simpleMessagesProtocol().isNoAutomaticACKs()) {
+                            sendAckMessage(from, messageID);
+                        }
+                    });
+                }
+            } else {
+                if (type != MessagesP.PayloadType.ACK && !ct.forClient.simpleMessagesProtocol().isNoAutomaticACKs()) {
+                    sendAckMessage(from, messageID);
+                }
             }
         }
 
@@ -153,18 +160,6 @@ public class ClientMessageWorkers {
         outboundThread.start();
     }
 
-    private boolean noAck = false;
-    public void setNoAutomaticACKs(boolean noAck) {
-        this.noAck = noAck;
-    }
-    private NKNClient.EncryptionLevel encryptionLevel = NKNClient.EncryptionLevel.CONVERT_MULTICAST_TO_UNICAST_AND_ENCRYPT;
-    private NKNClient.PeerEncryptionRequirement encryptionRequirement = NKNClient.PeerEncryptionRequirement.ON_NON_ENCRYPTED_MESSAGE___ALLOW_ALL_DROP_NONE;
-    public void setEncryptionLevel(NKNClient.EncryptionLevel level) {
-        this.encryptionLevel = level;
-    }
-    public void setPeerEncryptionRequirement(NKNClient.PeerEncryptionRequirement requirement) {
-        this.encryptionRequirement = requirement;
-    }
 
     public void close() {
         running = false;
@@ -180,10 +175,6 @@ public class ClientMessageWorkers {
         events.shutdown();
     }
 
-    private Function<NKNClient.ReceivedMessage, Object> onMessageL = null;
-    public void onMessage(Function<NKNClient.ReceivedMessage, Object> listener) {
-        onMessageL = listener;
-    }
 
 
 
@@ -191,9 +182,7 @@ public class ClientMessageWorkers {
 
 
 
-
-
-    public List<CompletableFuture<NKNClient.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, Object message) throws NKNClientException.UnknownObjectType {
+    public List<CompletableFuture<SimpleMessages.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, Object message) throws NKNClientException.UnknownObjectType {
         if (message instanceof String) {
             return sendMessageAsync(destination, replyTo, MessagesP.PayloadType.TEXT, MessagesP.TextData.newBuilder().setText((String) message).build().toByteString());
         } else if (message instanceof ByteString) {
@@ -206,27 +195,27 @@ public class ClientMessageWorkers {
         }
     }
 
-    public List<CompletableFuture<NKNClient.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, MessagesP.PayloadType type, ByteString message) {
+    public List<CompletableFuture<SimpleMessages.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, MessagesP.PayloadType type, ByteString message) {
         final ByteString replyToMessageID = replyTo == null ? ByteString.copyFrom(new byte[0]) : replyTo;
 
-        if (encryptionLevel == NKNClient.EncryptionLevel.CONVERT_MULTICAST_TO_UNICAST_AND_ENCRYPT) {
+        if (ct.forClient.getEncryptionLevel() == NKNClient.EncryptionLevel.CONVERT_MULTICAST_TO_UNICAST_AND_ENCRYPT) {
 
-            final List<CompletableFuture<NKNClient.ReceivedMessage>> promises = new ArrayList<>();
+            final List<CompletableFuture<SimpleMessages.ReceivedMessage>> promises = new ArrayList<>();
 
             for (String d : destination) {
-                final ByteString messageID = ByteString.copyFrom(Crypto.nextRandom4B());
+                final ByteString messageID = type == MessagesP.PayloadType.SESSION ? replyTo : ByteString.copyFrom(Crypto.nextRandom4B());
 
                 final MessagesP.Payload payload = MessagesP.Payload.newBuilder()
                         .setType(type)
                         .setPid(messageID)
                         .setReplyToPid(replyToMessageID)
                         .setData(message)
-                        .setNoAck(noAck)
+                        .setNoAck(ct.forClient.simpleMessagesProtocol().isNoAutomaticACKs())
                         .build();
 
                 try {
                     final ByteString encryptedPayload = ClientEnc.encryptMessage(Collections.singletonList(d), payload.toByteString(), ct.identity.wallet, NKNClient.EncryptionLevel.ENCRYPT_ONLY_UNICAST);
-                    promises.addAll(sendEncryptedMessage(Collections.singletonList(d), messageID, encryptedPayload));
+                    promises.addAll(sendEncryptedMessage(Collections.singletonList(d), messageID, encryptedPayload, type == MessagesP.PayloadType.SESSION));
                 } catch (NKNClientException e) {
                     LOG.warn("Failed to send message", e);
                 }
@@ -235,21 +224,21 @@ public class ClientMessageWorkers {
             return promises;
 
         } else {
-            final ByteString messageID = ByteString.copyFrom(Crypto.nextRandom4B());
+            final ByteString messageID = type == MessagesP.PayloadType.SESSION ? replyTo : ByteString.copyFrom(Crypto.nextRandom4B());
 
             final MessagesP.Payload payload = MessagesP.Payload.newBuilder()
                     .setType(type)
                     .setPid(messageID)
                     .setReplyToPid(replyToMessageID)
                     .setData(message)
-                    .setNoAck(noAck)
+                    .setNoAck(ct.forClient.simpleMessagesProtocol().isNoAutomaticACKs())
                     .build();
 
 
             try {
-                final ByteString encryptedPayload = ClientEnc.encryptMessage(destination, payload.toByteString(), ct.identity.wallet, encryptionLevel);
+                final ByteString encryptedPayload = ClientEnc.encryptMessage(destination, payload.toByteString(), ct.identity.wallet, ct.forClient.getEncryptionLevel());
 
-                return sendEncryptedMessage(destination, messageID, encryptedPayload);
+                return sendEncryptedMessage(destination, messageID, encryptedPayload, type == MessagesP.PayloadType.SESSION);
             } catch (NKNClientException e) {
                 LOG.warn("Failed to send message", e);
 
@@ -258,10 +247,10 @@ public class ClientMessageWorkers {
         }
     }
 
-    private List<CompletableFuture<NKNClient.ReceivedMessage>> sendEncryptedMessage(List<String> destination, ByteString messageID, ByteString payload) {
+    private List<CompletableFuture<SimpleMessages.ReceivedMessage>> sendEncryptedMessage(List<String> destination, ByteString messageID, ByteString payload, boolean noreplyQ) {
         if (destination.size() == 0) throw new IllegalArgumentException("At least one address is required for multicast");
 
-        final ArrayList<CompletableFuture<NKNClient.ReceivedMessage>> promises = new ArrayList<>();
+        final ArrayList<CompletableFuture<SimpleMessages.ReceivedMessage>> promises = new ArrayList<>();
         for (String identity : destination) {
             if (identity == null || identity.isEmpty()) throw new IllegalArgumentException("Destination identity is null or empty");
             promises.add(new CompletableFuture<>());
@@ -282,7 +271,7 @@ public class ClientMessageWorkers {
         if (!running) throw new IllegalStateException("Client is not running, cannot send messages.");
 
         try {
-            outboundQ.put(new MessageJob(destination, messageID, msg.toByteString(), promises, ConnectionProvider.messageAckTimeoutMS()));
+            outboundQ.put(new MessageJob(destination, messageID, msg.toByteString(), promises, ConnectionProvider.messageAckTimeoutMS(), noreplyQ));
         } catch (InterruptedException ignored) {}
 
         return promises;
@@ -297,7 +286,7 @@ public class ClientMessageWorkers {
                 .build();
 
         try {
-            final ByteString encryptedPayload = ClientEnc.encryptMessage(Collections.singletonList(destination), payload.toByteString(), ct.identity.wallet, encryptionLevel);
+            final ByteString encryptedPayload = ClientEnc.encryptMessage(Collections.singletonList(destination), payload.toByteString(), ct.identity.wallet, ct.forClient.getEncryptionLevel());
 
             final MessagesP.ClientMsg.Builder clientToNodeMsg = MessagesP.ClientMsg.newBuilder()
                     .setPayload(encryptedPayload)
@@ -322,16 +311,18 @@ public class ClientMessageWorkers {
 
         private final List<String> destination;
         private final ByteString messageID, payload;
-        private final List<CompletableFuture<NKNClient.ReceivedMessage>> promise;
+        private final List<CompletableFuture<SimpleMessages.ReceivedMessage>> promise;
         private final long timeoutIn;
         private long timeoutAt = -1;
+        private final boolean noreplyQ;
 
-        MessageJob(List<String> destination, ByteString messageID, ByteString payload, List<CompletableFuture<NKNClient.ReceivedMessage>> promise, long timeoutIn) {
+        MessageJob(List<String> destination, ByteString messageID, ByteString payload, List<CompletableFuture<SimpleMessages.ReceivedMessage>> promise, long timeoutIn, boolean noreplyQ) {
             this.destination = destination;
             this.messageID = messageID;
             this.payload = payload;
             this.promise = promise;
             this.timeoutIn = timeoutIn;
+            this.noreplyQ = noreplyQ;
         }
 
     }

@@ -4,6 +4,7 @@ import com.darkyen.dave.WebbException;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import jsmith.nknsdk.client.Identity;
+import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
 import jsmith.nknsdk.network.proto.MessagesP;
 import jsmith.nknsdk.utils.CountLatch;
@@ -15,10 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
@@ -36,15 +40,18 @@ public class ClientTunnel {
     final Identity identity;
 
     private static int id = 0;
-    private final int myId;
+    final int myId;
     private final ClientMessageWorkers cm;
-    public ClientTunnel(Identity identity) {
+    final NKNClient forClient;
+    final ArrayList<ClientTunnel> multiclients = new ArrayList<>();
+    public ClientTunnel(Identity identity, NKNClient forClient) {
         this.identity = identity;
         this.myId = ++id;
+        this.forClient = forClient;
         cm = new ClientMessageWorkers(this, myId);
     }
 
-    private boolean running = false;
+    boolean running = false;
     public void startClient() throws NKNClientException {
         if (running) throw new IllegalStateException("Client has already started, cannot start again");
         running = true;
@@ -52,6 +59,22 @@ public class ClientTunnel {
         reconnect();
         messageHold.countDown();
         cm.start();
+
+        for (ClientTunnel ct : multiclients) {
+            ct.startClient();
+        }
+    }
+
+    private AtomicInteger multiclientPrefix = new AtomicInteger(0);
+    void ensureMulticlients(int multiclientCount) throws NKNClientException {
+        LOG.debug("Ensuring {} multiclients", multiclientCount);
+        while (multiclients.size() < multiclientCount) {
+            final String prefix = "__" + multiclientPrefix.getAndIncrement() + "__.";
+            final Identity id = new Identity(prefix + identity.name, identity.wallet);
+            final ClientTunnel ct = new ClientTunnel(id, forClient);
+            multiclients.add(ct);
+            if (running) ct.startClient();
+        }
     }
 
     public ClientMessageWorkers getAssociatedCM() {
@@ -129,6 +152,9 @@ public class ClientTunnel {
 
     public void close() {
         this.running = false;
+        for (ClientTunnel ct : multiclients) {
+            ct.close();
+        }
         cm.close();
         ws.close();
     }
