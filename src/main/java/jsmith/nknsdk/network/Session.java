@@ -192,7 +192,7 @@ public class Session {
     private int latestConfirmedSeqId = 0;
     int latestSentSeqId = 0;
     final BlockingQueue<DataChunk> sendQ = new ArrayBlockingQueue<>(100); // TODO Q sizes
-    final HashMap<DataChunk, Long> sentQ = new HashMap<>();
+    final HashMap<DataChunk, SentLog> sentQ = new HashMap<>();
     final HashMap<Integer, Integer> sentBytesIntegral = new HashMap<>();
     final BlockingQueue<DataChunk> resendQ = new PriorityBlockingQueue<>(100, Comparator.comparingInt(j -> j.sequenceId));
 
@@ -205,7 +205,13 @@ public class Session {
         // TODO thread safety
         if (startSeq == latestConfirmedSeqId + 1) latestConfirmedSeqId = startSeq + count - 1;
 
-        sentQ.entrySet().removeIf(entry -> entry.getKey().sequenceId >= startSeq && entry.getKey().sequenceId < startSeq + count);
+        sentQ.entrySet().removeIf(entry -> {
+            boolean acked = entry.getKey().sequenceId >= startSeq && entry.getKey().sequenceId < startSeq + count;
+            if (acked) {
+                entry.getValue().sentBy.onWinsizeAckReceived(remoteIdentifier, (int)(System.currentTimeMillis() - entry.getValue().sentAt));
+            }
+            return acked;
+        });
         resendQ.removeIf(entry -> entry.sequenceId >= startSeq && entry.sequenceId < startSeq + count);
 
         if (sentQ.isEmpty()) {
@@ -279,6 +285,7 @@ public class Session {
             }
         }
 
+        // TODO concurrent modification Ex
         for (AckBundle ack : pendingAcks) {
             System.out.println("Pending ack: " + ack.startSeq + " -> (" + ack.count + ")");
         }
@@ -299,6 +306,15 @@ public class Session {
         DataChunk(int sequenceId, ByteString data) {
             this.sequenceId = sequenceId;
             this.data = data;
+        }
+    }
+
+    static class SentLog {
+        final long sentAt;
+        final ClientMessageWorkers sentBy;
+        SentLog(long sentAt, ClientMessageWorkers sentBy) {
+            this.sentAt = sentAt;
+            this.sentBy = sentBy;
         }
     }
 }

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -21,6 +22,11 @@ import java.util.concurrent.*;
 public class ClientMessageWorkers {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClientMessageWorkers.class);
+
+    public static final int MAX_CONNECTION_WINSIZE = 256;
+    public static final int DEFAULT_INITIAL_CONNECTION_WINSIZE = 16;
+    public static final int MIN_CONNECTION_WINSIZE = 1;
+    public static final int INITIAL_RTO = ConnectionProvider.messageAckTimeoutMS();
 
     private final ClientTunnel ct;
 
@@ -177,8 +183,56 @@ public class ClientMessageWorkers {
 
 
 
+    private final HashMap<String, Integer> maxWinSize = new HashMap<>();
+    private final HashMap<String, Integer> usedWinSize = new HashMap<>();
+    private final HashMap<String, Integer> trackedRto = new HashMap<>();
 
+    public void trackWinSize(String remote, int initialMaxWinSize) {
+        // TODO atomic
+        maxWinSize.putIfAbsent(remote, Math.min(MAX_CONNECTION_WINSIZE, Math.max(MIN_CONNECTION_WINSIZE, initialMaxWinSize)));
+        usedWinSize.putIfAbsent(remote, 0);
+        trackedRto.putIfAbsent(remote, ConnectionProvider.messageAckTimeoutMS());
+    }
+    public boolean isWinSizeAvailable(String remote) {
+        // TODO atomic
+        int max = maxWinSize.getOrDefault(remote, -1);
+        if (max == -1) return true; // We don't track winsize for this connection
 
+        return usedWinSize.get(remote) < max;
+    }
+    public void onWinsizeAckTimeout(String remote) {
+        // TODO atomic
+        if (!maxWinSize.containsKey(remote)) return;
+        usedWinSize.put(remote, Math.max(0, usedWinSize.get(remote) - 1));
+        maxWinSize.put(remote, Math.max(MIN_CONNECTION_WINSIZE, maxWinSize.get(remote) / 2));
+    }
+    public void onWinsizeAckReceived(String remote, int rttMs) {
+        // TODO atomic
+        if (!maxWinSize.containsKey(remote)) return;
+        usedWinSize.put(remote, Math.max(0, usedWinSize.get(remote) - 1));
+        maxWinSize.put(remote, Math.min(MAX_CONNECTION_WINSIZE, maxWinSize.get(remote) + 1));
+
+        int rto = trackedRto.get(remote);
+        //noinspection IntegerDivisionInFloatingPointContext
+        trackedRto.put(remote, (int)(rto + Math.tanh((3 * rttMs - rto) / 1000) * 100));
+
+    }
+    public void sendWinsizeTrackedPacket(String remote) {
+        // TODO atomic
+        while (!isWinSizeAvailable(remote)) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignored) {}
+        }
+        // TODO proper sleep and notify
+
+        if (usedWinSize.containsKey(remote)) {
+            usedWinSize.put(remote, usedWinSize.get(remote) + 1);
+        }
+    }
+    public int getTrackedRto(String remote) {
+        return trackedRto.getOrDefault(remote, ConnectionProvider.messageAckTimeoutMS());
+    }
 
 
 

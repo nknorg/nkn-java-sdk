@@ -16,10 +16,10 @@ import java.util.function.Function;
  */
 public class SessionHandler extends Thread {
 
-    public static final int MAX_MTU = 3; // 1024;
-    public static final int MAX_WIN_SIZE = 6;
+    public static final int MAX_MTU = 1024;
+    public static final int MAX_WIN_SIZE = 4 * 1024 * 1024;
     public static final int MAX_MULTICLIENTS = 16;
-    public static final int DEFAULT_MULTICLIENTS = 1;
+    public static final int DEFAULT_MULTICLIENTS = 8;
 
     private static final Logger LOG = LoggerFactory.getLogger(SessionHandler.class);
 
@@ -103,6 +103,10 @@ public class SessionHandler extends Thread {
 
                         s.ownMulticlients = Math.min(s.prefixes.size(), s.ownMulticlients);
 
+                        for (int i = 0; i < s.ownMulticlients; i++) {
+                            ct.multiclients.get(i).getAssociatedCM().trackWinSize(s.remoteIdentifier, ClientMessageWorkers.DEFAULT_INITIAL_CONNECTION_WINSIZE);
+                        }
+
                         try {
                             ct.ensureMulticlients(s.ownMulticlients);
                         } catch (NKNClientException e) {
@@ -150,6 +154,9 @@ public class SessionHandler extends Thread {
                             LOG.warn("Failed to create multiclients", e);
                         }
                         establishSession(s);
+                        for (int i = 0; i < s.ownMulticlients; i++) {
+                            ct.multiclients.get(i).getAssociatedCM().trackWinSize(s.remoteIdentifier, ClientMessageWorkers.DEFAULT_INITIAL_CONNECTION_WINSIZE);
+                        }
                         s.isEstablished = true;
                         if (s.onSessionEstablishedCb != null) {
                             s.onSessionEstablishedCalled = true;
@@ -168,15 +175,14 @@ public class SessionHandler extends Thread {
 
     @Override
     public void run() {
-        int rto = ConnectionProvider.messageAckTimeoutMS() + 10 + 50; // TODO, per session, per connection
-
         while (ct.running) { // TODO or buffers remaining
             for (Session s : activeSessions.values()) {
                 // TODO multithreaded concurrent modification?
-                final Iterator<Map.Entry<Session.DataChunk, Long>> iterator = s.sentQ.entrySet().iterator();
+                final Iterator<Map.Entry<Session.DataChunk, Session.SentLog>> iterator = s.sentQ.entrySet().iterator();
                 while (iterator.hasNext()) {
-                    final Map.Entry<Session.DataChunk, Long> sent = iterator.next();
-                    if (System.currentTimeMillis() - sent.getValue() > rto) {
+                    final Map.Entry<Session.DataChunk, Session.SentLog> sent = iterator.next();
+                    if (System.currentTimeMillis() - sent.getValue().sentAt > sent.getValue().sentBy.getTrackedRto(s.remoteIdentifier)) {
+                        sent.getValue().sentBy.onWinsizeAckTimeout(s.remoteIdentifier);
                         s.resendQ.add(sent.getKey());
                         iterator.remove();
                     }
@@ -190,7 +196,22 @@ public class SessionHandler extends Thread {
                 for (Session s : activeSessions.values()) {
                     if (s.isEstablished) {
                         try {
-                            remaining |= flushDataChunk(s);
+                            int workerI = -1;
+                            final ArrayList<Integer> availableMulticlients = new ArrayList<>(s.ownMulticlients);
+                            for (int i = 0; i < s.ownMulticlients; i++) {
+                                if (ct.multiclients.get(i).getAssociatedCM().isWinSizeAvailable(s.remoteIdentifier)) {
+                                    availableMulticlients.add(i);
+                                }
+                            }
+                            if (!availableMulticlients.isEmpty()) {
+                                workerI = (int)(Math.random() * availableMulticlients.size());
+                            }
+
+                            if (workerI != -1) {
+                                String chosenRemote = s.prefixes.get(workerI) + "." + s.remoteIdentifier;
+                                if (chosenRemote.startsWith(".")) chosenRemote = chosenRemote.substring(1);
+                                remaining |= flushDataChunk(s, ct.multiclients.get(workerI).getAssociatedCM(), chosenRemote);
+                            }
                         } catch (InterruptedException ignored) {}
                     }
                 }
@@ -201,8 +222,8 @@ public class SessionHandler extends Thread {
         }
     }
 
-
-    boolean flushDataChunk(Session s) throws InterruptedException {
+    private boolean flushDataChunk(Session s, ClientMessageWorkers chosenWorker, String chosenRemote) throws InterruptedException {
+        // Assuming the worker is available
         synchronized (s.sendQ) {
             Session.DataChunk dataChunk = null;
             if (!s.resendQ.isEmpty()) {
@@ -230,26 +251,50 @@ public class SessionHandler extends Thread {
                 acks.remove();
             }
 
-            // Assuming the worker is available
-            int workerI = 0;
-            final ClientMessageWorkers chosenWorker = ct.multiclients.get(workerI).getAssociatedCM(); // TODO choose better
-            String chosenRemote = s.prefixes.get(workerI) + "." + s.remoteIdentifier;
-            if (chosenRemote.startsWith(".")) chosenRemote = chosenRemote.substring(1);
-
             LOG.debug("Sending chunk #{} to {}", dataChunk == null ? "ACK" : dataChunk.sequenceId, chosenRemote);
 
-            chosenWorker.sendMessageAsync(Collections.singletonList(chosenRemote), s.sessionId, MessagesP.PayloadType.SESSION, packetBuilder.build().toByteString());
 
             if (dataChunk != null) {
-                s.sentQ.put(dataChunk, System.currentTimeMillis());
+                chosenWorker.sendWinsizeTrackedPacket(chosenRemote);
+                s.sentQ.put(dataChunk, new Session.SentLog(System.currentTimeMillis(), chosenWorker));
                 if (s.latestSentSeqId + 1 == dataChunk.sequenceId) {
                     s.sentBytesIntegral.putIfAbsent(dataChunk.sequenceId, s.sentBytesIntegral.get(s.latestSentSeqId) + dataChunk.data.size());
                     s.latestSentSeqId = dataChunk.sequenceId;
                 }
             }
+            chosenWorker.sendMessageAsync(Collections.singletonList(chosenRemote), s.sessionId, MessagesP.PayloadType.SESSION, packetBuilder.build().toByteString());
             s.lastSentAck = System.currentTimeMillis();
             return (s.resendQ.size() + s.sendQ.size()) != 0 /* && still available win_size slot */;
+
         }
+    }
+
+    boolean flushDataChunk(Session s) throws InterruptedException {
+        while (s.resendQ.isEmpty() && !s.sendQ.isEmpty() && s.sentBytesIntegral.get(s.latestSentSeqId) + s.sendQ.peek().data.size() <= s.winSize) {
+            Thread.sleep(300); // Wait for remote winsize to open
+            // TODO proper sleep and notify
+        }
+
+        int workerI = -1;
+        while (workerI == -1) {
+            final ArrayList<Integer> availableMulticlients = new ArrayList<>(s.ownMulticlients);
+            for (int i = 0; i < s.ownMulticlients; i++) {
+                if (ct.multiclients.get(i).getAssociatedCM().isWinSizeAvailable(s.remoteIdentifier)) {
+                    availableMulticlients.add(i);
+                }
+            }
+            if (!availableMulticlients.isEmpty()) {
+                workerI = (int)(Math.random() * availableMulticlients.size());
+            } else {
+                Thread.sleep(300);
+            }
+        }
+
+        final ClientMessageWorkers chosenWorker = ct.multiclients.get(workerI).getAssociatedCM();
+        String chosenRemote = s.prefixes.get(workerI) + "." + s.remoteIdentifier;
+        if (chosenRemote.startsWith(".")) chosenRemote = chosenRemote.substring(1);
+
+        return flushDataChunk(s, chosenWorker, chosenRemote);
     }
 
     private void establishSession(Session s) {
