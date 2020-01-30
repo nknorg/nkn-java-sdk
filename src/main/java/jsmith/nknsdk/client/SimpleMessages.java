@@ -1,7 +1,7 @@
 package jsmith.nknsdk.client;
 
 import com.google.protobuf.ByteString;
-import jsmith.nknsdk.network.ClientMessageWorkers;
+import jsmith.nknsdk.network.ClientMessageWorker;
 import jsmith.nknsdk.network.proto.MessagesP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +23,9 @@ public class SimpleMessages {
 
     private static final Logger LOG = LoggerFactory.getLogger(SimpleMessages.class);
 
-    private final ClientMessageWorkers cmWorkers;
-    SimpleMessages(ClientMessageWorkers cmWorkers) {
-        this.cmWorkers = cmWorkers;
+    private final ClientMessageWorker cmWorker;
+    SimpleMessages(ClientMessageWorker cmWorker) {
+        this.cmWorker = cmWorker;
     }
 
     private Function<SimpleMessages.ReceivedMessage, Object> onMessageL = null;
@@ -65,7 +65,7 @@ public class SimpleMessages {
                 .build();
 
         LOG.debug("Sending text message: {}", message);
-        return cmWorkers.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, MessagesP.PayloadType.TEXT, td.toByteString()).get(0);
+        return cmWorker.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, MessagesP.PayloadType.TEXT, td.toByteString()).get(0);
     }
 
     public CompletableFuture<ReceivedMessage> sendBinaryAsync(String destinationFullIdentifier, byte[] message) {
@@ -82,12 +82,12 @@ public class SimpleMessages {
 
     public CompletableFuture<ReceivedMessage> sendBinaryAsync(String destinationFullIdentifier, ByteString replyTo, ByteString message) {
         LOG.debug("Sending binary message");
-        return cmWorkers.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, MessagesP.PayloadType.BINARY, message).get(0);
+        return cmWorker.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, MessagesP.PayloadType.BINARY, message).get(0);
     }
 
     public CompletableFuture<ReceivedMessage> sendAsync(String destinationFullIdentifier, ByteString replyTo, Object message) {
         LOG.debug("Sending multicast message");
-        return cmWorkers.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, message).get(0);
+        return cmWorker.sendMessageAsync(Collections.singletonList(destinationFullIdentifier), replyTo, message).get(0);
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendTextMulticastAsync(String[] destinationFullIdentifier, String message) {
@@ -128,7 +128,7 @@ public class SimpleMessages {
                 .build();
 
         LOG.debug("Sending multicast text message: {}", message);
-        return cmWorkers.sendMessageAsync(destinationFullIdentifier, replyTo, MessagesP.PayloadType.TEXT, td.toByteString());
+        return cmWorker.sendMessageAsync(destinationFullIdentifier, replyTo, MessagesP.PayloadType.TEXT, td.toByteString());
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendBinaryMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, byte[] message) {
@@ -137,12 +137,12 @@ public class SimpleMessages {
 
     public List<CompletableFuture<ReceivedMessage>> sendBinaryMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, ByteString message) {
         LOG.debug("Sending multicast binary message");
-        return cmWorkers.sendMessageAsync(destinationFullIdentifier, replyTo, MessagesP.PayloadType.BINARY, message);
+        return cmWorker.sendMessageAsync(destinationFullIdentifier, replyTo, MessagesP.PayloadType.BINARY, message);
     }
 
     public List<CompletableFuture<ReceivedMessage>> sendMulticastAsync(List<String> destinationFullIdentifier, ByteString replyTo, Object message) {
         LOG.debug("Sending multicast message");
-        return cmWorkers.sendMessageAsync(destinationFullIdentifier, replyTo, message);
+        return cmWorker.sendMessageAsync(destinationFullIdentifier, replyTo, message);
     }
 
 
@@ -175,7 +175,7 @@ public class SimpleMessages {
         for (NKNExplorer.Subscription.Subscriber sub : subscribers) dest.add(sub.fullClientIdentifier);
 
         LOG.debug("Publishing message");
-        return cmWorkers.sendMessageAsync(dest, null, type, data);
+        return cmWorker.sendMessageAsync(dest, null, type, data);
     }
 
 

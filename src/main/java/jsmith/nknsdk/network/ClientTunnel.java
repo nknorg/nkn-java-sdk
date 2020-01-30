@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,14 +40,14 @@ public class ClientTunnel {
 
     private static int id = 0;
     final int myId;
-    private final ClientMessageWorkers cm;
+    private final ClientMessageWorker cm;
     final NKNClient forClient;
     final ArrayList<ClientTunnel> multiclients = new ArrayList<>();
     public ClientTunnel(Identity identity, NKNClient forClient) {
         this.identity = identity;
         this.myId = ++id;
         this.forClient = forClient;
-        cm = new ClientMessageWorkers(this, myId);
+        cm = new ClientMessageWorker(this, myId);
     }
 
     boolean running = false;
@@ -77,7 +76,7 @@ public class ClientTunnel {
         }
     }
 
-    public ClientMessageWorkers getAssociatedCM() {
+    public ClientMessageWorker getAssociatedCM() {
         return cm;
     }
 

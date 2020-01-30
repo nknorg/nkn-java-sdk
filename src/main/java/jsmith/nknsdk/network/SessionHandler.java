@@ -68,7 +68,7 @@ public class SessionHandler extends Thread {
 
     private final HashMap<SessionKey, Session> activeSessions = new HashMap<>();
 
-    void onMessage(ClientMessageWorkers cmw, String fromRaw, ByteString sessionId, ByteString bytes) {
+    void onMessage(ClientMessageWorker cmw, String fromRaw, ByteString sessionId, ByteString bytes) {
         String prefix = fromRaw.contains(".") ? fromRaw.substring(0, fromRaw.indexOf(".")) : "";
         String from = fromRaw;
         if (prefix.matches("^__\\d+__$")) {
@@ -104,7 +104,7 @@ public class SessionHandler extends Thread {
                         s.ownMulticlients = Math.min(s.prefixes.size(), s.ownMulticlients);
 
                         for (int i = 0; i < s.ownMulticlients; i++) {
-                            ct.multiclients.get(i).getAssociatedCM().trackWinSize(s.remoteIdentifier, ClientMessageWorkers.DEFAULT_INITIAL_CONNECTION_WINSIZE);
+                            ct.multiclients.get(i).getAssociatedCM().trackWinSize(s.remoteIdentifier, ClientMessageWorker.DEFAULT_INITIAL_CONNECTION_WINSIZE);
                         }
 
                         try {
@@ -123,7 +123,7 @@ public class SessionHandler extends Thread {
                     // TODO flush and close
                 } else {
                     if (sequenceId != 0) {
-                        s.onReceivedChunk(sequenceId, data.getData());
+                        s.onReceivedChunk(sequenceId, data.getData(), cmw);
                     }
                     if (ackSeqLength > 0) {
                         for (int i = 0; i < ackSeqLength; i++) {
@@ -155,7 +155,7 @@ public class SessionHandler extends Thread {
                         }
                         establishSession(s);
                         for (int i = 0; i < s.ownMulticlients; i++) {
-                            ct.multiclients.get(i).getAssociatedCM().trackWinSize(s.remoteIdentifier, ClientMessageWorkers.DEFAULT_INITIAL_CONNECTION_WINSIZE);
+                            ct.multiclients.get(i).getAssociatedCM().trackWinSize(s.remoteIdentifier, ClientMessageWorker.DEFAULT_INITIAL_CONNECTION_WINSIZE);
                         }
                         s.isEstablished = true;
                         if (s.onSessionEstablishedCb != null) {
@@ -191,7 +191,6 @@ public class SessionHandler extends Thread {
 
             boolean remaining = true;
             while (remaining) { // Somewhat balance all active sessions, but don't wait if there is data to be send remaining
-                // TODO available and not available connections
                 remaining = false;
                 for (Session s : activeSessions.values()) {
                     if (s.isEstablished) {
@@ -222,7 +221,7 @@ public class SessionHandler extends Thread {
         }
     }
 
-    private boolean flushDataChunk(Session s, ClientMessageWorkers chosenWorker, String chosenRemote) throws InterruptedException {
+    private boolean flushDataChunk(Session s, ClientMessageWorker chosenWorker, String chosenRemote) throws InterruptedException {
         // Assuming the worker is available
         synchronized (s.sendQ) {
             Session.DataChunk dataChunk = null;
@@ -230,7 +229,7 @@ public class SessionHandler extends Thread {
                 dataChunk = s.resendQ.take();
             } else if (!s.sendQ.isEmpty() && s.sentBytesIntegral.get(s.latestSentSeqId) + s.sendQ.peek().data.size() <= s.winSize) {
                 dataChunk = s.sendQ.take();
-            } else if (System.currentTimeMillis() - s.lastSentAck < 50 || s.pendingAcks.isEmpty()) {
+            } else if (s.pendingAcks.isEmpty()) {
                 return false;
             }
 
@@ -246,9 +245,13 @@ public class SessionHandler extends Thread {
             Iterator<Session.AckBundle> acks = s.pendingAcks.iterator();
             for (int aI = 0; aI < 32 && acks.hasNext(); aI++) {
                 final Session.AckBundle ack = acks.next();
-                packetBuilder.addAckStartSeq(ack.startSeq);
-                packetBuilder.addAckSeqCount(ack.count);
-                acks.remove();
+                if (ack.worker != chosenWorker) {
+                    aI --;
+                } else {
+                    packetBuilder.addAckStartSeq(ack.startSeq);
+                    packetBuilder.addAckSeqCount(ack.count);
+                    acks.remove();
+                }
             }
 
             LOG.debug("Sending chunk #{} to {}", dataChunk == null ? "ACK" : dataChunk.sequenceId, chosenRemote);
@@ -263,8 +266,7 @@ public class SessionHandler extends Thread {
                 }
             }
             chosenWorker.sendMessageAsync(Collections.singletonList(chosenRemote), s.sessionId, MessagesP.PayloadType.SESSION, packetBuilder.build().toByteString());
-            s.lastSentAck = System.currentTimeMillis();
-            return (s.resendQ.size() + s.sendQ.size()) != 0 /* && still available win_size slot */;
+            return !s.resendQ.isEmpty() || (!s.sendQ.isEmpty() && s.sentBytesIntegral.get(s.latestSentSeqId) + s.sendQ.peek().data.size() <= s.winSize);
 
         }
     }
@@ -290,7 +292,7 @@ public class SessionHandler extends Thread {
             }
         }
 
-        final ClientMessageWorkers chosenWorker = ct.multiclients.get(workerI).getAssociatedCM();
+        final ClientMessageWorker chosenWorker = ct.multiclients.get(workerI).getAssociatedCM();
         String chosenRemote = s.prefixes.get(workerI) + "." + s.remoteIdentifier;
         if (chosenRemote.startsWith(".")) chosenRemote = chosenRemote.substring(1);
 

@@ -1,9 +1,8 @@
 package jsmith.nknsdk.client;
 
 import com.google.protobuf.ByteString;
-import jsmith.nknsdk.network.ClientMessageWorkers;
+import jsmith.nknsdk.network.ClientMessageWorker;
 import jsmith.nknsdk.network.ClientTunnel;
-import jsmith.nknsdk.network.Session;
 import jsmith.nknsdk.network.SessionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,7 @@ public class NKNClient {
     private static final Logger LOG = LoggerFactory.getLogger(NKNClient.class);
 
     private final ClientTunnel clientTunnel;
-    private final ClientMessageWorkers clientMessageWorkers;
+    private final ClientMessageWorker clientMessageWorker;
     private final SimpleMessages simpleMessages;
     private final Identity identity;
     private final SessionHandler sessionHandler;
@@ -25,8 +24,8 @@ public class NKNClient {
     public NKNClient(Identity identity) {
         this.identity = identity;
         this.clientTunnel = new ClientTunnel(identity, this);
-        this.clientMessageWorkers = clientTunnel.getAssociatedCM();
-        this.simpleMessages = new SimpleMessages(this.clientMessageWorkers);
+        this.clientMessageWorker = clientTunnel.getAssociatedCM();
+        this.simpleMessages = new SimpleMessages(this.clientMessageWorker);
         this.sessionHandler = new SessionHandler(clientTunnel);
     }
 

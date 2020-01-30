@@ -19,9 +19,9 @@ import java.util.concurrent.*;
 /**
  *
  */
-public class ClientMessageWorkers {
+public class ClientMessageWorker {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ClientMessageWorkers.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ClientMessageWorker.class);
 
     public static final int MAX_CONNECTION_WINSIZE = 256;
     public static final int DEFAULT_INITIAL_CONNECTION_WINSIZE = 16;
@@ -39,7 +39,7 @@ public class ClientMessageWorkers {
     private boolean running = false;
     private ExecutorService events;
 
-    public ClientMessageWorkers(ClientTunnel ct, int myId) {
+    public ClientMessageWorker(ClientTunnel ct, int myId) {
         this.ct = ct;
 
         events = Executors.newFixedThreadPool(5);

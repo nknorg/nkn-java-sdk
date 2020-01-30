@@ -198,7 +198,6 @@ public class Session {
 
     // Acks
     final ArrayList<AckBundle> pendingAcks = new ArrayList<>();
-    long lastSentAck = 0;
 
 
     void onReceivedAck(int startSeq, int count) {
@@ -232,7 +231,7 @@ public class Session {
         }
     }
 
-    void onReceivedChunk(int sequenceId, ByteString data) {
+    void onReceivedChunk(int sequenceId, ByteString data, ClientMessageWorker from) {
         LOG.debug("Received chunk, seq {}", sequenceId);
         receivedChunks.put(sequenceId, data);
         if (sequenceId == firstReceiveSequenceIdAvailable.get() + receivedAvailableChunks.get() + 1) {
@@ -250,6 +249,8 @@ public class Session {
         boolean within = false;
         for (int i = 0; i < pendingAcks.size(); i ++) {
             AckBundle ack = pendingAcks.get(i);
+            if (ack.worker != from) continue;
+
             if (ack.startSeq + ack.count == sequenceId) {
                 ack.count += 1;
                 appendedI = i;
@@ -266,6 +267,8 @@ public class Session {
             boolean prepended = false;
             for (int i = 0; i < pendingAcks.size(); i++) {
                 AckBundle ack = pendingAcks.get(i);
+                if (ack.worker != from) continue;
+
                 if (ack.startSeq - 1 == sequenceId) {
                     ack.startSeq -= 1;
                     ack.count += 1;
@@ -281,7 +284,7 @@ public class Session {
             if (mergedI != -1) pendingAcks.remove(mergedI);
 
             if (appendedI == -1 && !prepended) {
-                pendingAcks.add(new AckBundle(sequenceId, 1));
+                pendingAcks.add(new AckBundle(from, sequenceId, 1));
             }
         }
 
@@ -292,9 +295,11 @@ public class Session {
     }
 
     static class AckBundle {
+        final ClientMessageWorker worker;
         int startSeq;
         int count;
-        AckBundle(int startSeq, int count) {
+        AckBundle(ClientMessageWorker w, int startSeq, int count) {
+            this.worker = w;
             this.startSeq = startSeq;
             this.count = count;
         }
@@ -311,8 +316,8 @@ public class Session {
 
     static class SentLog {
         final long sentAt;
-        final ClientMessageWorkers sentBy;
-        SentLog(long sentAt, ClientMessageWorkers sentBy) {
+        final ClientMessageWorker sentBy;
+        SentLog(long sentAt, ClientMessageWorker sentBy) {
             this.sentAt = sentAt;
             this.sentBy = sentBy;
         }
