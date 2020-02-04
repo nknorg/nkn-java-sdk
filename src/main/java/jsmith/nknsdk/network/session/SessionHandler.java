@@ -299,7 +299,7 @@ public class SessionHandler extends Thread {
     }
 
     void waitForFlush(Session s) throws InterruptedException {
-        // TODO block until send buffer opens
+        // TODO block properly, using wait and notify
         boolean workerAvailable = false;
         for (int i = 0; i < s.ownMulticlients; i++) {
             workerAvailable |= ct.multiclients.get(i).getAssociatedCM().isWinSizeAvailable(s.remoteIdentifier);

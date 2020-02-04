@@ -187,54 +187,74 @@ public class ClientMessageWorker {
 
 
 
+    private final Object winSizeLock = new Object();
     private final HashMap<String, Integer> maxWinSize = new HashMap<>();
     private final HashMap<String, Integer> usedWinSize = new HashMap<>();
     private final HashMap<String, Integer> trackedRto = new HashMap<>();
+    private final ConcurrentHashMap<String, Object> trackedLock = new ConcurrentHashMap<>();
 
     public void trackWinSize(String remote, int initialMaxWinSize) {
-        // TODO atomic
-        maxWinSize.putIfAbsent(remote, Math.min(MAX_CONNECTION_WINSIZE, Math.max(MIN_CONNECTION_WINSIZE, initialMaxWinSize)));
-        usedWinSize.putIfAbsent(remote, 0);
-        trackedRto.putIfAbsent(remote, ConnectionProvider.messageAckTimeoutMS());
+        synchronized (winSizeLock) {
+            maxWinSize.putIfAbsent(remote, Math.min(MAX_CONNECTION_WINSIZE, Math.max(MIN_CONNECTION_WINSIZE, initialMaxWinSize)));
+            usedWinSize.putIfAbsent(remote, 0);
+            trackedRto.putIfAbsent(remote, INITIAL_RTO);
+            trackedLock.putIfAbsent(remote, new Object());
+        }
     }
     public boolean isWinSizeAvailable(String remote) {
-        // TODO atomic
-        int max = maxWinSize.getOrDefault(remote, -1);
-        if (max == -1) return true; // We don't track winsize for this connection
-        return usedWinSize.get(remote) < max;
+        synchronized (winSizeLock) {
+            int max = maxWinSize.getOrDefault(remote, -1);
+            if (max == -1) return true; // We don't track winsize for this connection
+            return usedWinSize.get(remote) < max;
+        }
     }
     public void onWinsizeAckTimeout(String remote) {
-        // TODO atomic
-        if (!maxWinSize.containsKey(remote)) return;
-        usedWinSize.put(remote, Math.max(0, usedWinSize.get(remote) - 1));
-        maxWinSize.put(remote, Math.max(MIN_CONNECTION_WINSIZE, maxWinSize.get(remote) / 2));
+        synchronized (winSizeLock) {
+            if (!maxWinSize.containsKey(remote)) return;
+            usedWinSize.put(remote, Math.max(0, usedWinSize.get(remote) - 1));
+            maxWinSize.put(remote, Math.max(MIN_CONNECTION_WINSIZE, maxWinSize.get(remote) / 2));
+        }
+        final Object remoteLock = trackedLock.get(remote);
+        synchronized (remoteLock) {
+            remoteLock.notify();
+        }
     }
     public void onWinsizeAckReceived(String remote, int rttMs) {
-        // TODO atomic
-        if (!maxWinSize.containsKey(remote)) return;
-        usedWinSize.put(remote, Math.max(0, usedWinSize.get(remote) - 1));
-        maxWinSize.put(remote, Math.min(MAX_CONNECTION_WINSIZE, maxWinSize.get(remote) + 1));
+        synchronized (winSizeLock) {
+            if (!maxWinSize.containsKey(remote)) return;
+            usedWinSize.put(remote, Math.max(0, usedWinSize.get(remote) - 1));
+            maxWinSize.put(remote, Math.min(MAX_CONNECTION_WINSIZE, maxWinSize.get(remote) + 1));
 
-        int rto = trackedRto.get(remote);
-        //noinspection IntegerDivisionInFloatingPointContext
-        trackedRto.put(remote, (int)(rto + Math.tanh((3 * rttMs - rto) / 1000) * 100));
-
+            int rto = trackedRto.get(remote);
+            //noinspection IntegerDivisionInFloatingPointContext
+            trackedRto.put(remote, (int) (rto + Math.tanh((3 * rttMs - rto) / 1000) * 100));
+        }
+        final Object remoteLock = trackedLock.get(remote);
+        synchronized (remoteLock) {
+            remoteLock.notify();
+        }
     }
     public void sendWinsizeTrackedPacket(String remote) {
-        // TODO atomic
-        while (!isWinSizeAvailable(remote)) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ignored) {}
+        final Object remoteLock = trackedLock.get(remote);
+        if (remoteLock == null) return;
+        synchronized (remoteLock) {
+            while(!isWinSizeAvailable(remote)) {
+                try {
+                    remoteLock.wait();
+                } catch (InterruptedException ignored) {}
+            }
         }
-        // TODO proper sleep and notify
 
-        if (usedWinSize.containsKey(remote)) {
-            usedWinSize.put(remote, usedWinSize.get(remote) + 1);
+        synchronized (winSizeLock) {
+            if (usedWinSize.containsKey(remote)) {
+                usedWinSize.put(remote, usedWinSize.get(remote) + 1);
+            }
         }
     }
     public int getTrackedRto(String remote) {
-        return trackedRto.getOrDefault(remote, ConnectionProvider.messageAckTimeoutMS());
+        synchronized (winSizeLock) {
+            return trackedRto.getOrDefault(remote, ConnectionProvider.messageAckTimeoutMS());
+        }
     }
 
 
