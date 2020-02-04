@@ -4,7 +4,7 @@ import com.darkyen.tproll.TPLogger;
 import jsmith.nknsdk.client.Identity;
 import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
-import jsmith.nknsdk.client.SimpleMessages;
+import jsmith.nknsdk.client.SimpleMessagesProtocol;
 import jsmith.nknsdk.wallet.Wallet;
 import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
@@ -63,7 +63,7 @@ public class SimpleEx {
         System.out.println("Started!");
         Thread.sleep(500);
 
-        final CompletableFuture<SimpleMessages.ReceivedMessage> promise = clientA.simpleMessagesProtocol().sendTextAsync(identityB.getFullIdentifier(), "Hello!");
+        final CompletableFuture<SimpleMessagesProtocol.ReceivedMessage> promise = clientA.simpleMessagesProtocol().sendTextAsync(identityB.getFullIdentifier(), "Hello!");
         promise.whenComplete((response, error) -> {
             if (error == null) {
                 System.out.println("A: " + (response.wasEncrypted ? "Encrypted" : "UNENCRYPTED") + " response ==> " + response.textData);

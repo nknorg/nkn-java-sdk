@@ -7,6 +7,7 @@ import jsmith.nknsdk.client.Identity;
 import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
 import jsmith.nknsdk.network.proto.MessagesP;
+import jsmith.nknsdk.network.session.SessionHandler;
 import jsmith.nknsdk.utils.CountLatch;
 import org.bouncycastle.util.encoders.DecoderException;
 import org.bouncycastle.util.encoders.Hex;
@@ -42,12 +43,17 @@ public class ClientTunnel {
     final int myId;
     private final ClientMessageWorker cm;
     final NKNClient forClient;
-    final ArrayList<ClientTunnel> multiclients = new ArrayList<>();
+    public final ArrayList<ClientTunnel> multiclients = new ArrayList<>();
+    private final SessionHandler handler;
     public ClientTunnel(Identity identity, NKNClient forClient) {
+        this(identity, forClient, null);
+    }
+    ClientTunnel(Identity identity, NKNClient forClient, SessionHandler handler) {
         this.identity = identity;
         this.myId = ++id;
         this.forClient = forClient;
-        cm = new ClientMessageWorker(this, myId);
+        this.handler = handler == null ? new SessionHandler(this, myId) : handler;
+        cm = new ClientMessageWorker(this, myId, this.handler);
     }
 
     boolean running = false;
@@ -65,19 +71,24 @@ public class ClientTunnel {
     }
 
     private AtomicInteger multiclientPrefix = new AtomicInteger(0);
-    void ensureMulticlients(int multiclientCount) throws NKNClientException {
+    public void ensureMulticlients(int multiclientCount) throws NKNClientException {
         LOG.debug("Ensuring {} multiclients", multiclientCount);
+        // TODO create multiclients in parallel
         while (multiclients.size() < multiclientCount) {
             final String prefix = "__" + multiclientPrefix.getAndIncrement() + "__.";
             final Identity id = new Identity(prefix + identity.name, identity.wallet);
-            final ClientTunnel ct = new ClientTunnel(id, forClient);
+            final ClientTunnel ct = new ClientTunnel(id, forClient, handler);
             multiclients.add(ct);
             if (running) ct.startClient();
         }
+        // TODO close those that we dont need anymore?
     }
 
     public ClientMessageWorker getAssociatedCM() {
         return cm;
+    }
+    public SessionHandler getAssociatedSessionHandler() {
+        return handler;
     }
 
     private void reconnect() throws NKNClientException {

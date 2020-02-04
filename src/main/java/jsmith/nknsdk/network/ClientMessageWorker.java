@@ -4,8 +4,9 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
-import jsmith.nknsdk.client.SimpleMessages;
+import jsmith.nknsdk.client.SimpleMessagesProtocol;
 import jsmith.nknsdk.network.proto.MessagesP;
+import jsmith.nknsdk.network.session.SessionHandler;
 import jsmith.nknsdk.utils.Crypto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +40,11 @@ public class ClientMessageWorker {
     private boolean running = false;
     private ExecutorService events;
 
-    public ClientMessageWorker(ClientTunnel ct, int myId) {
+    private final SessionHandler sessionHandler;
+
+    public ClientMessageWorker(ClientTunnel ct, int myId, SessionHandler sessionHandler) {
         this.ct = ct;
+        this.sessionHandler = sessionHandler;
 
         events = Executors.newFixedThreadPool(5);
 
@@ -73,7 +77,7 @@ public class ClientMessageWorker {
                         final MessageJob job = timerQ.take();
                         Thread.sleep(Math.max(job.timeoutAt - System.currentTimeMillis(), 0));
 
-                        for (CompletableFuture<SimpleMessages.ReceivedMessage> p : job.promise) {
+                        for (CompletableFuture<SimpleMessagesProtocol.ReceivedMessage> p : job.promise) {
                             events.submit(() -> p.completeExceptionally(new NKNClientException.MessageAckTimeout(job.messageID)));
                         }
 
@@ -119,19 +123,19 @@ public class ClientMessageWorker {
             LOG.warn("Received message of TEXT type, but the content isn't valid text");
         }
 
-        final SimpleMessages.ReceivedMessage receivedMessage = new SimpleMessages.ReceivedMessage(
+        final SimpleMessagesProtocol.ReceivedMessage receivedMessage = new SimpleMessagesProtocol.ReceivedMessage(
             from, messageID, isEncrypted, type, type == MessagesP.PayloadType.TEXT ? text : type == MessagesP.PayloadType.BINARY ? data : null
         );
 
         if (type == MessagesP.PayloadType.SESSION) {
-            ct.forClient.sessionProtocol().onMessage(this, from, messageID, data);
+            sessionHandler.onMessage(this, from, messageID, data);
         } else {
 
             final MessageJob job = inboundQ.get(replyTo);
             if (job != null) {
                 for (int i = 0; i < job.destination.size(); i++) {
                     if (job.destination.get(i).equalsIgnoreCase(from)) {
-                        final CompletableFuture<SimpleMessages.ReceivedMessage> p = job.promise.get(i);
+                        final CompletableFuture<SimpleMessagesProtocol.ReceivedMessage> p = job.promise.get(i);
                         events.submit(() -> p.complete(receivedMessage));
                     }
                 }
@@ -197,7 +201,6 @@ public class ClientMessageWorker {
         // TODO atomic
         int max = maxWinSize.getOrDefault(remote, -1);
         if (max == -1) return true; // We don't track winsize for this connection
-
         return usedWinSize.get(remote) < max;
     }
     public void onWinsizeAckTimeout(String remote) {
@@ -236,7 +239,7 @@ public class ClientMessageWorker {
 
 
 
-    public List<CompletableFuture<SimpleMessages.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, Object message) throws NKNClientException.UnknownObjectType {
+    public List<CompletableFuture<SimpleMessagesProtocol.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, Object message) throws NKNClientException.UnknownObjectType {
         if (message instanceof String) {
             return sendMessageAsync(destination, replyTo, MessagesP.PayloadType.TEXT, MessagesP.TextData.newBuilder().setText((String) message).build().toByteString());
         } else if (message instanceof ByteString) {
@@ -249,12 +252,12 @@ public class ClientMessageWorker {
         }
     }
 
-    public List<CompletableFuture<SimpleMessages.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, MessagesP.PayloadType type, ByteString message) {
+    public List<CompletableFuture<SimpleMessagesProtocol.ReceivedMessage>> sendMessageAsync(List<String> destination, ByteString replyTo, MessagesP.PayloadType type, ByteString message) {
         final ByteString replyToMessageID = replyTo == null ? ByteString.copyFrom(new byte[0]) : replyTo;
 
         if (ct.forClient.getEncryptionLevel() == NKNClient.EncryptionLevel.CONVERT_MULTICAST_TO_UNICAST_AND_ENCRYPT) {
 
-            final List<CompletableFuture<SimpleMessages.ReceivedMessage>> promises = new ArrayList<>();
+            final List<CompletableFuture<SimpleMessagesProtocol.ReceivedMessage>> promises = new ArrayList<>();
 
             for (String d : destination) {
                 final ByteString messageID = type == MessagesP.PayloadType.SESSION ? replyTo : ByteString.copyFrom(Crypto.nextRandom4B());
@@ -301,10 +304,10 @@ public class ClientMessageWorker {
         }
     }
 
-    private List<CompletableFuture<SimpleMessages.ReceivedMessage>> sendEncryptedMessage(List<String> destination, ByteString messageID, ByteString payload, boolean noreplyQ) {
+    private List<CompletableFuture<SimpleMessagesProtocol.ReceivedMessage>> sendEncryptedMessage(List<String> destination, ByteString messageID, ByteString payload, boolean noreplyQ) {
         if (destination.size() == 0) throw new IllegalArgumentException("At least one address is required for multicast");
 
-        final ArrayList<CompletableFuture<SimpleMessages.ReceivedMessage>> promises = new ArrayList<>();
+        final ArrayList<CompletableFuture<SimpleMessagesProtocol.ReceivedMessage>> promises = new ArrayList<>();
         for (String identity : destination) {
             if (identity == null || identity.isEmpty()) throw new IllegalArgumentException("Destination identity is null or empty");
             promises.add(new CompletableFuture<>());
@@ -365,12 +368,12 @@ public class ClientMessageWorker {
 
         private final List<String> destination;
         private final ByteString messageID, payload;
-        private final List<CompletableFuture<SimpleMessages.ReceivedMessage>> promise;
+        private final List<CompletableFuture<SimpleMessagesProtocol.ReceivedMessage>> promise;
         private final long timeoutIn;
         private long timeoutAt = -1;
         private final boolean noreplyQ;
 
-        MessageJob(List<String> destination, ByteString messageID, ByteString payload, List<CompletableFuture<SimpleMessages.ReceivedMessage>> promise, long timeoutIn, boolean noreplyQ) {
+        MessageJob(List<String> destination, ByteString messageID, ByteString payload, List<CompletableFuture<SimpleMessagesProtocol.ReceivedMessage>> promise, long timeoutIn, boolean noreplyQ) {
             this.destination = destination;
             this.messageID = messageID;
             this.payload = payload;

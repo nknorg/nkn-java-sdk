@@ -4,7 +4,7 @@ import com.darkyen.tproll.TPLogger;
 import jsmith.nknsdk.client.Identity;
 import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
-import jsmith.nknsdk.client.SimpleMessages;
+import jsmith.nknsdk.client.SimpleMessagesProtocol;
 import jsmith.nknsdk.wallet.Wallet;
 import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class MulticastEx {
         LOG.info("All clients ready, broadcasting");
 
         // Change one of the addresses or dont start one client to see what happens if the message is not sent and received correctly
-        final List<CompletableFuture<SimpleMessages.ReceivedMessage>> promises = clientSender.simpleMessagesProtocol().sendTextMulticastAsync(new String[] {
+        final List<CompletableFuture<SimpleMessagesProtocol.ReceivedMessage>> promises = clientSender.simpleMessagesProtocol().sendTextMulticastAsync(new String[] {
                 identityA.getFullIdentifier(),
                 identityB.getFullIdentifier(),
                 identityC.getFullIdentifier()

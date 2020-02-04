@@ -1,9 +1,7 @@
 package jsmith.nknsdk.client;
 
 import com.google.protobuf.ByteString;
-import jsmith.nknsdk.network.ClientMessageWorker;
 import jsmith.nknsdk.network.ClientTunnel;
-import jsmith.nknsdk.network.SessionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,17 +14,15 @@ public class NKNClient {
     private static final Logger LOG = LoggerFactory.getLogger(NKNClient.class);
 
     private final ClientTunnel clientTunnel;
-    private final ClientMessageWorker clientMessageWorker;
-    private final SimpleMessages simpleMessages;
+    private final SimpleMessagesProtocol simpleMessagesProtocol;
     private final Identity identity;
-    private final SessionHandler sessionHandler;
+    private final SessionProtocol sessionProtocol;
 
     public NKNClient(Identity identity) {
         this.identity = identity;
         this.clientTunnel = new ClientTunnel(identity, this);
-        this.clientMessageWorker = clientTunnel.getAssociatedCM();
-        this.simpleMessages = new SimpleMessages(this.clientMessageWorker);
-        this.sessionHandler = new SessionHandler(clientTunnel);
+        this.simpleMessagesProtocol = new SimpleMessagesProtocol(clientTunnel.getAssociatedCM());
+        this.sessionProtocol = new SessionProtocol(clientTunnel.getAssociatedSessionHandler());
     }
 
     public NKNClient start() throws NKNClientException {
@@ -35,15 +31,16 @@ public class NKNClient {
     }
 
     public void close() {
+        sessionProtocol.close();
         clientTunnel.close();
     }
 
-    public SimpleMessages simpleMessagesProtocol() {
-        return simpleMessages;
+    public SimpleMessagesProtocol simpleMessagesProtocol() {
+        return simpleMessagesProtocol;
     }
 
-    public SessionHandler sessionProtocol() {
-        return sessionHandler;
+    public SessionProtocol sessionProtocol() {
+        return sessionProtocol;
     }
 
 

@@ -4,19 +4,16 @@ import com.darkyen.tproll.TPLogger;
 import jsmith.nknsdk.client.Identity;
 import jsmith.nknsdk.client.NKNClient;
 import jsmith.nknsdk.client.NKNClientException;
-import jsmith.nknsdk.client.SimpleMessages;
-import jsmith.nknsdk.network.Session;
+import jsmith.nknsdk.network.session.Session;
+import jsmith.nknsdk.network.session.SessionOutputStream;
 import jsmith.nknsdk.wallet.Wallet;
-import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CompletableFuture;
 
 /**
  *
@@ -26,7 +23,7 @@ public class SessionEx {
     private static final Logger LOG = LoggerFactory.getLogger(SessionEx.class);
 
     public static void main(String[] args) throws InterruptedException {
-        LogUtils.setupLogging(TPLogger.DEBUG);
+        LogUtils.setupLogging(TPLogger.INFO);
 
         final Identity identityA = new Identity("Client A", Wallet.createNew());
         final Identity identityB = new Identity("Client B", Wallet.createNew());
@@ -57,15 +54,26 @@ public class SessionEx {
                         InputStream bIs = sB.getInputStream();
                         try {
 
-                            byte[] buffer = new byte[100];
+                            byte[] buffer = new byte[1024 * 1024];
+                            int redtotal = 0;
                             int red = bIs.read(buffer);
+                            int lastMb = 0;
+                            long thisTime, lastTime = System.currentTimeMillis();
                             while (red != -1) {
                                 if (red > 0) {
-                                    String received = new String(buffer, 0, red, StandardCharsets.UTF_8);
-                                    System.out.println("Streamed to me: " + received);
+//                                    String received = new String(buffer, 0, red, StandardCharsets.UTF_8);
+//                                    System.out.println("Streamed to me: " + received);
+                                    redtotal += red;
+                                    if (redtotal / 1024 / 1024 > lastMb) {
+                                        lastMb = redtotal / 1024 / 1024;
+                                        thisTime = System.currentTimeMillis();
+                                        System.out.println("Streamed to me: " + lastMb + " MB (" + (1024 * 1000 / (thisTime - lastTime)) + "kB/s)");
+                                        lastTime = thisTime;
+                                    }
+                                } else {
+                                    Thread.sleep(500);
                                 }
                                 red = bIs.read(buffer);
-                                Thread.sleep(500);
                             }
                         } catch (IOException | InterruptedException e) {
                             LOG.error("IOException thrown when sending data");
@@ -84,9 +92,18 @@ public class SessionEx {
 
             sA.onSessionEstablished(() -> {
                 Thread t = new Thread(() -> {
-                    OutputStream aOs = sA.getOutputStream();
+                    SessionOutputStream aOs = sA.getOutputStream();
                     try {
-                        aOs.write("Some random text here".getBytes(StandardCharsets.UTF_8));
+//                        aOs.write("Some random text here".getBytes(StandardCharsets.UTF_8));
+//
+                        int sendData = 1024 * 1024 * 100; // 1M
+                        byte[] buffer = new byte[1024 * 1024];
+                        while (sendData > 0) {
+                            aOs.write(buffer);
+                            sendData -= buffer.length;
+                            System.out.println("Remaining to send " + sendData + " B");
+                        }
+
                         aOs.flush();
                         LOG.debug("Flushing some data, session A -> session B");
                     } catch (IOException e) {

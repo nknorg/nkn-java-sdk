@@ -17,19 +17,19 @@ import java.util.function.Function;
 /**
  *
  */
-public class SimpleMessages {
+public class SimpleMessagesProtocol {
 
     // TODO allocate message to multiclients
 
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleMessages.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleMessagesProtocol.class);
 
     private final ClientMessageWorker cmWorker;
-    SimpleMessages(ClientMessageWorker cmWorker) {
+    SimpleMessagesProtocol(ClientMessageWorker cmWorker) {
         this.cmWorker = cmWorker;
     }
 
-    private Function<SimpleMessages.ReceivedMessage, Object> onMessageL = null;
-    public SimpleMessages onNewMessage(Consumer<ReceivedMessage> listener) {
+    private Function<SimpleMessagesProtocol.ReceivedMessage, Object> onMessageL = null;
+    public SimpleMessagesProtocol onNewMessage(Consumer<ReceivedMessage> listener) {
         onMessageL = (msg) -> {
             listener.accept(msg);
             return null;
@@ -37,16 +37,16 @@ public class SimpleMessages {
         return this;
     }
 
-    public SimpleMessages onNewMessageWithReply(Function<ReceivedMessage, Object> listener) {
+    public SimpleMessagesProtocol onNewMessageWithReply(Function<ReceivedMessage, Object> listener) {
         onMessageL = listener;
         return this;
     }
-    public Function<SimpleMessages.ReceivedMessage, Object> getOnMessageListener() {
+    public Function<SimpleMessagesProtocol.ReceivedMessage, Object> getOnMessageListener() {
         return onMessageL;
     }
 
     private boolean noAutomaticACKs = false;
-    public SimpleMessages setNoAutomaticACKs(boolean noAutomaticACKs) {
+    public SimpleMessagesProtocol setNoAutomaticACKs(boolean noAutomaticACKs) {
         this.noAutomaticACKs  = noAutomaticACKs;
         return this;
     }
