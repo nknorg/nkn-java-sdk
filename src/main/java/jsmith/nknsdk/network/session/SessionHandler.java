@@ -33,10 +33,10 @@ public class SessionHandler extends Thread {
         start();
     }
 
-    public Session dialSession(String destinationFullIdentifier, int multiclientCount, String[] targetPrefixes) throws NKNClientException {
+    public Session dialSession(String destinationFullIdentifier, int multiclientsCount, String[] targetPrefixes, int maxMtu, int maxWindowSize) throws NKNClientException {
         if (isClosing) throw new IllegalStateException("SessionHandler is in closed state, cannot dial session");
 
-        final int multiclients = Math.min(multiclientCount, MAX_MULTICLIENTS);
+        final int multiclients = Math.min(multiclientsCount, MAX_MULTICLIENTS);
         ct.ensureMulticlients(multiclients);
 
         // TODO user cap multiclients
@@ -53,7 +53,7 @@ public class SessionHandler extends Thread {
             }
         }
 
-        final Session s = new Session(this, prefixes, multiclients, destinationFullIdentifier, ByteString.copyFrom(Crypto.nextRandom4B()), MAX_MTU, MAX_WIN_SIZE);
+        final Session s = new Session(this, prefixes, multiclients, destinationFullIdentifier, ByteString.copyFrom(Crypto.nextRandom4B()), maxMtu, maxWindowSize);
         activeSessions.put(new SessionKey(destinationFullIdentifier, s.sessionId), s);
         LOG.info("Dialing session");
         establishSession(s);
@@ -67,6 +67,17 @@ public class SessionHandler extends Thread {
 
 
     private final HashMap<SessionKey, Session> activeSessions = new HashMap<>();
+
+    private int preferredMtu = MAX_MTU, preferredMulticlients = DEFAULT_MULTICLIENTS, preferredWinSize = MAX_WIN_SIZE;
+    public void setIncomingPreferredMtu(int preferredMtu) {
+        this.preferredMtu = preferredMtu;
+    }
+    public void setIncomingPreferredMulticlients(int preferredMulticlients) {
+        this.preferredMulticlients = preferredMulticlients;
+    }
+    public void setIncomingPreferredWinSize(int preferredWinSize) {
+        this.preferredWinSize = preferredWinSize;
+    }
 
     public void onMessage(ClientMessageWorker cmw, String fromRaw, ByteString sessionId, ByteString bytes) {
         String prefix = fromRaw.contains(".") ? fromRaw.substring(0, fromRaw.indexOf(".")) : "";
@@ -94,26 +105,25 @@ public class SessionHandler extends Thread {
                     if (sequenceId == 0 && ackSeqLength == 0) { // Handshake request
                         if (!isClosing) {
                             if (!s.isEstablished) {
-                                s.isEstablished = true;
 
-
-                                final int mtu = data.getMtu();
-                                final int winSize = data.getWindowSize();
-                                s.mtu = Math.min(mtu, s.mtu);
-                                s.winSize = Math.min(winSize, s.winSize);
-                                s.prefixes = data.getIdentifierPrefixList();
-
-                                s.ownMulticlients = Math.min(s.prefixes.size(), s.ownMulticlients);
-
+                                try {
+                                    ct.ensureMulticlients(Math.min(s.prefixes.size(), s.ownMulticlients));
+                                } catch (NKNClientException e) {
+                                    LOG.warn("Failed to create multiclients", e);
+                                }
                                 for (int i = 0; i < s.ownMulticlients; i++) {
                                     ct.multiclients.get(i).getAssociatedCM().trackWinSize(s.remoteIdentifier, ClientMessageWorker.DEFAULT_INITIAL_CONNECTION_WINSIZE);
                                 }
 
-                                try {
-                                    ct.ensureMulticlients(s.ownMulticlients);
-                                } catch (NKNClientException e) {
-                                    LOG.warn("Failed to create multiclients", e);
-                                }
+                                final int mtu = data.getMtu();
+                                final int winSize = data.getWindowSize();
+                                s.establishSession(
+                                        data.getIdentifierPrefixList(),
+                                        Math.min(mtu, s.mtu),
+                                        Math.min(s.prefixes.size(), s.ownMulticlients),
+                                        Math.min(winSize, s.winSize)
+                                );
+
 
                                 LOG.info("Session has been established");
                                 if (s.onSessionEstablishedCb != null) {
@@ -149,7 +159,7 @@ public class SessionHandler extends Thread {
                         final int mtu = data.getMtu();
                         final int winSize = data.getWindowSize();
 
-                        s = new Session(this, data.getIdentifierPrefixList(), Math.min(DEFAULT_MULTICLIENTS, data.getIdentifierPrefixCount()), from, sessionId, Math.min(mtu, MAX_MTU), Math.min(winSize, MAX_WIN_SIZE));
+                        s = new Session(this, data.getIdentifierPrefixList(), data.getIdentifierPrefixCount(), from, sessionId, mtu, winSize);
 
                         synchronized (s.lock) {
 
@@ -163,11 +173,11 @@ public class SessionHandler extends Thread {
                                 } catch (NKNClientException e) {
                                     LOG.warn("Failed to create multiclients", e);
                                 }
-                                establishSession(s);
                                 for (int i = 0; i < s.ownMulticlients; i++) {
                                     ct.multiclients.get(i).getAssociatedCM().trackWinSize(s.remoteIdentifier, ClientMessageWorker.DEFAULT_INITIAL_CONNECTION_WINSIZE);
                                 }
-                                s.isEstablished = true;
+                                establishSession(s);
+                                s.establishSession(s.prefixes, Math.min(s.mtu, preferredMtu), Math.min(Math.min(MAX_MULTICLIENTS, preferredMulticlients), s.ownMulticlients), Math.min(s.winSize, preferredWinSize));
                                 if (s.onSessionEstablishedCb != null) {
                                     s.onSessionEstablishedCalled = true;
                                     s.onSessionEstablishedCb.run();

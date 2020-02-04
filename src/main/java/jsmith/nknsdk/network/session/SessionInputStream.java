@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 

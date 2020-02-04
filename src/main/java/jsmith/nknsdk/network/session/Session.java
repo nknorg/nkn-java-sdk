@@ -48,6 +48,21 @@ public class Session {
         is = new SessionInputStream(this);
     }
 
+    void establishSession(List<String> prefixes, int mtu, int ownMulticlients, int winSize) {
+        synchronized (this) {
+            isEstablished = true;
+            this.mtu = mtu;
+            this.prefixes = prefixes;
+            this.ownMulticlients = ownMulticlients;
+            this.winSize = winSize;
+
+            final int qSize = Math.max(winSize / mtu, ClientMessageWorker.MAX_CONNECTION_WINSIZE * ownMulticlients);
+
+            sendQ = new ArrayBlockingQueue<>(qSize + 16);
+            resendQ = new PriorityBlockingQueue<>(qSize + 32, Comparator.comparingInt(j -> j.sequenceId));
+        }
+    }
+
     Runnable onSessionEstablishedCb = null;
     boolean onSessionEstablishedCalled = false;
     public void onSessionEstablished(Runnable onSessionEstablished) {
@@ -71,15 +86,10 @@ public class Session {
     // Outbound
     private int latestConfirmedSeqId = 0;
     int latestSentSeqId = 0;
-    final BlockingQueue<DataChunk> sendQ = new ArrayBlockingQueue<>(
-            Math.max(SessionHandler.MAX_WIN_SIZE / SessionHandler.MAX_MTU, ClientMessageWorker.MAX_CONNECTION_WINSIZE * SessionHandler.MAX_MULTICLIENTS) + 16
-    );
+    BlockingQueue<DataChunk> sendQ;
     final HashMap<DataChunk, SentLog> sentQ = new HashMap<>();
     final HashMap<Integer, Integer> sentBytesIntegral = new HashMap<>();
-    final BlockingQueue<DataChunk> resendQ = new PriorityBlockingQueue<>(
-            Math.max(SessionHandler.MAX_WIN_SIZE / SessionHandler.MAX_MTU, ClientMessageWorker.MAX_CONNECTION_WINSIZE * SessionHandler.MAX_MULTICLIENTS) + 32,
-            Comparator.comparingInt(j -> j.sequenceId)
-    );
+    BlockingQueue<DataChunk> resendQ;
 
     // Acks
     final ArrayList<AckBundle> pendingAcks = new ArrayList<>();

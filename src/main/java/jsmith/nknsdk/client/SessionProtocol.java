@@ -1,6 +1,5 @@
 package jsmith.nknsdk.client;
 
-import jsmith.nknsdk.network.ClientTunnel;
 import jsmith.nknsdk.network.session.Session;
 import jsmith.nknsdk.network.session.SessionHandler;
 
@@ -18,18 +17,27 @@ public class SessionProtocol {
     }
 
     public Session dialSession(String destinationFullIdentifier) throws NKNClientException {
-        return handler.dialSession(destinationFullIdentifier, SessionHandler.DEFAULT_MULTICLIENTS, null);
+        return handler.dialSession(destinationFullIdentifier, SessionHandler.DEFAULT_MULTICLIENTS, null, SessionHandler.MAX_MTU, SessionHandler.MAX_WIN_SIZE);
     }
 
-    public Session dialSession(String destinationFullIdentifier, int multiclientCount, String[] targetPrefixes) throws NKNClientException {
-        return handler.dialSession(destinationFullIdentifier, multiclientCount, targetPrefixes);
+    public Session dialSession(String destinationFullIdentifier, int multiclients, String[] targetPrefixes, int maxMtu, int maxWindowSize) throws NKNClientException {
+        return handler.dialSession(destinationFullIdentifier, multiclients, targetPrefixes, maxMtu, maxWindowSize);
     }
 
     public void onSessionRequest(Function<Session, Boolean> accept) {
         handler.onSessionRequest(accept);
     }
 
-    // TODO ability to set multiclients count, mtu, and all other params on receiving session
+    public void setIncomingPreferredMtu(int preferredMtu) {
+        handler.setIncomingPreferredMtu(preferredMtu);
+    }
+    public void setIncomingPreferredMulticlients(int preferredMulticlients) {
+        handler.setIncomingPreferredMulticlients(preferredMulticlients);
+    }
+    public void setIncomingPreferredWinSize(int preferredWinSize) {
+        handler.setIncomingPreferredWinSize(preferredWinSize);
+    }
+
 
     void close() {
         handler.close();
