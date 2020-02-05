@@ -2206,23 +2206,28 @@ public final class MessagesP {
     int getAckSeqCount(int index);
 
     /**
-     * <code>repeated string identifier_prefix = 5;</code>
+     * <code>uint64 bytes_read = 5;</code>
+     */
+    long getBytesRead();
+
+    /**
+     * <code>repeated string client_ids = 6;</code>
      */
     java.util.List<java.lang.String>
-        getIdentifierPrefixList();
+        getClientIdsList();
     /**
-     * <code>repeated string identifier_prefix = 5;</code>
+     * <code>repeated string client_ids = 6;</code>
      */
-    int getIdentifierPrefixCount();
+    int getClientIdsCount();
     /**
-     * <code>repeated string identifier_prefix = 5;</code>
+     * <code>repeated string client_ids = 6;</code>
      */
-    java.lang.String getIdentifierPrefix(int index);
+    java.lang.String getClientIds(int index);
     /**
-     * <code>repeated string identifier_prefix = 5;</code>
+     * <code>repeated string client_ids = 6;</code>
      */
     com.google.protobuf.ByteString
-        getIdentifierPrefixBytes(int index);
+        getClientIdsBytes(int index);
 
     /**
      * <code>uint32 window_size = 7;</code>
@@ -2238,6 +2243,11 @@ public final class MessagesP {
      * <code>bool close = 9;</code>
      */
     boolean getClose();
+
+    /**
+     * <code>bool handshake = 10;</code>
+     */
+    boolean getHandshake();
   }
   /**
    * Protobuf type {@code jsmith.nknsdk.network.proto.SessionData}
@@ -2256,10 +2266,12 @@ public final class MessagesP {
       data_ = com.google.protobuf.ByteString.EMPTY;
       ackStartSeq_ = java.util.Collections.emptyList();
       ackSeqCount_ = java.util.Collections.emptyList();
-      identifierPrefix_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      bytesRead_ = 0L;
+      clientIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       windowSize_ = 0;
       mtu_ = 0;
       close_ = false;
+      handshake_ = false;
     }
 
     @java.lang.Override
@@ -2338,13 +2350,18 @@ public final class MessagesP {
               input.popLimit(limit);
               break;
             }
-            case 42: {
+            case 40: {
+
+              bytesRead_ = input.readUInt64();
+              break;
+            }
+            case 50: {
               java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-                identifierPrefix_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000010;
+              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+                clientIds_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000020;
               }
-              identifierPrefix_.add(s);
+              clientIds_.add(s);
               break;
             }
             case 56: {
@@ -2360,6 +2377,11 @@ public final class MessagesP {
             case 72: {
 
               close_ = input.readBool();
+              break;
+            }
+            case 80: {
+
+              handshake_ = input.readBool();
               break;
             }
             default: {
@@ -2383,8 +2405,8 @@ public final class MessagesP {
         if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
           ackSeqCount_ = java.util.Collections.unmodifiableList(ackSeqCount_);
         }
-        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-          identifierPrefix_ = identifierPrefix_.getUnmodifiableView();
+        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+          clientIds_ = clientIds_.getUnmodifiableView();
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -2468,33 +2490,42 @@ public final class MessagesP {
     }
     private int ackSeqCountMemoizedSerializedSize = -1;
 
-    public static final int IDENTIFIER_PREFIX_FIELD_NUMBER = 5;
-    private com.google.protobuf.LazyStringList identifierPrefix_;
+    public static final int BYTES_READ_FIELD_NUMBER = 5;
+    private long bytesRead_;
     /**
-     * <code>repeated string identifier_prefix = 5;</code>
+     * <code>uint64 bytes_read = 5;</code>
+     */
+    public long getBytesRead() {
+      return bytesRead_;
+    }
+
+    public static final int CLIENT_IDS_FIELD_NUMBER = 6;
+    private com.google.protobuf.LazyStringList clientIds_;
+    /**
+     * <code>repeated string client_ids = 6;</code>
      */
     public com.google.protobuf.ProtocolStringList
-        getIdentifierPrefixList() {
-      return identifierPrefix_;
+        getClientIdsList() {
+      return clientIds_;
     }
     /**
-     * <code>repeated string identifier_prefix = 5;</code>
+     * <code>repeated string client_ids = 6;</code>
      */
-    public int getIdentifierPrefixCount() {
-      return identifierPrefix_.size();
+    public int getClientIdsCount() {
+      return clientIds_.size();
     }
     /**
-     * <code>repeated string identifier_prefix = 5;</code>
+     * <code>repeated string client_ids = 6;</code>
      */
-    public java.lang.String getIdentifierPrefix(int index) {
-      return identifierPrefix_.get(index);
+    public java.lang.String getClientIds(int index) {
+      return clientIds_.get(index);
     }
     /**
-     * <code>repeated string identifier_prefix = 5;</code>
+     * <code>repeated string client_ids = 6;</code>
      */
     public com.google.protobuf.ByteString
-        getIdentifierPrefixBytes(int index) {
-      return identifierPrefix_.getByteString(index);
+        getClientIdsBytes(int index) {
+      return clientIds_.getByteString(index);
     }
 
     public static final int WINDOW_SIZE_FIELD_NUMBER = 7;
@@ -2522,6 +2553,15 @@ public final class MessagesP {
      */
     public boolean getClose() {
       return close_;
+    }
+
+    public static final int HANDSHAKE_FIELD_NUMBER = 10;
+    private boolean handshake_;
+    /**
+     * <code>bool handshake = 10;</code>
+     */
+    public boolean getHandshake() {
+      return handshake_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -2559,8 +2599,11 @@ public final class MessagesP {
       for (int i = 0; i < ackSeqCount_.size(); i++) {
         output.writeUInt32NoTag(ackSeqCount_.get(i));
       }
-      for (int i = 0; i < identifierPrefix_.size(); i++) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, identifierPrefix_.getRaw(i));
+      if (bytesRead_ != 0L) {
+        output.writeUInt64(5, bytesRead_);
+      }
+      for (int i = 0; i < clientIds_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, clientIds_.getRaw(i));
       }
       if (windowSize_ != 0) {
         output.writeUInt32(7, windowSize_);
@@ -2570,6 +2613,9 @@ public final class MessagesP {
       }
       if (close_ != false) {
         output.writeBool(9, close_);
+      }
+      if (handshake_ != false) {
+        output.writeBool(10, handshake_);
       }
       unknownFields.writeTo(output);
     }
@@ -2616,13 +2662,17 @@ public final class MessagesP {
         }
         ackSeqCountMemoizedSerializedSize = dataSize;
       }
+      if (bytesRead_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(5, bytesRead_);
+      }
       {
         int dataSize = 0;
-        for (int i = 0; i < identifierPrefix_.size(); i++) {
-          dataSize += computeStringSizeNoTag(identifierPrefix_.getRaw(i));
+        for (int i = 0; i < clientIds_.size(); i++) {
+          dataSize += computeStringSizeNoTag(clientIds_.getRaw(i));
         }
         size += dataSize;
-        size += 1 * getIdentifierPrefixList().size();
+        size += 1 * getClientIdsList().size();
       }
       if (windowSize_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -2635,6 +2685,10 @@ public final class MessagesP {
       if (close_ != false) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(9, close_);
+      }
+      if (handshake_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(10, handshake_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -2660,14 +2714,18 @@ public final class MessagesP {
           .equals(other.getAckStartSeqList());
       result = result && getAckSeqCountList()
           .equals(other.getAckSeqCountList());
-      result = result && getIdentifierPrefixList()
-          .equals(other.getIdentifierPrefixList());
+      result = result && (getBytesRead()
+          == other.getBytesRead());
+      result = result && getClientIdsList()
+          .equals(other.getClientIdsList());
       result = result && (getWindowSize()
           == other.getWindowSize());
       result = result && (getMtu()
           == other.getMtu());
       result = result && (getClose()
           == other.getClose());
+      result = result && (getHandshake()
+          == other.getHandshake());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -2691,9 +2749,12 @@ public final class MessagesP {
         hash = (37 * hash) + ACK_SEQ_COUNT_FIELD_NUMBER;
         hash = (53 * hash) + getAckSeqCountList().hashCode();
       }
-      if (getIdentifierPrefixCount() > 0) {
-        hash = (37 * hash) + IDENTIFIER_PREFIX_FIELD_NUMBER;
-        hash = (53 * hash) + getIdentifierPrefixList().hashCode();
+      hash = (37 * hash) + BYTES_READ_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getBytesRead());
+      if (getClientIdsCount() > 0) {
+        hash = (37 * hash) + CLIENT_IDS_FIELD_NUMBER;
+        hash = (53 * hash) + getClientIdsList().hashCode();
       }
       hash = (37 * hash) + WINDOW_SIZE_FIELD_NUMBER;
       hash = (53 * hash) + getWindowSize();
@@ -2702,6 +2763,9 @@ public final class MessagesP {
       hash = (37 * hash) + CLOSE_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getClose());
+      hash = (37 * hash) + HANDSHAKE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getHandshake());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -2843,13 +2907,17 @@ public final class MessagesP {
         bitField0_ = (bitField0_ & ~0x00000004);
         ackSeqCount_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000008);
-        identifierPrefix_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bytesRead_ = 0L;
+
+        clientIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000020);
         windowSize_ = 0;
 
         mtu_ = 0;
 
         close_ = false;
+
+        handshake_ = false;
 
         return this;
       }
@@ -2891,14 +2959,16 @@ public final class MessagesP {
           bitField0_ = (bitField0_ & ~0x00000008);
         }
         result.ackSeqCount_ = ackSeqCount_;
-        if (((bitField0_ & 0x00000010) == 0x00000010)) {
-          identifierPrefix_ = identifierPrefix_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000010);
+        result.bytesRead_ = bytesRead_;
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          clientIds_ = clientIds_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000020);
         }
-        result.identifierPrefix_ = identifierPrefix_;
+        result.clientIds_ = clientIds_;
         result.windowSize_ = windowSize_;
         result.mtu_ = mtu_;
         result.close_ = close_;
+        result.handshake_ = handshake_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2974,13 +3044,16 @@ public final class MessagesP {
           }
           onChanged();
         }
-        if (!other.identifierPrefix_.isEmpty()) {
-          if (identifierPrefix_.isEmpty()) {
-            identifierPrefix_ = other.identifierPrefix_;
-            bitField0_ = (bitField0_ & ~0x00000010);
+        if (other.getBytesRead() != 0L) {
+          setBytesRead(other.getBytesRead());
+        }
+        if (!other.clientIds_.isEmpty()) {
+          if (clientIds_.isEmpty()) {
+            clientIds_ = other.clientIds_;
+            bitField0_ = (bitField0_ & ~0x00000020);
           } else {
-            ensureIdentifierPrefixIsMutable();
-            identifierPrefix_.addAll(other.identifierPrefix_);
+            ensureClientIdsIsMutable();
+            clientIds_.addAll(other.clientIds_);
           }
           onChanged();
         }
@@ -2992,6 +3065,9 @@ public final class MessagesP {
         }
         if (other.getClose() != false) {
           setClose(other.getClose());
+        }
+        if (other.getHandshake() != false) {
+          setHandshake(other.getHandshake());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -3210,96 +3286,122 @@ public final class MessagesP {
         return this;
       }
 
-      private com.google.protobuf.LazyStringList identifierPrefix_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      private void ensureIdentifierPrefixIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
-          identifierPrefix_ = new com.google.protobuf.LazyStringArrayList(identifierPrefix_);
-          bitField0_ |= 0x00000010;
+      private long bytesRead_ ;
+      /**
+       * <code>uint64 bytes_read = 5;</code>
+       */
+      public long getBytesRead() {
+        return bytesRead_;
+      }
+      /**
+       * <code>uint64 bytes_read = 5;</code>
+       */
+      public Builder setBytesRead(long value) {
+        
+        bytesRead_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint64 bytes_read = 5;</code>
+       */
+      public Builder clearBytesRead() {
+        
+        bytesRead_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringList clientIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureClientIdsIsMutable() {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+          clientIds_ = new com.google.protobuf.LazyStringArrayList(clientIds_);
+          bitField0_ |= 0x00000020;
          }
       }
       /**
-       * <code>repeated string identifier_prefix = 5;</code>
+       * <code>repeated string client_ids = 6;</code>
        */
       public com.google.protobuf.ProtocolStringList
-          getIdentifierPrefixList() {
-        return identifierPrefix_.getUnmodifiableView();
+          getClientIdsList() {
+        return clientIds_.getUnmodifiableView();
       }
       /**
-       * <code>repeated string identifier_prefix = 5;</code>
+       * <code>repeated string client_ids = 6;</code>
        */
-      public int getIdentifierPrefixCount() {
-        return identifierPrefix_.size();
+      public int getClientIdsCount() {
+        return clientIds_.size();
       }
       /**
-       * <code>repeated string identifier_prefix = 5;</code>
+       * <code>repeated string client_ids = 6;</code>
        */
-      public java.lang.String getIdentifierPrefix(int index) {
-        return identifierPrefix_.get(index);
+      public java.lang.String getClientIds(int index) {
+        return clientIds_.get(index);
       }
       /**
-       * <code>repeated string identifier_prefix = 5;</code>
+       * <code>repeated string client_ids = 6;</code>
        */
       public com.google.protobuf.ByteString
-          getIdentifierPrefixBytes(int index) {
-        return identifierPrefix_.getByteString(index);
+          getClientIdsBytes(int index) {
+        return clientIds_.getByteString(index);
       }
       /**
-       * <code>repeated string identifier_prefix = 5;</code>
+       * <code>repeated string client_ids = 6;</code>
        */
-      public Builder setIdentifierPrefix(
+      public Builder setClientIds(
           int index, java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  ensureIdentifierPrefixIsMutable();
-        identifierPrefix_.set(index, value);
+  ensureClientIdsIsMutable();
+        clientIds_.set(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string identifier_prefix = 5;</code>
+       * <code>repeated string client_ids = 6;</code>
        */
-      public Builder addIdentifierPrefix(
+      public Builder addClientIds(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  ensureIdentifierPrefixIsMutable();
-        identifierPrefix_.add(value);
+  ensureClientIdsIsMutable();
+        clientIds_.add(value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string identifier_prefix = 5;</code>
+       * <code>repeated string client_ids = 6;</code>
        */
-      public Builder addAllIdentifierPrefix(
+      public Builder addAllClientIds(
           java.lang.Iterable<java.lang.String> values) {
-        ensureIdentifierPrefixIsMutable();
+        ensureClientIdsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, identifierPrefix_);
+            values, clientIds_);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string identifier_prefix = 5;</code>
+       * <code>repeated string client_ids = 6;</code>
        */
-      public Builder clearIdentifierPrefix() {
-        identifierPrefix_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
+      public Builder clearClientIds() {
+        clientIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000020);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string identifier_prefix = 5;</code>
+       * <code>repeated string client_ids = 6;</code>
        */
-      public Builder addIdentifierPrefixBytes(
+      public Builder addClientIdsBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        ensureIdentifierPrefixIsMutable();
-        identifierPrefix_.add(value);
+        ensureClientIdsIsMutable();
+        clientIds_.add(value);
         onChanged();
         return this;
       }
@@ -3378,6 +3480,32 @@ public final class MessagesP {
       public Builder clearClose() {
         
         close_ = false;
+        onChanged();
+        return this;
+      }
+
+      private boolean handshake_ ;
+      /**
+       * <code>bool handshake = 10;</code>
+       */
+      public boolean getHandshake() {
+        return handshake_;
+      }
+      /**
+       * <code>bool handshake = 10;</code>
+       */
+      public Builder setHandshake(boolean value) {
+        
+        handshake_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool handshake = 10;</code>
+       */
+      public Builder clearHandshake() {
+        
+        handshake_ = false;
         onChanged();
         return this;
       }
@@ -6446,24 +6574,24 @@ public final class MessagesP {
       "\004type\030\001 \001(\0162(.jsmith.nknsdk.network.prot" +
       "o.PayloadType\022\013\n\003pid\030\002 \001(\014\022\014\n\004data\030\003 \001(\014" +
       "\022\024\n\014reply_to_pid\030\004 \001(\014\022\016\n\006no_ack\030\005 \001(\010\"\030" +
-      "\n\010TextData\022\014\n\004text\030\001 \001(\t\"\252\001\n\013SessionData" +
+      "\n\010TextData\022\014\n\004text\030\001 \001(\t\"\312\001\n\013SessionData" +
       "\022\023\n\013sequence_id\030\001 \001(\r\022\014\n\004data\030\002 \001(\014\022\025\n\ra" +
       "ck_start_seq\030\003 \003(\r\022\025\n\rack_seq_count\030\004 \003(" +
-      "\r\022\031\n\021identifier_prefix\030\005 \003(\t\022\023\n\013window_s" +
-      "ize\030\007 \001(\r\022\013\n\003mtu\030\010 \001(\r\022\r\n\005close\030\t \001(\010\"Z\n" +
-      "\007Message\022>\n\014message_type\030\001 \001(\0162(.jsmith." +
-      "nknsdk.network.proto.MessageType\022\017\n\007mess" +
-      "age\030\002 \001(\014\"\215\001\n\tClientMsg\022\014\n\004dest\030\001 \001(\t\022\017\n" +
-      "\007payload\030\002 \001(\014\022\r\n\005dests\030\003 \003(\t\022\033\n\023max_hol" +
-      "ding_seconds\030\004 \001(\r\022\r\n\005nonce\030\005 \001(\r\022\022\n\nblo" +
-      "ck_hash\030\006 \001(\014\022\022\n\nsignatures\030\007 \003(\014\"?\n\007Nod" +
-      "eMsg\022\013\n\003src\030\001 \001(\t\022\017\n\007payload\030\002 \001(\014\022\026\n\016pr" +
-      "ev_signature\030\003 \001(\014\"7\n\nReceiptMsg\022\026\n\016prev" +
-      "_signature\030\001 \001(\014\022\021\n\tsignature\030\002 \001(\014*9\n\013P" +
-      "ayloadType\022\n\n\006BINARY\020\000\022\010\n\004TEXT\020\001\022\007\n\003ACK\020" +
-      "\002\022\013\n\007SESSION\020\003*<\n\013MessageType\022\016\n\nCLIENT_" +
-      "MSG\020\000\022\014\n\010NODE_MSG\020\001\022\017\n\013RECEIPT_MSG\020\002b\006pr" +
-      "oto3"
+      "\r\022\022\n\nbytes_read\030\005 \001(\004\022\022\n\nclient_ids\030\006 \003(" +
+      "\t\022\023\n\013window_size\030\007 \001(\r\022\013\n\003mtu\030\010 \001(\r\022\r\n\005c" +
+      "lose\030\t \001(\010\022\021\n\thandshake\030\n \001(\010\"Z\n\007Message" +
+      "\022>\n\014message_type\030\001 \001(\0162(.jsmith.nknsdk.n" +
+      "etwork.proto.MessageType\022\017\n\007message\030\002 \001(" +
+      "\014\"\215\001\n\tClientMsg\022\014\n\004dest\030\001 \001(\t\022\017\n\007payload" +
+      "\030\002 \001(\014\022\r\n\005dests\030\003 \003(\t\022\033\n\023max_holding_sec" +
+      "onds\030\004 \001(\r\022\r\n\005nonce\030\005 \001(\r\022\022\n\nblock_hash\030" +
+      "\006 \001(\014\022\022\n\nsignatures\030\007 \003(\014\"?\n\007NodeMsg\022\013\n\003" +
+      "src\030\001 \001(\t\022\017\n\007payload\030\002 \001(\014\022\026\n\016prev_signa" +
+      "ture\030\003 \001(\014\"7\n\nReceiptMsg\022\026\n\016prev_signatu" +
+      "re\030\001 \001(\014\022\021\n\tsignature\030\002 \001(\014*9\n\013PayloadTy" +
+      "pe\022\n\n\006BINARY\020\000\022\010\n\004TEXT\020\001\022\007\n\003ACK\020\002\022\013\n\007SES" +
+      "SION\020\003*<\n\013MessageType\022\016\n\nCLIENT_MSG\020\000\022\014\n" +
+      "\010NODE_MSG\020\001\022\017\n\013RECEIPT_MSG\020\002b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -6500,7 +6628,7 @@ public final class MessagesP {
     internal_static_jsmith_nknsdk_network_proto_SessionData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_jsmith_nknsdk_network_proto_SessionData_descriptor,
-        new java.lang.String[] { "SequenceId", "Data", "AckStartSeq", "AckSeqCount", "IdentifierPrefix", "WindowSize", "Mtu", "Close", });
+        new java.lang.String[] { "SequenceId", "Data", "AckStartSeq", "AckSeqCount", "BytesRead", "ClientIds", "WindowSize", "Mtu", "Close", "Handshake", });
     internal_static_jsmith_nknsdk_network_proto_Message_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_jsmith_nknsdk_network_proto_Message_fieldAccessorTable = new

@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
 
 /**
@@ -38,8 +39,6 @@ public class SessionHandler extends Thread {
 
         final int multiclients = Math.min(multiclientsCount, MAX_MULTICLIENTS);
         ct.ensureMulticlients(multiclients);
-
-        // TODO user cap multiclients
 
         ArrayList<String> prefixes;
         if (targetPrefixes != null) {
@@ -99,15 +98,12 @@ public class SessionHandler extends Thread {
                 synchronized (s.lock) {
                     if (s.isClosed) return;
 
-                    final int sequenceId = data.getSequenceId();
-                    final int ackSeqLength = data.getAckStartSeqCount();
-
-                    if (sequenceId == 0 && ackSeqLength == 0 && !data.getClose()) { // Handshake request
+                    if (data.getHandshake()) {
                         if (!isClosing) {
                             if (!s.isEstablished) {
 
                                 try {
-                                    s.prefixes = data.getIdentifierPrefixList();
+                                    s.prefixes = data.getClientIdsList();
                                     ct.ensureMulticlients(Math.min(s.prefixes.size(), s.ownMulticlients));
                                 } catch (NKNClientException e) {
                                     LOG.warn("Failed to create multiclients", e);
@@ -119,7 +115,7 @@ public class SessionHandler extends Thread {
                                 final int mtu = data.getMtu();
                                 final int winSize = data.getWindowSize();
                                 s.establishSession(
-                                        data.getIdentifierPrefixList(),
+                                        data.getClientIdsList(),
                                         Math.min(mtu, s.mtu),
                                         Math.min(s.prefixes.size(), s.ownMulticlients),
                                         Math.min(winSize, s.winSize)
@@ -138,6 +134,9 @@ public class SessionHandler extends Thread {
                             }
                         }
                     } else {
+                        final int sequenceId = data.getSequenceId();
+                        final int ackSeqLength = data.getAckStartSeqCount();
+
                         if (sequenceId != 0) {
                             s.onReceivedChunk(sequenceId, data.getData(), cmw);
                         }
@@ -150,7 +149,10 @@ public class SessionHandler extends Thread {
                             LOG.debug("Received a close packet");
                             s.close();
                             s.getInputStream().sessionClosed();
-                            if (s.isClosedOutbound) s.isClosed = true;
+                            if (s.isClosedOutbound) {
+                                s.isClosed = true;
+                                if (isClosing) activeSessions.remove(sk);
+                            }
                         }
                     }
                 }
@@ -158,13 +160,11 @@ public class SessionHandler extends Thread {
             } else {
 
                 if (!isClosing) {
-                    final int sequenceId = data.getSequenceId();
-                    final int ackSeqLength = data.getAckSeqCountCount() + data.getAckStartSeqCount();
-                    if (sequenceId == 0 && ackSeqLength == 0) { // Handshake request
+                    if (data.getHandshake()) {
                         final int mtu = data.getMtu();
                         final int winSize = data.getWindowSize();
 
-                        s = new Session(this, data.getIdentifierPrefixList(), Math.min(preferredMulticlients, data.getIdentifierPrefixCount()), from, sessionId, mtu, winSize);
+                        s = new Session(this, data.getClientIdsList(), Math.min(preferredMulticlients, data.getClientIdsCount()), from, sessionId, mtu, winSize);
 
                         synchronized (s.lock) {
 
@@ -190,7 +190,7 @@ public class SessionHandler extends Thread {
                             } else {
                                 s.isClosed = true;
                                 s.isClosedOutbound = true;
-                                if (s.getInputStream().isClosedInbound) s.isClosed = true;
+                                if (isClosing) activeSessions.remove(sk);
                             }
                         }
                     }
@@ -204,17 +204,19 @@ public class SessionHandler extends Thread {
 
 
     private boolean isClosing = false;
-    public void close() {
+    private CountDownLatch closingLatch = new CountDownLatch(1);
+    public void close() throws InterruptedException {
         if (!isClosing) {
             isClosing = true;
             activeSessions.values().forEach(Session::close);
             activeSessions.entrySet().removeIf(e -> e.getValue().isClosed);
         }
+        closingLatch.await();
     }
 
     @Override
     public void run() {
-        while (!isClosing || activeSessions.isEmpty()) {
+        while (!isClosing || !activeSessions.isEmpty()) {
             for (Session s : activeSessions.values()) {
                 synchronized (s.sentQ) {
                     final Iterator<Map.Entry<Session.DataChunk, Session.SentLog>> iterator = s.sentQ.entrySet().iterator();
@@ -269,6 +271,10 @@ public class SessionHandler extends Thread {
                             );
                         }
                         s.isClosedOutbound = true;
+                        if (s.getInputStream().isClosedInbound) {
+                            s.isClosed = true;
+                            if (isClosing) activeSessions.remove(new SessionKey(s.remoteIdentifier, s.sessionId));
+                        }
                     }
                 }
             }
@@ -276,6 +282,7 @@ public class SessionHandler extends Thread {
                 Thread.sleep(10);
             } catch (InterruptedException ignored) {}
         }
+        closingLatch.countDown();
     }
 
     private boolean flushDataChunk(Session s, ClientMessageWorker chosenWorker, String chosenRemote) throws InterruptedException {
@@ -347,7 +354,7 @@ public class SessionHandler extends Thread {
                 workerAvailable |= ct.multiclients.get(i).getAssociatedCM().isWinSizeAvailable(s.remoteIdentifier);
             }
 
-            winSizeAvailable = s.sentBytesIntegral.get(s.latestSentSeqId) + (s.sendQ.isEmpty() ? 0 : s.sendQ.peek().data.size()) <= s.winSize;
+            winSizeAvailable = s.sentBytesIntegral.get(s.latestSentSeqId) + s.sendQ.stream().mapToInt(dc -> dc.data.size()).sum() <= s.winSize;
         }
     }
 
@@ -361,7 +368,8 @@ public class SessionHandler extends Thread {
 
         MessagesP.SessionData data = MessagesP.SessionData.newBuilder()
                 .setSequenceId(0)
-                .addAllIdentifierPrefix(myPrefixes)
+                .setHandshake(true)
+                .addAllClientIds(myPrefixes)
                 .setMtu(s.mtu)
                 .setWindowSize(s.winSize)
                 .setClose(false)
@@ -378,23 +386,23 @@ public class SessionHandler extends Thread {
 
     private static class SessionKey {
         private final String remote;
-        private final ByteString messageId;
-        SessionKey(String remote, ByteString messageId) {
+        private final ByteString sessionId;
+        SessionKey(String remote, ByteString sessionId) {
             if (remote == null) throw new NullPointerException("Argument 'remote' is null");
-            if (messageId == null) throw new NullPointerException("Arguments 'messageId' is null");
+            if (sessionId == null) throw new NullPointerException("Arguments 'sessionId' is null");
             this.remote = remote;
-            this.messageId = messageId;
+            this.sessionId = sessionId;
         }
 
         @Override
         public int hashCode() {
-            return 13 * remote.hashCode() + 23 * messageId.hashCode();
+            return 13 * remote.hashCode() + 23 * sessionId.hashCode();
         }
 
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof SessionKey)) return false;
-            return remote.equals(((SessionKey) o).remote) && messageId.equals(((SessionKey) o).messageId);
+            return remote.equals(((SessionKey) o).remote) && sessionId.equals(((SessionKey) o).sessionId);
         }
     }
 

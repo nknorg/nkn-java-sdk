@@ -134,9 +134,9 @@ public class SessionEx {
             LOG.error("Session dial failed");
         }
 
-        Thread.sleep(130_000);
+        Thread.sleep(150_000);
 
-        System.out.println("130s passed, closing clients!");
+        System.out.println("150s passed, closing clients!");
         clientA.close();
         clientB.close();
 

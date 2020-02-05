@@ -37,10 +37,12 @@ message SessionData {
 
     repeated uint32 ack_start_seq = 3;
     repeated uint32 ack_seq_count = 4;
-    repeated string identifier_prefix = 5;
+    uint64 bytes_read = 5;
+    repeated string client_ids = 6;
     uint32 window_size = 7;
     uint32 mtu = 8;
     bool close = 9;
+    bool handshake = 10;
 }
 // --- END PAYLOADS ---
 

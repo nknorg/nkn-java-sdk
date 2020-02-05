@@ -39,7 +39,7 @@ public class SessionProtocol {
     }
 
 
-    void close() {
+    void close() throws InterruptedException {
         handler.close();
     }
 

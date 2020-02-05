@@ -30,7 +30,7 @@ public class NKNClient {
         return this;
     }
 
-    public void close() {
+    public void close() throws InterruptedException {
         sessionProtocol.close();
         clientTunnel.close();
     }
