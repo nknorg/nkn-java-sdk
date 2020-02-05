@@ -52,8 +52,6 @@ public class WsApi extends WebSocketClient {
     }
 
     public void onMessage(ByteBuffer bytes) {
-        LOG.debug("WS#{} received bin message, {} bytes", myId, bytes.limit());
-
         if (protobufMessageListener != null) {
             protobufMessageListener.accept(ByteString.copyFrom(bytes));
         }
@@ -72,7 +70,7 @@ public class WsApi extends WebSocketClient {
 
     @Override
     public void onError(Exception ex) {
-        LOG.warn("WS#{} On error: {}", myId, ex);
+        LOG.warn("WS#{} On error:", myId, ex);
         // TODO handle error
     }
 
@@ -99,7 +97,6 @@ public class WsApi extends WebSocketClient {
     }
 
     public void sendPacket(ByteString bin) {
-        LOG.debug("WS#{} sending bin, {} bytes", myId, bin.size());
         send(ByteBuffer.wrap(bin.toByteArray()));
     }
 

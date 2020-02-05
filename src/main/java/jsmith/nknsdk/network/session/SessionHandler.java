@@ -21,7 +21,7 @@ public class SessionHandler extends Thread {
     public static final int MAX_MTU = 1024;
     public static final int MAX_WIN_SIZE = 4 * 1024 * 1024;
     public static final int MAX_MULTICLIENTS = 16;
-    public static final int DEFAULT_MULTICLIENTS = 2;
+    public static final int DEFAULT_MULTICLIENTS = 4;
 
     private static final Logger LOG = LoggerFactory.getLogger(SessionHandler.class);
 
@@ -102,11 +102,12 @@ public class SessionHandler extends Thread {
                     final int sequenceId = data.getSequenceId();
                     final int ackSeqLength = data.getAckStartSeqCount();
 
-                    if (sequenceId == 0 && ackSeqLength == 0) { // Handshake request
+                    if (sequenceId == 0 && ackSeqLength == 0 && !data.getClose()) { // Handshake request
                         if (!isClosing) {
                             if (!s.isEstablished) {
 
                                 try {
+                                    s.prefixes = data.getIdentifierPrefixList();
                                     ct.ensureMulticlients(Math.min(s.prefixes.size(), s.ownMulticlients));
                                 } catch (NKNClientException e) {
                                     LOG.warn("Failed to create multiclients", e);
@@ -136,8 +137,6 @@ public class SessionHandler extends Thread {
                                 s.close();
                             }
                         }
-                    } else if (data.getClose()) { // Close request
-                        // TODO flush and close
                     } else {
                         if (sequenceId != 0) {
                             s.onReceivedChunk(sequenceId, data.getData(), cmw);
@@ -146,6 +145,12 @@ public class SessionHandler extends Thread {
                             for (int i = 0; i < ackSeqLength; i++) {
                                 s.onReceivedAck(data.getAckStartSeq(i), data.getAckSeqCount(i));
                             }
+                        }
+                        if (data.getClose()) { // Close request
+                            LOG.debug("Received a close packet");
+                            s.close();
+                            s.getInputStream().sessionClosed();
+                            if (s.isClosedOutbound) s.isClosed = true;
                         }
                     }
                 }
@@ -159,7 +164,7 @@ public class SessionHandler extends Thread {
                         final int mtu = data.getMtu();
                         final int winSize = data.getWindowSize();
 
-                        s = new Session(this, data.getIdentifierPrefixList(), data.getIdentifierPrefixCount(), from, sessionId, mtu, winSize);
+                        s = new Session(this, data.getIdentifierPrefixList(), Math.min(preferredMulticlients, data.getIdentifierPrefixCount()), from, sessionId, mtu, winSize);
 
                         synchronized (s.lock) {
 
@@ -184,6 +189,8 @@ public class SessionHandler extends Thread {
                                 }
                             } else {
                                 s.isClosed = true;
+                                s.isClosedOutbound = true;
+                                if (s.getInputStream().isClosedInbound) s.isClosed = true;
                             }
                         }
                     }
@@ -226,7 +233,7 @@ public class SessionHandler extends Thread {
             while (remaining) { // Somewhat balance all active sessions, but don't wait if there is data to be send remaining
                 remaining = false;
                 for (Session s : activeSessions.values()) {
-                    if (s.isEstablished) {
+                    if (s.isEstablished && !s.isClosedOutbound) {
                         try {
                             final ArrayList<Integer> availableMulticlients = new ArrayList<>(s.ownMulticlients);
                             for (int i = 0; i < s.ownMulticlients; i++) {
@@ -243,6 +250,25 @@ public class SessionHandler extends Thread {
                             }
 
                         } catch (InterruptedException ignored) {}
+                    }
+                    if (s.isClosing && !s.isClosedOutbound && s.sentBytesIntegral.get(s.latestSentSeqId) + s.sendQ.stream().mapToInt(dc -> dc.data.size()).sum() == 0) {
+                        MessagesP.SessionData closePacket = MessagesP.SessionData.newBuilder()
+                                .setSequenceId(0)
+                                .setClose(true)
+                                .build();
+
+                        LOG.debug("Sending a close message, outbound Q is empty");
+                        for (int i = 0; i < s.ownMulticlients; i++) {
+                            String chosenRemote = s.prefixes.get(i) + "." + s.remoteIdentifier;
+                            if (chosenRemote.startsWith(".")) chosenRemote = chosenRemote.substring(1);
+                            ct.multiclients.get(i).getAssociatedCM().sendMessageAsync(
+                                    Collections.singletonList(chosenRemote),
+                                    s.sessionId,
+                                    MessagesP.PayloadType.SESSION,
+                                    closePacket.toByteString()
+                            );
+                        }
+                        s.isClosedOutbound = true;
                     }
                 }
             }
@@ -288,9 +314,6 @@ public class SessionHandler extends Thread {
         }
 
         if (nonEmptyAck || dataChunk != null) {
-            LOG.debug("Sending chunk #{} to {}", dataChunk == null ? "ACK" : dataChunk.sequenceId, chosenRemote);
-
-
             if (dataChunk != null) {
                 chosenWorker.sendWinsizeTrackedPacket(chosenRemote);
                 synchronized (s.sentQ) {
@@ -326,7 +349,6 @@ public class SessionHandler extends Thread {
 
             winSizeAvailable = s.sentBytesIntegral.get(s.latestSentSeqId) + (s.sendQ.isEmpty() ? 0 : s.sendQ.peek().data.size()) <= s.winSize;
         }
-
     }
 
     private void establishSession(Session s) {

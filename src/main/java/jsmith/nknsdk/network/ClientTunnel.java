@@ -187,6 +187,7 @@ public class ClientTunnel {
 
                 try {
                     ConnectionProvider.attempt((bootstrapNode) -> {
+                        System.out.println(json.toString());
                         final String[] parts = json.getString("Result").split(":");
                         directNodeWS = new InetSocketAddress(parts[0], Integer.parseInt(parts[1]));
 
@@ -295,7 +296,6 @@ public class ClientTunnel {
                                     .setMessageType(MessagesP.MessageType.RECEIPT_MSG)
                                     .build().toByteString();
                             ws.sendPacket(receiptMsg);
-                            LOG.debug("Sending receipt msg");
                         }
                         cm.onInboundMessage(from, pldMsg);
                     } else {

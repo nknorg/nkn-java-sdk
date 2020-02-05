@@ -79,6 +79,10 @@ public class SessionOutputStream extends OutputStream {
         s.close();
     }
 
-    // TODO how many unconfirmed bytes remaining
+    public int getUnconfirmedSentBytesCount() {
+        synchronized (bufferLock) {
+            return s.sentBytesIntegral.get(s.latestSentSeqId) + s.sendQ.stream().mapToInt(dc -> dc.data.size()).sum() + buffer.size();
+        }
+    }
 
 }

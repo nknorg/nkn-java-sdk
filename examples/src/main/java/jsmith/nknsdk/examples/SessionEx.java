@@ -12,8 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -23,7 +21,7 @@ public class SessionEx {
     private static final Logger LOG = LoggerFactory.getLogger(SessionEx.class);
 
     public static void main(String[] args) throws InterruptedException {
-        LogUtils.setupLogging(TPLogger.INFO);
+        LogUtils.setupLogging(TPLogger.DEBUG);
 
         final Identity identityA = new Identity("Client A", Wallet.createNew());
         final Identity identityB = new Identity("Client B", Wallet.createNew());
@@ -37,6 +35,7 @@ public class SessionEx {
         }
 
         final NKNClient clientB = new NKNClient(identityB);
+        clientB.sessionProtocol().setIncomingPreferredMulticlients(2);
         try {
              clientB.start();
         } catch (NKNClientException e) {
@@ -67,7 +66,8 @@ public class SessionEx {
                                     if (redtotal / 1024 / 1024 > lastMb) {
                                         lastMb = redtotal / 1024 / 1024;
                                         thisTime = System.currentTimeMillis();
-                                        System.out.println("Streamed to me: " + lastMb + " MB (" + (1024 * 1000 / (thisTime - lastTime)) + "kB/s)");
+                                        // +1 to avoid division by zero, in case there is more than buffer.length data to be read
+                                        System.out.println("Streamed to me: " + lastMb + " MB (" + (1024 * 1000 / (thisTime - lastTime + 1)) + "kB/s)");
                                         lastTime = thisTime;
                                     }
                                 } else {
@@ -75,6 +75,9 @@ public class SessionEx {
                                 }
                                 red = bIs.read(buffer);
                             }
+
+                            LOG.info("All data has been received, session closed");
+
                         } catch (IOException | InterruptedException e) {
                             LOG.error("IOException thrown when sending data");
                         }
@@ -96,7 +99,7 @@ public class SessionEx {
                     try {
 //                        aOs.write("Some random text here".getBytes(StandardCharsets.UTF_8));
 //
-                        int sendData = 1024 * 1024 * 100; // 1M
+                        int sendData = 1024 * 1024 * 10; // 10M
                         byte[] buffer = new byte[1024 * 1024];
                         while (sendData > 0) {
                             aOs.write(buffer);
@@ -106,6 +109,18 @@ public class SessionEx {
 
                         aOs.flush();
                         LOG.debug("Flushing some data, session A -> session B");
+
+                        // Wait until the other side acknowledges receiving everything TODO or timeout
+                        while (aOs.getUnconfirmedSentBytesCount() > 0) {
+                            try {
+                                Thread.sleep(300);
+                            } catch (InterruptedException ignored) {}
+                        }
+
+                        LOG.info("Everything was sent and read, closing");
+
+                        sA.close();
+
                     } catch (IOException e) {
                         LOG.error("IOException thrown when sending data");
                     }
@@ -121,7 +136,7 @@ public class SessionEx {
 
         Thread.sleep(130_000);
 
-        System.out.println("Closing!");
+        System.out.println("130s passed, closing clients!");
         clientA.close();
         clientB.close();
 

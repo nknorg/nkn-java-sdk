@@ -64,11 +64,12 @@ public class SessionInputStream extends InputStream {
         s.close();
     }
 
+    boolean isClosedInbound = false;
     void sessionClosed() {
         synchronized (bufferLock) {
             bufferLock.notifyAll();
+            isClosedInbound = true;
         }
-        // TODO call the sessionClosed method from somewhere
     }
 
     private final ConcurrentHashMap<Integer, ByteString> receivedChunks = new ConcurrentHashMap<>();

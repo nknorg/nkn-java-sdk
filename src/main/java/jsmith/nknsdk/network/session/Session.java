@@ -5,6 +5,7 @@ import jsmith.nknsdk.network.ClientMessageWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -17,9 +18,11 @@ public class Session {
 
     private static final Logger LOG = LoggerFactory.getLogger(Session.class);
 
+    // TODO Not all status reads are properly synchronized. It should be fine though
     boolean isEstablished;
     boolean isClosing;
     boolean isClosed;
+    boolean isClosedOutbound;
 
     final String remoteIdentifier;
     final ByteString sessionId;
@@ -50,16 +53,15 @@ public class Session {
 
     void establishSession(List<String> prefixes, int mtu, int ownMulticlients, int winSize) {
         synchronized (this) {
-            isEstablished = true;
             this.mtu = mtu;
             this.prefixes = prefixes;
             this.ownMulticlients = ownMulticlients;
             this.winSize = winSize;
 
-            final int qSize = Math.max(winSize / mtu, ClientMessageWorker.MAX_CONNECTION_WINSIZE * ownMulticlients);
+            sendQ = new ArrayBlockingQueue<>(winSize / mtu + 16);
+            resendQ = new PriorityBlockingQueue<>(winSize / mtu + 32, Comparator.comparingInt(j -> j.sequenceId));
 
-            sendQ = new ArrayBlockingQueue<>(qSize + 16);
-            resendQ = new PriorityBlockingQueue<>(qSize + 32, Comparator.comparingInt(j -> j.sequenceId));
+            isEstablished = true;
         }
     }
 
@@ -74,11 +76,11 @@ public class Session {
     }
 
     public SessionInputStream getInputStream() {
-        // TODO if is not established or is closing or closed, throw an error
+        if (!isEstablished || isClosed) throw new IllegalStateException("The session is not active, cannot return stream");
         return is;
     }
     public SessionOutputStream getOutputStream() {
-        // TODO if is not established or is closing or closed, throw an error
+        if (!isEstablished || isClosed) throw new IllegalStateException("The session is not active, cannot return stream");
         return os;
     }
 
@@ -128,7 +130,6 @@ public class Session {
     }
 
     void onReceivedChunk(int sequenceId, ByteString data, ClientMessageWorker from) {
-        LOG.debug("Received chunk, seq {}", sequenceId);
         is.onReceivedDataChunk(sequenceId, data);
 
         synchronized (pendingAcks) {
@@ -179,13 +180,20 @@ public class Session {
     }
 
     public void close() {
-        if (isClosing) return;
-        if (!isEstablished) {
-            isClosing = true;
-            isClosed = true;
-            return;
+        synchronized (this) {
+            if (isClosing) return;
+
+            if (!isEstablished) {
+                isClosing = true;
+                isClosed = true;
+                isClosedOutbound = true;
+            } else {
+                isClosing = true;
+                try {
+                    os.flush();
+                } catch (IOException ignored) {}
+            }
         }
-        // TODO
     }
 
     static class AckBundle {
