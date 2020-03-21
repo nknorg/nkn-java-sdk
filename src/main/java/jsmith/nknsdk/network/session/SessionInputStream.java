@@ -26,11 +26,11 @@ public class SessionInputStream extends InputStream {
     public int read(@NotNull byte[] bytes, int offset, int length) throws IOException {
         if (length <= 0) return 0;
         if (offset < 0 || offset >= bytes.length) throw new IndexOutOfBoundsException("Offset is outside of bounds (" + offset + ")");
-        length = Math.max(length, bytes.length - offset);
+        length = Math.min(length, bytes.length - offset);
 
         synchronized (bufferLock) {
             while (buffer.size() == 0) {
-                if (s.isClosed) return -1;
+                if (isClosedInbound) return -1;
                 try {
                     bufferLock.wait();
                 } catch (InterruptedException e) {
@@ -41,6 +41,7 @@ public class SessionInputStream extends InputStream {
             int size = Math.min(buffer.size(), length);
             buffer.copyTo(bytes, 0, offset, size);
             buffer = buffer.substring(size);
+            s.bytesRead.addAndGet(size);
             return size;
         }
     }
@@ -67,13 +68,20 @@ public class SessionInputStream extends InputStream {
     boolean isClosedInbound = false;
     void sessionClosed() {
         synchronized (bufferLock) {
-            bufferLock.notifyAll();
             isClosedInbound = true;
+            bufferLock.notifyAll();
         }
     }
 
     private final ConcurrentHashMap<Integer, ByteString> receivedChunks = new ConcurrentHashMap<>();
-    void onReceivedDataChunk(int sequenceId, ByteString data) {
+    private final AtomicInteger acc = new AtomicInteger(0);
+    boolean onReceivedDataChunk(int sequenceId, ByteString data) {
+        acc.set(0);
+        receivedChunks.forEach((sId, d) -> acc.addAndGet(d.size()));
+        synchronized (bufferLock) {
+            if (acc.get() + buffer.size() + data.size() > s.winSize) return false;
+        }
+
         if (sequenceId - 1 == lastSequenceIdInBuffer.get()) {
             synchronized (bufferLock) {
                 if (sequenceId - 1 == lastSequenceIdInBuffer.get()) {
@@ -98,5 +106,7 @@ public class SessionInputStream extends InputStream {
             receivedChunks.put(sequenceId, data);
         }
         receivedChunks.keySet().removeIf(sid -> sid <= lastSid);
+
+        return true;
     }
 }

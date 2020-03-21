@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  *
@@ -23,6 +24,11 @@ public class Session {
     boolean isClosing;
     boolean isClosed;
     boolean isClosedOutbound;
+
+    final AtomicLong bytesRead = new AtomicLong(0);
+    long lastSentBytesRead = 0;
+    final AtomicLong remoteBytesRead = new AtomicLong(0);
+    long lastSentBytesReadTime = 0;
 
     final String remoteIdentifier;
     final ByteString sessionId;
@@ -45,7 +51,7 @@ public class Session {
         this.mtu = mtu;
         this.winSize = winSize;
 
-        sentBytesIntegral.put(0, 0);
+        sentBytesIntegral.put(0, 0L);
 
         os = new SessionOutputStream(this, handler);
         is = new SessionInputStream(this);
@@ -86,11 +92,11 @@ public class Session {
 
 
     // Outbound
-    private int latestConfirmedSeqId = 0;
+    int latestConfirmedSeqId = 0;
     int latestSentSeqId = 0;
     BlockingQueue<DataChunk> sendQ;
     final HashMap<DataChunk, SentLog> sentQ = new HashMap<>();
-    final HashMap<Integer, Integer> sentBytesIntegral = new HashMap<>();
+    final HashMap<Integer, Long> sentBytesIntegral = new HashMap<>();
     BlockingQueue<DataChunk> resendQ;
 
     // Acks
@@ -116,64 +122,56 @@ public class Session {
                 sentQ.keySet().stream().min(Comparator.comparingInt(dc -> dc.sequenceId)).ifPresent(dc -> latestConfirmedSeqId = dc.sequenceId - 1);
             }
 
-            int start = sentBytesIntegral.get(latestConfirmedSeqId);
-            final Iterator<Map.Entry<Integer, Integer>> iterator = sentBytesIntegral.entrySet().iterator();
-            while (iterator.hasNext()) {
-                final Map.Entry<Integer, Integer> entry = iterator.next();
-                if (entry.getKey() < latestConfirmedSeqId) {
-                    iterator.remove();
-                } else {
-                    entry.setValue(entry.getValue() - start);
-                }
-            }
+            sentBytesIntegral.entrySet().removeIf(entry -> entry.getKey() < latestConfirmedSeqId);
         }
     }
 
     void onReceivedChunk(int sequenceId, ByteString data, ClientMessageWorker from) {
-        is.onReceivedDataChunk(sequenceId, data);
+        if (is.onReceivedDataChunk(sequenceId, data)) {
 
-        synchronized (pendingAcks) {
-            // Check for appends
-            int appendedI = -1;
-            boolean within = false;
-            for (int i = 0; i < pendingAcks.size(); i++) {
-                AckBundle ack = pendingAcks.get(i);
-                if (ack.worker != from) continue;
-
-                if (ack.startSeq + ack.count == sequenceId) {
-                    ack.count += 1;
-                    appendedI = i;
-                    break;
-                }
-                if (ack.startSeq >= sequenceId && ack.startSeq + ack.count < sequenceId) {
-                    within = true;
-                    break;
-                }
-            }
-            // Check for prepends
-            if (!within) {
-                int mergedI = -1;
-                boolean prepended = false;
+            synchronized (pendingAcks) {
+                // Check for appends
+                int appendedI = -1;
+                boolean within = false;
                 for (int i = 0; i < pendingAcks.size(); i++) {
                     AckBundle ack = pendingAcks.get(i);
                     if (ack.worker != from) continue;
 
-                    if (ack.startSeq - 1 == sequenceId) {
-                        ack.startSeq -= 1;
+                    if (ack.startSeq + ack.count == sequenceId) {
                         ack.count += 1;
-                        prepended = true;
-                        if (appendedI != -1) {
-                            AckBundle newAck = pendingAcks.get(appendedI);
-                            newAck.count += ack.count - 1;
-                            mergedI = i;
-                        }
+                        appendedI = i;
+                        break;
+                    }
+                    if (ack.startSeq >= sequenceId && ack.startSeq + ack.count < sequenceId) {
+                        within = true;
                         break;
                     }
                 }
-                if (mergedI != -1) pendingAcks.remove(mergedI);
+                // Check for prepends
+                if (!within) {
+                    int mergedI = -1;
+                    boolean prepended = false;
+                    for (int i = 0; i < pendingAcks.size(); i++) {
+                        AckBundle ack = pendingAcks.get(i);
+                        if (ack.worker != from) continue;
 
-                if (appendedI == -1 && !prepended) {
-                    pendingAcks.add(new AckBundle(from, sequenceId, 1));
+                        if (ack.startSeq - 1 == sequenceId) {
+                            ack.startSeq -= 1;
+                            ack.count += 1;
+                            prepended = true;
+                            if (appendedI != -1) {
+                                AckBundle newAck = pendingAcks.get(appendedI);
+                                newAck.count += ack.count - 1;
+                                mergedI = i;
+                            }
+                            break;
+                        }
+                    }
+                    if (mergedI != -1) pendingAcks.remove(mergedI);
+
+                    if (appendedI == -1 && !prepended) {
+                        pendingAcks.add(new AckBundle(from, sequenceId, 1));
+                    }
                 }
             }
         }

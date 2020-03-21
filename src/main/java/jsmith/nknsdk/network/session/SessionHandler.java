@@ -136,6 +136,7 @@ public class SessionHandler extends Thread {
                     } else {
                         final int sequenceId = data.getSequenceId();
                         final int ackSeqLength = data.getAckStartSeqCount();
+                        final long bytesRead = data.getBytesRead();
 
                         if (sequenceId != 0) {
                             s.onReceivedChunk(sequenceId, data.getData(), cmw);
@@ -145,6 +146,7 @@ public class SessionHandler extends Thread {
                                 s.onReceivedAck(data.getAckStartSeq(i), data.getAckSeqCount(i));
                             }
                         }
+                        s.remoteBytesRead.updateAndGet(br -> Math.max(bytesRead, br));
                         if (data.getClose()) { // Close request
                             LOG.debug("Received a close packet");
                             s.close();
@@ -244,16 +246,37 @@ public class SessionHandler extends Thread {
                                 }
                             }
                             if (!availableMulticlients.isEmpty()) {
-                                int workerI = (int)(Math.random() * availableMulticlients.size());
+                                int workerI = availableMulticlients.get((int)(Math.random() * availableMulticlients.size()));
 
                                 String chosenRemote = s.prefixes.get(workerI) + "." + s.remoteIdentifier;
                                 if (chosenRemote.startsWith(".")) chosenRemote = chosenRemote.substring(1);
                                 remaining |= flushDataChunk(s, ct.multiclients.get(workerI).getAssociatedCM(), chosenRemote);
+
+                                if (s.lastSentBytesRead == s.bytesRead.get() && System.currentTimeMillis() - s.lastSentBytesReadTime < 5000) {
+                                    long bytesRead = s.bytesRead.get();
+                                    MessagesP.SessionData.Builder packetBuilder = MessagesP.SessionData.newBuilder()
+                                            .setSequenceId(0)
+                                            .setBytesRead(bytesRead)
+                                            .setClose(false);
+
+                                    for (int worker : availableMulticlients) {
+
+                                        chosenRemote = s.prefixes.get(worker) + "." + s.remoteIdentifier;
+                                        if (chosenRemote.startsWith(".")) chosenRemote = chosenRemote.substring(1);
+                                        if (s.lastSentBytesRead < bytesRead) {
+                                            ct.multiclients.get(worker).getAssociatedCM().sendMessageAsync(
+                                                    Collections.singletonList(chosenRemote), s.sessionId, MessagesP.PayloadType.SESSION,
+                                                    packetBuilder.build().toByteString());
+                                        }
+                                    }
+                                    s.lastSentBytesRead = bytesRead;
+                                    s.lastSentBytesReadTime = System.currentTimeMillis();
+                                }
                             }
 
                         } catch (InterruptedException ignored) {}
                     }
-                    if (s.isClosing && !s.isClosedOutbound && s.sentBytesIntegral.get(s.latestSentSeqId) + s.sendQ.stream().mapToInt(dc -> dc.data.size()).sum() == 0) {
+                    if (s.isClosing && !s.isClosedOutbound && s.sentBytesIntegral.get(s.latestSentSeqId) - s.sentBytesIntegral.get(s.latestConfirmedSeqId) + s.sendQ.stream().mapToInt(dc -> dc.data.size()).sum() == 0) {
                         MessagesP.SessionData closePacket = MessagesP.SessionData.newBuilder()
                                 .setSequenceId(0)
                                 .setClose(true)
@@ -279,7 +302,7 @@ public class SessionHandler extends Thread {
                 }
             }
             try {
-                Thread.sleep(10);
+                Thread.sleep(5);
             } catch (InterruptedException ignored) {}
         }
         closingLatch.countDown();
@@ -289,15 +312,18 @@ public class SessionHandler extends Thread {
         Session.DataChunk dataChunk = null;
         if (!s.resendQ.isEmpty()) {
             dataChunk = s.resendQ.take();
-        } else if (!s.sendQ.isEmpty() && s.sentBytesIntegral.get(s.latestSentSeqId) + s.sendQ.peek().data.size() <= s.winSize) {
+        } else if (!s.sendQ.isEmpty() && s.sentBytesIntegral.get(s.latestSentSeqId) - s.remoteBytesRead.get() + s.sendQ.peek().data.size() <= s.winSize) {
             dataChunk = s.sendQ.take();
         } else if (s.pendingAcks.isEmpty()) {
             return false;
         }
 
+        long bytesRead = s.bytesRead.get();
         MessagesP.SessionData.Builder packetBuilder = MessagesP.SessionData.newBuilder()
                 .setSequenceId(0)
+                .setBytesRead(bytesRead)
                 .setClose(false);
+
 
         if (dataChunk != null) {
             packetBuilder.setSequenceId(dataChunk.sequenceId);
@@ -332,7 +358,9 @@ public class SessionHandler extends Thread {
                 }
             }
             chosenWorker.sendMessageAsync(Collections.singletonList(chosenRemote), s.sessionId, MessagesP.PayloadType.SESSION, packetBuilder.build().toByteString());
-            return !s.resendQ.isEmpty() || (!s.sendQ.isEmpty() && s.sentBytesIntegral.get(s.latestSentSeqId) + s.sendQ.peek().data.size() <= s.winSize);
+            s.lastSentBytesRead = bytesRead;
+            s.lastSentBytesReadTime = System.currentTimeMillis();
+            return !s.resendQ.isEmpty() || (!s.sendQ.isEmpty() && s.sentBytesIntegral.get(s.latestSentSeqId) - s.remoteBytesRead.get() + s.sendQ.peek().data.size() <= s.winSize);
         } else {
             return false;
         }
@@ -344,7 +372,8 @@ public class SessionHandler extends Thread {
         for (int i = 0; i < s.ownMulticlients; i++) {
             workerAvailable |= ct.multiclients.get(i).getAssociatedCM().isWinSizeAvailable(s.remoteIdentifier);
         }
-        boolean winSizeAvailable = s.sentBytesIntegral.get(s.latestSentSeqId) + s.sendQ.stream().mapToInt(dc -> dc.data.size()).sum() <= s.winSize;
+
+        boolean winSizeAvailable = s.sentBytesIntegral.get(s.latestSentSeqId) - s.remoteBytesRead.get() + s.sendQ.stream().mapToInt(dc -> dc.data.size()).sum() <= s.winSize;
 
         while (!winSizeAvailable || !workerAvailable) {
             Thread.sleep(300);
@@ -354,7 +383,7 @@ public class SessionHandler extends Thread {
                 workerAvailable |= ct.multiclients.get(i).getAssociatedCM().isWinSizeAvailable(s.remoteIdentifier);
             }
 
-            winSizeAvailable = s.sentBytesIntegral.get(s.latestSentSeqId) + s.sendQ.stream().mapToInt(dc -> dc.data.size()).sum() <= s.winSize;
+            winSizeAvailable = s.sentBytesIntegral.get(s.latestSentSeqId) - s.remoteBytesRead.get() + s.sendQ.stream().mapToInt(dc -> dc.data.size()).sum() <= s.winSize;
         }
     }
 
