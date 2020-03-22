@@ -43,8 +43,6 @@ public class WsApi extends WebSocketClient {
 
 
     public void onMessage(String message) {
-        LOG.debug("WS#{} received text message: '{}'", myId,  message);
-
         if (jsonMessageListener != null) {
             final JSONObject messageJson = new JSONObject(message);
             jsonMessageListener.accept(messageJson);
