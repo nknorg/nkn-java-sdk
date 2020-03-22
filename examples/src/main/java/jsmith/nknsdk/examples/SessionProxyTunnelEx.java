@@ -38,7 +38,8 @@ public class SessionProxyTunnelEx {
             LOG.info("SERVER Mode. Target is {}", inetAddress);
         } else {
             inetAddress = new InetSocketAddress("127.0.0.1", 8080);
-            nknAddress = "ProxyTunnel.2862c70b3113881d559575c280c995a5649519d95743e396c02b48a33c14ddeb";
+//            nknAddress = "ProxyTunnel.2862c70b3113881d559575c280c995a5649519d95743e396c02b48a33c14ddeb";
+            nknAddress = "62416a251de49f1b599f55e38c3b35aefea5dd6963cebc01805a15a8afe77902";
             LOG.info("Client Mode. Target is :{} -> {}", inetAddress.getPort(), nknAddress);
         }
 
@@ -70,15 +71,19 @@ public class SessionProxyTunnelEx {
 
 
         if (SERVER) {
-            client.sessionProtocol().onSessionRequest(session -> {
-                try {
-                    setupSession(session, new Socket(inetAddress.getAddress(), inetAddress.getPort()));
-                    return true;
-                } catch (IOException e) {
-                    LOG.error("Could not open proxy connection", e);
-                    return false;
-                }
-            });
+            try {
+                client.sessionProtocol().onSessionRequest(session -> {
+                    try {
+                        setupSession(session, new Socket(inetAddress.getAddress(), inetAddress.getPort()));
+                        return true;
+                    } catch (IOException e) {
+                        LOG.error("Could not open proxy connection", e);
+                        return false;
+                    }
+                });
+            } catch (NKNClientException e) {
+                LOG.error("Waiting for session failed", e);
+            }
         } else {
             try {
                 final ServerSocket ss = new ServerSocket(inetAddress.getPort());
@@ -93,7 +98,7 @@ public class SessionProxyTunnelEx {
 
         }
 
-        System.out.println("Started as " + identity.getFullIdentifier());
+        LOG.info("Started as {}", identity.getFullIdentifier());
         Thread.sleep(100);
 
 

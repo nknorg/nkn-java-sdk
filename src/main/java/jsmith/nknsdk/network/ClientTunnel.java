@@ -37,7 +37,7 @@ public class ClientTunnel {
     volatile WsApi ws = null;
     CountLatch messageHold = new CountLatch(1);
 
-    final Identity identity;
+    public final Identity identity;
 
     private static int id = 0;
     final int myId;
@@ -75,8 +75,8 @@ public class ClientTunnel {
         LOG.debug("Ensuring {} multiclients", multiclientCount);
         // TODO create multiclients in parallel
         while (multiclients.size() < multiclientCount) {
-            final String prefix = "__" + multiclientPrefix.getAndIncrement() + "__.";
-            final Identity id = new Identity(prefix + identity.name, identity.wallet);
+            final String prefix = "__" + multiclientPrefix.getAndIncrement() + "__";
+            final Identity id = new Identity(prefix + (identity.name.isEmpty() ? "" : "." + identity.name), identity.wallet);
             final ClientTunnel ct = new ClientTunnel(id, forClient, handler);
             multiclients.add(ct);
             if (running) ct.startClient();

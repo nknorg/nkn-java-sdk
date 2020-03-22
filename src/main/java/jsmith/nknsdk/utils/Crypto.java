@@ -130,8 +130,13 @@ public class Crypto {
         randomId_sr.nextBytes(id);
         return id;
     }
+    public static byte[] nextRandom8B() {
+        final byte[] id = new byte[8];
+        randomId_sr.nextBytes(id);
+        return id;
+    }
     public static byte[] nextRandom4B() {
-        final byte[] id = new byte[16];
+        final byte[] id = new byte[4];
         randomId_sr.nextBytes(id);
         return id;
     }

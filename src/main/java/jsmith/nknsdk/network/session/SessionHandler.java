@@ -22,7 +22,7 @@ public class SessionHandler extends Thread {
     public static final int MAX_MTU = 1024;
     public static final int MAX_WIN_SIZE = 4 * 1024 * 1024;
     public static final int MAX_MULTICLIENTS = 16;
-    public static final int DEFAULT_MULTICLIENTS = 4;
+    public static final int DEFAULT_MULTICLIENTS = 1;
 
     private static final Logger LOG = LoggerFactory.getLogger(SessionHandler.class);
 
@@ -52,7 +52,7 @@ public class SessionHandler extends Thread {
             }
         }
 
-        final Session s = new Session(this, prefixes, multiclients, destinationFullIdentifier, ByteString.copyFrom(Crypto.nextRandom4B()), maxMtu, maxWindowSize);
+        final Session s = new Session(this, prefixes, multiclients, destinationFullIdentifier, ByteString.copyFrom(Crypto.nextRandom8B()), maxMtu, maxWindowSize);
         activeSessions.put(new SessionKey(destinationFullIdentifier, s.sessionId), s);
         LOG.info("Dialing session");
         establishSession(s);
@@ -60,8 +60,11 @@ public class SessionHandler extends Thread {
     }
 
     private Function<Session, Boolean> acceptSession = null;
-    public void onSessionRequest(Function<Session, Boolean> accept) {
+    public void onSessionRequest(Function<Session, Boolean> accept) throws NKNClientException {
         this.acceptSession = accept;
+        if (accept != null) {
+            ct.ensureMulticlients(1);
+        }
     }
 
 
@@ -79,6 +82,7 @@ public class SessionHandler extends Thread {
     }
 
     public void onMessage(ClientMessageWorker cmw, String fromRaw, ByteString sessionId, ByteString bytes) {
+        System.out.println("Message");
         String prefix = fromRaw.contains(".") ? fromRaw.substring(0, fromRaw.indexOf(".")) : "";
         String from = fromRaw;
         if (prefix.matches("^__\\d+__$")) {
@@ -99,6 +103,7 @@ public class SessionHandler extends Thread {
                     if (s.isClosed) return;
 
                     if (data.getHandshake()) {
+                        System.out.println("Known session, Handshake");
                         if (!isClosing) {
                             if (!s.isEstablished) {
 
@@ -134,6 +139,7 @@ public class SessionHandler extends Thread {
                             }
                         }
                     } else {
+                        System.out.println("Known session, Other");
                         final int sequenceId = data.getSequenceId();
                         final int ackSeqLength = data.getAckStartSeqCount();
                         final long bytesRead = data.getBytesRead();
@@ -161,19 +167,19 @@ public class SessionHandler extends Thread {
 
             } else {
 
+                System.out.println("New session");
                 if (!isClosing) {
                     if (data.getHandshake()) {
                         final int mtu = data.getMtu();
                         final int winSize = data.getWindowSize();
 
-                        s = new Session(this, data.getClientIdsList(), Math.min(preferredMulticlients, data.getClientIdsCount()), from, sessionId, mtu, winSize);
+                        s = new Session(this, data.getClientIdsList(), Math.min(preferredMulticlients, data.getClientIdsCount()), from, sessionId, Math.min(mtu, preferredMtu), Math.min(preferredWinSize, winSize));
 
                         synchronized (s.lock) {
 
                             activeSessions.put(sk, s);
 
                             if (acceptSession != null && acceptSession.apply(s)) {
-                                LOG.info("Reply sent with session establishment confirmation");
 
                                 try {
                                     ct.ensureMulticlients(s.ownMulticlients);
@@ -183,8 +189,10 @@ public class SessionHandler extends Thread {
                                 for (int i = 0; i < s.ownMulticlients; i++) {
                                     ct.multiclients.get(i).getAssociatedCM().trackWinSize(s.remoteIdentifier, ClientMessageWorker.DEFAULT_INITIAL_CONNECTION_WINSIZE);
                                 }
+
                                 establishSession(s);
-                                s.establishSession(s.prefixes, Math.min(s.mtu, preferredMtu), Math.min(Math.min(MAX_MULTICLIENTS, preferredMulticlients), s.ownMulticlients), Math.min(s.winSize, preferredWinSize));
+                                s.establishSession(s.prefixes, s.mtu, Math.min(Math.min(MAX_MULTICLIENTS, preferredMulticlients), s.ownMulticlients), s.winSize);
+                                LOG.info("Reply sent with session establishment confirmation");
                                 if (s.onSessionEstablishedCb != null) {
                                     s.onSessionEstablishedCalled = true;
                                     s.onSessionEstablishedCb.run();
@@ -410,10 +418,20 @@ public class SessionHandler extends Thread {
                 .build();
 
         final ByteString packet = data.toByteString();
+        System.out.println(s.ownMulticlients + ", " + s.prefixes.size());
         for (int i = 0; i < s.ownMulticlients && i < s.prefixes.size(); i ++) {
             String remote = s.prefixes.get(i) + "." + s.remoteIdentifier;
             if (remote.startsWith(".")) remote = remote.substring(1);
+            System.out.println("Sending handshake: " + ct.multiclients.get(i).identity.getFullIdentifier() + " -> " + remote);
             ct.multiclients.get(i).getAssociatedCM().sendMessageAsync(Collections.singletonList(remote), s.sessionId, MessagesP.PayloadType.SESSION, packet);
+        }
+        if (s.ownMulticlients == 1 && s.prefixes.size() > 1) {
+            for (int i = 1; i < s.prefixes.size(); i ++) {
+                String remote = s.prefixes.get(i) + "." + s.remoteIdentifier;
+                if (remote.startsWith(".")) remote = remote.substring(1);
+                System.out.println("Sending handshake: " + ct.multiclients.get(0).identity.getFullIdentifier() + " -> " + remote);
+                ct.multiclients.get(0).getAssociatedCM().sendMessageAsync(Collections.singletonList(remote), s.sessionId, MessagesP.PayloadType.SESSION, packet);
+            }
         }
     }
 

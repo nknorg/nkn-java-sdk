@@ -24,7 +24,7 @@ public class SessionProtocol {
         return handler.dialSession(destinationFullIdentifier, multiclients, targetPrefixes, maxMtu, maxWindowSize);
     }
 
-    public void onSessionRequest(Function<Session, Boolean> accept) {
+    public void onSessionRequest(Function<Session, Boolean> accept) throws NKNClientException {
         handler.onSessionRequest(accept);
     }
 

@@ -23,12 +23,12 @@ public class Identity {
      */
     public Identity(String name, Wallet w) {
         if (w == null) throw new NullPointerException("Wallet cannot be null");
-        this.name = name;
+        this.name = name == null ? "" : name;
         this.wallet = w;
     }
 
     public String getFullIdentifier() {
-        if (name == null || name.isEmpty()) return Hex.toHexString(wallet.getPublicKey());
+        if (name.isEmpty()) return Hex.toHexString(wallet.getPublicKey());
         return name + "." + Hex.toHexString(wallet.getPublicKey());
     }
 
