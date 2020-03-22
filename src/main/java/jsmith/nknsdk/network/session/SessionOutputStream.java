@@ -50,6 +50,16 @@ public class SessionOutputStream extends OutputStream {
         doFlush();
     }
 
+    long lastFlush = 0;
+    void timedFlush() {
+        if (System.currentTimeMillis() - lastFlush > 70) {
+            try {
+                flush();
+                lastFlush = System.currentTimeMillis();
+            } catch (IOException ignored) {}
+        }
+    }
+
     private final Object flushLock = new Object();
     private void doFlush() throws IOException {
         try {

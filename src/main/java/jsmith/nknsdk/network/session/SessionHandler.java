@@ -231,6 +231,7 @@ public class SessionHandler extends Thread {
                         }
                     }
                 }
+                if (s.isEstablished && !s.isClosedOutbound && !s.isClosing) s.getOutputStream().timedFlush();
             }
 
             boolean remaining = true;
@@ -257,6 +258,7 @@ public class SessionHandler extends Thread {
                                     MessagesP.SessionData.Builder packetBuilder = MessagesP.SessionData.newBuilder()
                                             .setSequenceId(0)
                                             .setBytesRead(bytesRead)
+                                            .setHandshake(false)
                                             .setClose(false);
 
                                     for (int worker : availableMulticlients) {
@@ -309,6 +311,8 @@ public class SessionHandler extends Thread {
     }
 
     private boolean flushDataChunk(Session s, ClientMessageWorker chosenWorker, String chosenRemote) throws InterruptedException {
+        if (!s.isEstablished) return false;
+
         Session.DataChunk dataChunk = null;
         if (!s.resendQ.isEmpty()) {
             dataChunk = s.resendQ.take();
@@ -322,6 +326,7 @@ public class SessionHandler extends Thread {
         MessagesP.SessionData.Builder packetBuilder = MessagesP.SessionData.newBuilder()
                 .setSequenceId(0)
                 .setBytesRead(bytesRead)
+                .setHandshake(false)
                 .setClose(false);
 
 

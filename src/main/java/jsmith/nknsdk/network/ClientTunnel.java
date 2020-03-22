@@ -187,7 +187,6 @@ public class ClientTunnel {
 
                 try {
                     ConnectionProvider.attempt((bootstrapNode) -> {
-                        System.out.println(json.toString());
                         final String[] parts = json.getString("Result").split(":");
                         directNodeWS = new InetSocketAddress(parts[0], Integer.parseInt(parts[1]));
 
