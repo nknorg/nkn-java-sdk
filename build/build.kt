@@ -53,6 +53,19 @@ val SessionExample by project(path("examples")) {
 
 }
 
+val SessionProxyTunnelExample by project(path("examples")) {
+
+    projectDependencies add { ProjectDependency(NknSdk, false) }
+
+    repositories add { Jitpack }
+    libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.1") } // Logging frontend
+
+    mainClass set { "jsmith.nknsdk.examples.SessionProxyTunnelEx" }
+
+    runDirectory set { projectRoot.get() }
+
+}
+
 val DropBenchmarkExample by project(path("examples")) {
 
     projectDependencies add { ProjectDependency(NknSdk, false) }
