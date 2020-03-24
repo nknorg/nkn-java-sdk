@@ -5,4 +5,4 @@
 jdk:
   - oraclejdk8
 install:
-  - java -jar wemi "NknSdk/jitpack:publish"
+  - ./wemi "NknSdk/jitpack:publish"

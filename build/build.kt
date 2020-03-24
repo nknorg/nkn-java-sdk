@@ -9,7 +9,7 @@ val NknSdk by project {
 
     projectName set { "NknSdk" }
     projectGroup set { "cz.jsmith.nkn" }
-    projectVersion set { "0.2.1-SNAPSHOT" }
+    projectVersion set { "0.2.2" }
 
     repositories add { Jitpack }
 
@@ -21,7 +21,7 @@ val NknSdk by project {
     libraryDependencies add { dependency("com.google.protobuf:protobuf-java:3.6.1") } // Proto-buffer implementation
 
     libraryDependencies add { dependency("net.i2p.crypto:eddsa:0.3.0") } // Crypto, Ed25519
-    libraryDependencies add { dependency("org.bouncycastle:bcprov-jdk15on:1.61") } // Crypto, The rest
+    libraryDependencies add { dependency("org.bouncycastle:bcprov-jdk15on:1.64") } // Crypto, The rest
 
     publishArtifacts set { artifacts(NoClassifier, includeSources = true, includeDocumentation = false) }
 
