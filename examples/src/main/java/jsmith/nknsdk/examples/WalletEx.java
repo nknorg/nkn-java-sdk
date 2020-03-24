@@ -20,11 +20,11 @@ public class WalletEx {
         setupLogging(TPLogger.DEBUG);
 
         final Wallet w = Wallet.createNew();
-        w.save(new File("devnet-tmpWallet.dat"), "a");
+        w.save(new File("devnet-tmpWallet.json"), "a");
         System.out.println("Generated: " + w.getAddress());
 
 
-        final Wallet w2 = Wallet.load(new File("devnet-tmpWallet.dat"), "pwd");
+        final Wallet w2 = Wallet.load(new File("devnet-tmpWallet.json"), "pwd");
         if (w2 != null) {
             System.out.println("Loaded: " + w2.getAddress());
         } else {
@@ -38,8 +38,8 @@ public class WalletEx {
 
 
         System.out.println();
-        final File fromFile = new File("devnet-from.dat");
-        final File toFile = new File("devnet-to.dat");
+        final File fromFile = new File("devnet-from.json");
+        final File toFile = new File("devnet-to.json");
 
         if (!fromFile.exists()) Wallet.createNew().save(fromFile, "pwd");
         if (!toFile.exists()) Wallet.createNew().save(toFile, "pwd");

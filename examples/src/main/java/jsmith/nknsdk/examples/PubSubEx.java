@@ -18,7 +18,7 @@ public class PubSubEx {
     public static void main(String[] args) throws WalletException, InterruptedException, NKNClientException, NKNExplorerException {
         setupLogging(TPLogger.DEBUG);
 
-        final File walletFile = new File("pubsub.dat");
+        final File walletFile = new File("pubsub.json");
 
         if (!walletFile.exists()) Wallet.createNew().save(walletFile, "pwd");
 

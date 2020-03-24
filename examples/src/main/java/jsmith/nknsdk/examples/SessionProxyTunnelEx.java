@@ -45,7 +45,7 @@ public class SessionProxyTunnelEx {
 
 
 
-        File walletFile = new File("tmpWallet.dat");
+        File walletFile = new File("tmpWallet.json");
         Wallet w;
         try {
             w = Wallet.load(walletFile, "pwd");

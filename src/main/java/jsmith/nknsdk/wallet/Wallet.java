@@ -77,7 +77,7 @@ public class Wallet {
         return w;
     }
 
-    private static final String VERSION = "0.0.1";
+    private static final int VERSION = 1;
     public static Wallet load(File f, String password) throws WalletException {
         try {
             final FileInputStream fis = new FileInputStream(f);
@@ -107,7 +107,7 @@ public class Wallet {
 
             JSONObject json = new JSONObject(new String(walletBytes, StandardCharsets.UTF_8));
 
-            if (!json.getString("Version").equals(VERSION)) {
+            if (json.getInt("Version") != VERSION) {
                 throw new WalletException("Unsuported version of wallet save file: " + json.getString("Version"));
             }
 
