@@ -72,16 +72,18 @@ public class ClientTunnel {
 
     private AtomicInteger multiclientPrefix = new AtomicInteger(0);
     public void ensureMulticlients(int multiclientCount) throws NKNClientException {
-        LOG.debug("Ensuring {} multiclients", multiclientCount);
-        // TODO create multiclients in parallel
-        while (multiclients.size() < multiclientCount) {
-            final String prefix = "__" + multiclientPrefix.getAndIncrement() + "__";
-            final Identity id = new Identity(prefix + (identity.name.isEmpty() ? "" : "." + identity.name), identity.wallet);
-            final ClientTunnel ct = new ClientTunnel(id, forClient, handler);
-            multiclients.add(ct);
-            if (running) ct.startClient();
+        synchronized (this) {
+            LOG.debug("Ensuring {} multiclients", multiclientCount);
+            // TODO create multiclients in parallel
+            while (multiclients.size() < multiclientCount) {
+                final String prefix = "__" + multiclientPrefix.getAndIncrement() + "__";
+                final Identity id = new Identity(prefix + (identity.name.isEmpty() ? "" : "." + identity.name), identity.wallet);
+                final ClientTunnel ct = new ClientTunnel(id, forClient, handler);
+                multiclients.add(ct);
+                if (running) ct.startClient();
+            }
+            // TODO close those that we dont need anymore?
         }
-        // TODO close those that we dont need anymore?
     }
 
     public ClientMessageWorker getAssociatedCM() {

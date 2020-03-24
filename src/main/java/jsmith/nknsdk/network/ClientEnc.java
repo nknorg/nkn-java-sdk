@@ -25,6 +25,11 @@ public class ClientEnc {
 
     public static void signOutboundMessage(MessagesP.ClientMsg.Builder msg, ClientTunnel ct) {
 
+        if (ct.nodePubkey == null) {
+            LOG.warn("Message sig chain requested, but public key of a node is not known!");
+            return;
+        }
+
         final SigchainP.SigChainElem sigChainElem = SigchainP.SigChainElem.newBuilder()
                 .setNextPubkey(ct.nodePubkey)
                 .build();

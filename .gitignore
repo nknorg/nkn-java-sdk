@@ -4,6 +4,8 @@ build/*
 
 # Wallets
 *.dat
+*.json
+
 
 # IntelliJ
 .idea/
