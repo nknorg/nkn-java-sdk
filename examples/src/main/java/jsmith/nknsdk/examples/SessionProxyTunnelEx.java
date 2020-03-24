@@ -114,15 +114,12 @@ public class SessionProxyTunnelEx {
                 final InputStream nknIn = session.getInputStream();
                 final OutputStream nknOut = session.getOutputStream();
 
-                System.out.println("Got streams");
-
                 new Thread(() -> {
                     byte[] buffer = new byte[1024 * 1024];
                     boolean closed = false;
                     try {
                         while (!closed) {
                             int red = inetIn.read(buffer);
-                            System.out.println("Inet red " + red);
                             if (red != -1) {
                                 if (red > 0) {
                                     nknOut.write(buffer, 0, red);
@@ -133,8 +130,8 @@ public class SessionProxyTunnelEx {
                                 closed = true;
                             }
                         }
-                    } catch (IOException | InterruptedException ioe) {
-                        LOG.error("NetInNknOut IOe", ioe);
+                    } catch (IOException | InterruptedException ignored) {
+                        // Connection closed or something, close it as well
                     } finally {
                         try {
                             inetIn.close();
@@ -152,7 +149,6 @@ public class SessionProxyTunnelEx {
                     try {
                         while (!closed) {
                             int red = nknIn.read(buffer);
-                            System.out.println("NKN red " + red);
                             if (red != -1) {
                                 if (red > 0) {
                                     inetOut.write(buffer, 0, red);
@@ -163,8 +159,8 @@ public class SessionProxyTunnelEx {
                                 closed = true;
                             }
                         }
-                    } catch (IOException | InterruptedException ioe) {
-                        LOG.error("NetOutNknIn IOe", ioe);
+                    } catch (IOException | InterruptedException ignored) {
+                        // Connection closed or something, close it as well
                     } finally {
                         try {
                             inetIn.close();
@@ -174,8 +170,6 @@ public class SessionProxyTunnelEx {
                         } catch (IOException ignored) {}
                     }
                 }, "ProxyTunnelExample-NetOutNknIn").start();
-
-                System.out.println("Started threads");
 
             } catch (IOException e) {
                 LOG.error("IOException", e);

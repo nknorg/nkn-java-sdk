@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
 
@@ -22,7 +23,7 @@ public class SessionHandler extends Thread {
     public static final int MAX_MTU = 1024;
     public static final int MAX_WIN_SIZE = 4 * 1024 * 1024;
     public static final int MAX_MULTICLIENTS = 16;
-    public static final int DEFAULT_MULTICLIENTS = 1;
+    public static final int DEFAULT_MULTICLIENTS = 4;
 
     private static final Logger LOG = LoggerFactory.getLogger(SessionHandler.class);
 
@@ -68,7 +69,7 @@ public class SessionHandler extends Thread {
     }
 
 
-    private final HashMap<SessionKey, Session> activeSessions = new HashMap<>();
+    private final ConcurrentHashMap<SessionKey, Session> activeSessions = new ConcurrentHashMap<>();
 
     private int preferredMtu = MAX_MTU, preferredMulticlients = DEFAULT_MULTICLIENTS, preferredWinSize = MAX_WIN_SIZE;
     public void setIncomingPreferredMtu(int preferredMtu) {
@@ -82,7 +83,6 @@ public class SessionHandler extends Thread {
     }
 
     public void onMessage(ClientMessageWorker cmw, String fromRaw, ByteString sessionId, ByteString bytes) {
-        System.out.println("Message");
         String prefix = fromRaw.contains(".") ? fromRaw.substring(0, fromRaw.indexOf(".")) : "";
         String from = fromRaw;
         if (prefix.matches("^__\\d+__$")) {
@@ -93,8 +93,8 @@ public class SessionHandler extends Thread {
         try {
             MessagesP.SessionData data = MessagesP.SessionData.parseFrom(bytes);
 
-            if (data.getAckStartSeqCount() != data.getAckSeqCountCount()) {
-                throw new InvalidProtocolBufferException("AckStartSeq does not have the same length as AckSeqCount");
+            if (data.getAckStartSeqCount() != data.getAckSeqCountCount() && data.getAckStartSeqCount() != 0 && data.getAckSeqCountCount() != 0) {
+                throw new InvalidProtocolBufferException("AckStartSeq does not have the same length as AckSeqCount and are both non-zero");
             }
 
             Session s = activeSessions.get(sk);
@@ -103,7 +103,6 @@ public class SessionHandler extends Thread {
                     if (s.isClosed) return;
 
                     if (data.getHandshake()) {
-                        System.out.println("Known session, Handshake");
                         if (!isClosing) {
                             if (!s.isEstablished) {
 
@@ -139,7 +138,6 @@ public class SessionHandler extends Thread {
                             }
                         }
                     } else {
-                        System.out.println("Known session, Other");
                         final int sequenceId = data.getSequenceId();
                         final int ackSeqLength = data.getAckStartSeqCount();
                         final long bytesRead = data.getBytesRead();
@@ -149,7 +147,13 @@ public class SessionHandler extends Thread {
                         }
                         if (ackSeqLength > 0) {
                             for (int i = 0; i < ackSeqLength; i++) {
-                                s.onReceivedAck(data.getAckStartSeq(i), data.getAckSeqCount(i));
+                                int count = 1;
+                                if (data.getAckSeqCountCount() > 0) count = data.getAckSeqCount(i);
+                                s.onReceivedAck(data.getAckStartSeq(i), count);
+                            }
+                        } else if (data.getAckSeqCountCount() > 0) {
+                            for (int i = 0; i < data.getAckSeqCountCount(); i++) {
+                                s.onReceivedAck(1, data.getAckSeqCount(i));
                             }
                         }
                         s.remoteBytesRead.updateAndGet(br -> Math.max(bytesRead, br));
@@ -166,8 +170,6 @@ public class SessionHandler extends Thread {
                 }
 
             } else {
-
-                System.out.println("New session");
                 if (!isClosing) {
                     if (data.getHandshake()) {
                         final int mtu = data.getMtu();
@@ -418,18 +420,15 @@ public class SessionHandler extends Thread {
                 .build();
 
         final ByteString packet = data.toByteString();
-        System.out.println(s.ownMulticlients + ", " + s.prefixes.size());
         for (int i = 0; i < s.ownMulticlients && i < s.prefixes.size(); i ++) {
             String remote = s.prefixes.get(i) + "." + s.remoteIdentifier;
             if (remote.startsWith(".")) remote = remote.substring(1);
-            System.out.println("Sending handshake: " + ct.multiclients.get(i).identity.getFullIdentifier() + " -> " + remote);
             ct.multiclients.get(i).getAssociatedCM().sendMessageAsync(Collections.singletonList(remote), s.sessionId, MessagesP.PayloadType.SESSION, packet);
         }
         if (s.ownMulticlients == 1 && s.prefixes.size() > 1) {
             for (int i = 1; i < s.prefixes.size(); i ++) {
                 String remote = s.prefixes.get(i) + "." + s.remoteIdentifier;
                 if (remote.startsWith(".")) remote = remote.substring(1);
-                System.out.println("Sending handshake: " + ct.multiclients.get(0).identity.getFullIdentifier() + " -> " + remote);
                 ct.multiclients.get(0).getAssociatedCM().sendMessageAsync(Collections.singletonList(remote), s.sessionId, MessagesP.PayloadType.SESSION, packet);
             }
         }

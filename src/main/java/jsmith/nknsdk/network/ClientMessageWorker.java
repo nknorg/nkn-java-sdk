@@ -282,16 +282,18 @@ public class ClientMessageWorker {
             for (String d : destination) {
                 final ByteString messageID = type == MessagesP.PayloadType.SESSION ? replyTo : ByteString.copyFrom(Crypto.nextRandom4B());
 
-                final MessagesP.Payload payload = MessagesP.Payload.newBuilder()
+                final MessagesP.Payload.Builder payload = MessagesP.Payload.newBuilder()
                         .setType(type)
                         .setPid(messageID)
-                        .setReplyToPid(replyToMessageID)
                         .setData(message)
-                        .setNoAck(ct.forClient.simpleMessagesProtocol().isNoAutomaticACKs())
-                        .build();
+                        .setNoAck(ct.forClient.simpleMessagesProtocol().isNoAutomaticACKs());
+                if (type != MessagesP.PayloadType.SESSION) {
+                    payload.setReplyToPid(replyToMessageID);
+                }
+
 
                 try {
-                    final ByteString encryptedPayload = ClientEnc.encryptMessage(Collections.singletonList(d), payload.toByteString(), ct.identity.wallet, NKNClient.EncryptionLevel.ENCRYPT_ONLY_UNICAST);
+                    final ByteString encryptedPayload = ClientEnc.encryptMessage(Collections.singletonList(d), payload.build().toByteString(), ct.identity.wallet, NKNClient.EncryptionLevel.ENCRYPT_ONLY_UNICAST);
                     promises.addAll(sendEncryptedMessage(Collections.singletonList(d), messageID, encryptedPayload, type == MessagesP.PayloadType.SESSION));
                 } catch (NKNClientException e) {
                     LOG.warn("Failed to send message", e);
@@ -303,17 +305,17 @@ public class ClientMessageWorker {
         } else {
             final ByteString messageID = type == MessagesP.PayloadType.SESSION ? replyTo : ByteString.copyFrom(Crypto.nextRandom4B());
 
-            final MessagesP.Payload payload = MessagesP.Payload.newBuilder()
+            final MessagesP.Payload.Builder payload = MessagesP.Payload.newBuilder()
                     .setType(type)
                     .setPid(messageID)
-                    .setReplyToPid(replyToMessageID)
                     .setData(message)
-                    .setNoAck(ct.forClient.simpleMessagesProtocol().isNoAutomaticACKs())
-                    .build();
-
+                    .setNoAck(ct.forClient.simpleMessagesProtocol().isNoAutomaticACKs());
+            if (type != MessagesP.PayloadType.SESSION) {
+                payload.setReplyToPid(replyToMessageID);
+            }
 
             try {
-                final ByteString encryptedPayload = ClientEnc.encryptMessage(destination, payload.toByteString(), ct.identity.wallet, ct.forClient.getEncryptionLevel());
+                final ByteString encryptedPayload = ClientEnc.encryptMessage(destination, payload.build().toByteString(), ct.identity.wallet, ct.forClient.getEncryptionLevel());
 
                 return sendEncryptedMessage(destination, messageID, encryptedPayload, type == MessagesP.PayloadType.SESSION);
             } catch (NKNClientException e) {
