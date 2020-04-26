@@ -31,7 +31,7 @@ public class Session {
     final AtomicLong remoteBytesRead = new AtomicLong(0);
     long lastSentBytesReadTime = 0;
 
-    final String remoteIdentifier;
+    public final String remoteIdentifier;
     final ByteString sessionId;
 
     List<String> prefixes;
