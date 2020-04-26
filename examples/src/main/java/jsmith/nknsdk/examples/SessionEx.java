@@ -85,6 +85,9 @@ public class SessionEx {
                     t.setDaemon(true);
                     t.start();
                 });
+                sB.onSessionBrokenTunnel(() -> {
+                    LOG.warn("Session tunnel broke");
+                });
                 return true;
             });
 
@@ -128,6 +131,9 @@ public class SessionEx {
                 }, "SessionExample-OutputStreamThread");
                 t.setDaemon(true);
                 t.start();
+            });
+            sA.onSessionBrokenTunnel(() -> {
+                LOG.warn("Session tunnel broke");
             });
 
         } catch (NKNClientException e) {

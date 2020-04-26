@@ -67,6 +67,7 @@ public class ConnectionProvider {
     private static int maxRetries = 3;
     private static int rpcCallTimeoutMS = 5000;
     private static int messageAckTimeoutMS = 5000;
+    private static int sessionTimeoutMS = 10000;
 
 
     public static int maxRetries() {
@@ -102,6 +103,18 @@ public class ConnectionProvider {
         if (messageAckTimeoutMS < 0) throw new IllegalArgumentException("Timeout must be non-negative number");
         synchronized (lock) {
             ConnectionProvider.messageAckTimeoutMS = messageAckTimeoutMS;
+        }
+    }
+
+    public static int sessionTimeoutMS() {
+        synchronized (lock) {
+            return messageAckTimeoutMS;
+        }
+    }
+    public static void sessionTimeoutMS(int sessionTimeoutMS) {
+        if (sessionTimeoutMS < 0) throw new IllegalArgumentException("Timeout must be non-negative number");
+        synchronized (lock) {
+            ConnectionProvider.sessionTimeoutMS = sessionTimeoutMS;
         }
     }
 

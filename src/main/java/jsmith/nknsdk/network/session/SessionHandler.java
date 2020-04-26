@@ -5,6 +5,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import jsmith.nknsdk.client.NKNClientException;
 import jsmith.nknsdk.network.ClientMessageWorker;
 import jsmith.nknsdk.network.ClientTunnel;
+import jsmith.nknsdk.network.ConnectionProvider;
 import jsmith.nknsdk.network.proto.MessagesP;
 import jsmith.nknsdk.utils.Crypto;
 import org.slf4j.Logger;
@@ -101,6 +102,7 @@ public class SessionHandler extends Thread {
             if (s != null) {
                 synchronized (s.lock) {
                     if (s.isClosed) return;
+                    s.lastReceivedPacket = System.currentTimeMillis();
 
                     if (data.getHandshake()) {
                         if (!isClosing) {
@@ -176,6 +178,7 @@ public class SessionHandler extends Thread {
                         final int winSize = data.getWindowSize();
 
                         s = new Session(this, data.getClientIdsList(), Math.min(preferredMulticlients, data.getClientIdsCount()), from, sessionId, Math.min(mtu, preferredMtu), Math.min(preferredWinSize, winSize));
+                        s.lastReceivedPacket = System.currentTimeMillis();
 
                         synchronized (s.lock) {
 
@@ -242,6 +245,20 @@ public class SessionHandler extends Thread {
                     }
                 }
                 if (s.isEstablished && !s.isClosedOutbound && !s.isClosing) s.getOutputStream().timedFlush();
+                if (System.currentTimeMillis() - s.lastReceivedPacket > ConnectionProvider.sessionTimeoutMS() && s.lastReceivedPacket != -1) {
+                    if (!s.isClosed && !s.isBroken) {
+                        s.isBroken = true;
+                        if (s.onSessionBrokenCb != null && !s.onSessionBrokenCalled) {
+                            s.onSessionBrokenCalled = true;
+                            s.onSessionBrokenCb.run();
+                        }
+                        s.close();
+                        s.lastReceivedPacket = System.currentTimeMillis();
+                    } else {
+                        s.isClosed = true;
+                        activeSessions.remove(new SessionKey(s.remoteIdentifier, s.sessionId));
+                    }
+                }
             }
 
             boolean remaining = true;
@@ -432,6 +449,7 @@ public class SessionHandler extends Thread {
                 ct.multiclients.get(0).getAssociatedCM().sendMessageAsync(Collections.singletonList(remote), s.sessionId, MessagesP.PayloadType.SESSION, packet);
             }
         }
+        s.lastReceivedPacket = System.currentTimeMillis();
     }
 
 

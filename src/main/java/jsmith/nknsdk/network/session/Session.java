@@ -21,6 +21,7 @@ public class Session {
 
     // TODO Not all status reads are properly synchronized. It should be fine though
     boolean isEstablished;
+    boolean isBroken;
     boolean isClosing;
     boolean isClosed;
     boolean isClosedOutbound;
@@ -67,6 +68,8 @@ public class Session {
             sendQ = new ArrayBlockingQueue<>(winSize / mtu + 16);
             resendQ = new PriorityBlockingQueue<>(winSize / mtu + 32, Comparator.comparingInt(j -> j.sequenceId));
 
+            lastReceivedPacket = System.currentTimeMillis();
+
             isEstablished = true;
         }
     }
@@ -78,6 +81,16 @@ public class Session {
         if (isEstablished && !onSessionEstablishedCalled && onSessionEstablished != null) {
             onSessionEstablishedCalled = true;
             onSessionEstablished.run();
+        }
+    }
+    Runnable onSessionBrokenCb = null;
+    boolean onSessionBrokenCalled = false;
+    long lastReceivedPacket = -1;
+    public void onSessionBrokenTunnel(Runnable onSessionBrokenTunnel) {
+        this.onSessionBrokenCb = onSessionBrokenTunnel;
+        if (isBroken && !onSessionBrokenCalled && onSessionBrokenCb != null) {
+            onSessionBrokenCalled = true;
+            onSessionBrokenCb.run();
         }
     }
 
