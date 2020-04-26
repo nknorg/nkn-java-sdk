@@ -108,7 +108,7 @@ public class ConnectionProvider {
 
     public static int sessionTimeoutMS() {
         synchronized (lock) {
-            return messageAckTimeoutMS;
+            return sessionTimeoutMS;
         }
     }
     public static void sessionTimeoutMS(int sessionTimeoutMS) {
