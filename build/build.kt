@@ -3,6 +3,7 @@ import wemi.*
 import wemi.dependency.Jitpack
 import wemi.dependency.NoClassifier
 import wemi.dependency.ProjectDependency
+import wemi.dependency.ScopeAggregate
 import wemi.publish.artifacts
 
 val NknSdk by project {
@@ -29,7 +30,7 @@ val NknSdk by project {
 
 val SimpleExample by project(path("examples")) {
 
-    projectDependencies add { ProjectDependency(NknSdk, false) }
+    projectDependencies add { ProjectDependency(NknSdk, scope = ScopeAggregate) }
 
     repositories add { Jitpack }
     libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.1") } // Logging frontend
@@ -42,7 +43,7 @@ val SimpleExample by project(path("examples")) {
 
 val SessionExample by project(path("examples")) {
 
-    projectDependencies add { ProjectDependency(NknSdk, false) }
+    projectDependencies add { ProjectDependency(NknSdk, scope = ScopeAggregate) }
 
     repositories add { Jitpack }
     libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.1") } // Logging frontend
@@ -55,7 +56,7 @@ val SessionExample by project(path("examples")) {
 
 val SessionProxyTunnelExample by project(path("examples")) {
 
-    projectDependencies add { ProjectDependency(NknSdk, false) }
+    projectDependencies add { ProjectDependency(NknSdk, scope = ScopeAggregate) }
 
     repositories add { Jitpack }
     libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.1") } // Logging frontend
@@ -68,7 +69,7 @@ val SessionProxyTunnelExample by project(path("examples")) {
 
 val DropBenchmarkExample by project(path("examples")) {
 
-    projectDependencies add { ProjectDependency(NknSdk, false) }
+    projectDependencies add { ProjectDependency(NknSdk, scope = ScopeAggregate) }
 
     repositories add { Jitpack }
     libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.1") } // Logging frontend
@@ -81,7 +82,7 @@ val DropBenchmarkExample by project(path("examples")) {
 
 val MulticastExample by project(path("examples")) {
 
-    projectDependencies add { ProjectDependency(NknSdk, false) }
+    projectDependencies add { ProjectDependency(NknSdk, scope = ScopeAggregate) }
 
     repositories add { Jitpack }
     libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.1") } // Logging frontend
@@ -95,7 +96,7 @@ val MulticastExample by project(path("examples")) {
 
 val WalletExample by project(path("examples")) {
 
-    projectDependencies add { ProjectDependency(NknSdk, false) }
+    projectDependencies add { ProjectDependency(NknSdk, scope = ScopeAggregate) }
 
     repositories add { Jitpack }
     libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.1") } // Logging frontend
@@ -108,7 +109,7 @@ val WalletExample by project(path("examples")) {
 
 val PubSubExample by project(path("examples")) {
 
-    projectDependencies add { ProjectDependency(NknSdk, false) }
+    projectDependencies add { ProjectDependency(NknSdk, scope = ScopeAggregate) }
 
     repositories add { Jitpack }
     libraryDependencies add { dependency("com.github.Darkyenus:tproll:v1.3.1") } // Logging frontend
