@@ -18,6 +18,10 @@ public class NKNClient {
     private final Identity identity;
     private final SessionProtocol sessionProtocol;
 
+    /**
+     * Construct the client object.
+     * @param identity
+     */
     public NKNClient(Identity identity) {
         this.identity = identity;
         this.clientTunnel = new ClientTunnel(identity, this);
@@ -25,16 +29,29 @@ public class NKNClient {
         this.sessionProtocol = new SessionProtocol(clientTunnel.getAssociatedSessionHandler());
     }
 
+    /**
+     * Start the client. Returns an instance of the client itself.
+     * @return
+     * @throws NKNClientException
+     */
     public NKNClient start() throws NKNClientException {
         clientTunnel.startClient();
         return this;
     }
 
+    /**
+     * Close the client.
+     * @throws InterruptedException
+     */
     public void close() throws InterruptedException {
         sessionProtocol.close();
         clientTunnel.close();
     }
 
+    /**
+     * This method is used to return the underlying messages api.
+     * @return SimpleMessagesProtocol
+     */
     public SimpleMessagesProtocol simpleMessagesProtocol() {
         return simpleMessagesProtocol;
     }
