@@ -10,7 +10,7 @@ val NknSdk by project {
 
     projectName set { "NknSdk" }
     projectGroup set { "cz.jsmith.nkn" }
-    projectVersion set { "0.2.2" }
+    projectVersion set { "0.2.5" }
 
     repositories add { Jitpack }
 
